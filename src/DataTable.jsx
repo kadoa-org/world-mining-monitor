@@ -257,7 +257,7 @@ export default function DataTable({ production, mines, filters, activePeriod, in
                   <td className="px-3 py-1.5 text-white/40">{row.metric}</td>
                   <td className="px-3 py-1.5 text-white/50">{row.time_period}</td>
                   <td className="px-3 py-1.5 text-orange-400/80 tabular-nums text-right font-medium">
-                    {formatValue(row.value_normalized)}
+                    {formatValue(row.value_normalized ?? row.value)}
                   </td>
                   <td className="px-3 py-1.5 text-white/30">{row.unit_normalized || row.unit}</td>
                   <td className="px-3 py-1.5 tabular-nums text-right">
