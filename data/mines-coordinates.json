@@ -1,0 +1,2003 @@
+[
+  {
+    "id": "pilbara",
+    "name": "Pilbara",
+    "company": "Rio Tinto",
+    "lat": -22.3,
+    "lng": 118.3,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "escondida",
+    "name": "Escondida",
+    "company": "Rio Tinto",
+    "lat": -24.27,
+    "lng": -69.07,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "oyu-tolgoi",
+    "name": "Oyu Tolgoi",
+    "company": "Rio Tinto",
+    "lat": 43.0,
+    "lng": 106.85,
+    "country": "Mongolia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kennecott",
+    "name": "Kennecott",
+    "company": "Rio Tinto",
+    "lat": 40.53,
+    "lng": -112.15,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "bingham-canyon",
+    "name": "Bingham Canyon",
+    "company": "Rio Tinto",
+    "lat": 40.53,
+    "lng": -112.15,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": "ioc",
+    "name": "Iron Ore Company of Canada",
+    "company": "Rio Tinto",
+    "lat": 52.95,
+    "lng": -66.91,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "diavik",
+    "name": "Diavik",
+    "company": "Rio Tinto",
+    "lat": 64.5,
+    "lng": -110.27,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "diamonds"
+    ]
+  },
+  {
+    "id": "dampier-salt",
+    "name": "Dampier Salt",
+    "company": "Rio Tinto",
+    "lat": -20.66,
+    "lng": 116.71,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "salt"
+    ]
+  },
+  {
+    "id": "simandou",
+    "name": "Simandou",
+    "company": "Rio Tinto",
+    "lat": 8.53,
+    "lng": -8.94,
+    "country": "Guinea",
+    "region": "Africa",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "rincon",
+    "name": "Rincon",
+    "company": "Rio Tinto",
+    "lat": -23.72,
+    "lng": -66.83,
+    "country": "Argentina",
+    "region": "Americas",
+    "commodities": [
+      "lithium"
+    ]
+  },
+  {
+    "id": "katanga-kcc",
+    "name": "KCC (Katanga)",
+    "company": "Glencore",
+    "lat": -10.98,
+    "lng": 25.97,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "cobalt"
+    ]
+  },
+  {
+    "id": "mutanda",
+    "name": "Mutanda",
+    "company": "Glencore",
+    "lat": -10.68,
+    "lng": 25.94,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "cobalt"
+    ]
+  },
+  {
+    "id": "collahuasi-glencore",
+    "name": "Collahuasi",
+    "company": "Glencore",
+    "lat": -20.99,
+    "lng": -68.66,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "antamina-glencore",
+    "name": "Antamina",
+    "company": "Glencore",
+    "lat": -9.55,
+    "lng": -77.05,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "zinc"
+    ]
+  },
+  {
+    "id": "antapaccay",
+    "name": "Antapaccay",
+    "company": "Glencore",
+    "lat": -14.97,
+    "lng": -71.35,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "lomas-bayas",
+    "name": "Lomas Bayas",
+    "company": "Glencore",
+    "lat": -23.45,
+    "lng": -69.49,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kazzinc",
+    "name": "Kazzinc",
+    "company": "Glencore",
+    "lat": 49.99,
+    "lng": 82.62,
+    "country": "Kazakhstan",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "mount-isa",
+    "name": "Mount Isa",
+    "company": "Glencore",
+    "lat": -20.73,
+    "lng": 139.5,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "mcarthur-river",
+    "name": "McArthur River",
+    "company": "Glencore",
+    "lat": -16.44,
+    "lng": 136.12,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "murrin-murrin",
+    "name": "Murrin Murrin",
+    "company": "Glencore",
+    "lat": -28.72,
+    "lng": 121.87,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "ino",
+    "name": "INO (Integrated Nickel Operations)",
+    "company": "Glencore",
+    "lat": -2.53,
+    "lng": 121.56,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "matsa",
+    "name": "MATSA",
+    "company": "Sandfire Resources",
+    "lat": 37.71,
+    "lng": -6.61,
+    "country": "Spain",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "zinc",
+      "lead",
+      "silver"
+    ]
+  },
+  {
+    "id": "motheo",
+    "name": "Motheo",
+    "company": "Sandfire Resources",
+    "lat": -21.73,
+    "lng": 23.42,
+    "country": "Botswana",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "silver"
+    ]
+  },
+  {
+    "id": "black-butte",
+    "name": "Black Butte",
+    "company": "Sandfire Resources",
+    "lat": 46.83,
+    "lng": -110.95,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "aitik",
+    "name": "Aitik",
+    "company": "Boliden",
+    "lat": 67.07,
+    "lng": 20.96,
+    "country": "Sweden",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "garpenberg",
+    "name": "Garpenberg",
+    "company": "Boliden",
+    "lat": 60.3,
+    "lng": 16.23,
+    "country": "Sweden",
+    "region": "Europe",
+    "commodities": [
+      "zinc",
+      "silver"
+    ]
+  },
+  {
+    "id": "boliden-area",
+    "name": "Boliden Area",
+    "company": "Boliden",
+    "lat": 64.87,
+    "lng": 20.37,
+    "country": "Sweden",
+    "region": "Europe",
+    "commodities": [
+      "zinc",
+      "gold",
+      "silver"
+    ]
+  },
+  {
+    "id": "kevitsa",
+    "name": "Kevitsa",
+    "company": "Boliden",
+    "lat": 67.69,
+    "lng": 26.04,
+    "country": "Finland",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "nickel"
+    ]
+  },
+  {
+    "id": "tara",
+    "name": "Tara",
+    "company": "Boliden",
+    "lat": 53.66,
+    "lng": -6.83,
+    "country": "Ireland",
+    "region": "Europe",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "somincor",
+    "name": "Somincor (Neves-Corvo)",
+    "company": "Boliden",
+    "lat": 37.59,
+    "lng": -7.97,
+    "country": "Portugal",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "zinc"
+    ]
+  },
+  {
+    "id": "hamburg",
+    "name": "Hamburg Smelter",
+    "company": "Aurubis",
+    "lat": 53.52,
+    "lng": 10.04,
+    "country": "Germany",
+    "region": "Europe",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "lunen",
+    "name": "Lunen Recycling",
+    "company": "Aurubis",
+    "lat": 51.62,
+    "lng": 7.52,
+    "country": "Germany",
+    "region": "Europe",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "pirdop",
+    "name": "Pirdop Smelter",
+    "company": "Aurubis",
+    "lat": 42.7,
+    "lng": 24.18,
+    "country": "Bulgaria",
+    "region": "Europe",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "olen",
+    "name": "Olen",
+    "company": "Aurubis",
+    "lat": 51.14,
+    "lng": 4.86,
+    "country": "Belgium",
+    "region": "Europe",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "beerse",
+    "name": "Beerse",
+    "company": "Aurubis",
+    "lat": 51.32,
+    "lng": 4.86,
+    "country": "Belgium",
+    "region": "Europe",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "richmond",
+    "name": "Aurubis Richmond",
+    "company": "Aurubis",
+    "lat": 37.56,
+    "lng": -77.47,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kansanshi",
+    "name": "Kansanshi",
+    "company": "First Quantum Minerals",
+    "lat": -12.1,
+    "lng": 26.42,
+    "country": "Zambia",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "sentinel",
+    "name": "Sentinel",
+    "company": "First Quantum Minerals",
+    "lat": -12.63,
+    "lng": 25.53,
+    "country": "Zambia",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "cobre-panama",
+    "name": "Cobre Panama",
+    "company": "First Quantum Minerals",
+    "lat": 8.83,
+    "lng": -80.63,
+    "country": "Panama",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "enterprise",
+    "name": "Enterprise",
+    "company": "First Quantum Minerals",
+    "lat": -12.42,
+    "lng": 25.88,
+    "country": "Zambia",
+    "region": "Africa",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "las-bambas",
+    "name": "Las Bambas",
+    "company": "MMG Limited",
+    "lat": -14.06,
+    "lng": -72.33,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "gold",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": "dugald-river",
+    "name": "Dugald River",
+    "company": "MMG Limited",
+    "lat": -20.26,
+    "lng": 139.72,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc",
+      "lead"
+    ]
+  },
+  {
+    "id": "kinsevere",
+    "name": "Kinsevere",
+    "company": "MMG Limited",
+    "lat": -11.37,
+    "lng": 27.58,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "rosebery",
+    "name": "Rosebery",
+    "company": "MMG Limited",
+    "lat": -41.78,
+    "lng": 145.54,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc",
+      "copper",
+      "lead",
+      "gold",
+      "silver"
+    ]
+  },
+  {
+    "id": "khoemacau",
+    "name": "Khoemacau",
+    "company": "MMG Limited",
+    "lat": -21.17,
+    "lng": 25.25,
+    "country": "Botswana",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "silver"
+    ]
+  },
+  {
+    "id": "collahuasi-anglo",
+    "name": "Collahuasi",
+    "company": "Anglo American",
+    "lat": -20.99,
+    "lng": -68.66,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "los-bronces",
+    "name": "Los Bronces",
+    "company": "Anglo American",
+    "lat": -33.15,
+    "lng": -70.28,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "quellaveco",
+    "name": "Quellaveco",
+    "company": "Anglo American",
+    "lat": -17.1,
+    "lng": -70.62,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "el-soldado",
+    "name": "El Soldado",
+    "company": "Anglo American",
+    "lat": -32.63,
+    "lng": -71.08,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kumba",
+    "name": "Kumba",
+    "company": "Anglo American",
+    "lat": -27.77,
+    "lng": 25.04,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "minas-rio",
+    "name": "Minas-Rio",
+    "company": "Anglo American",
+    "lat": -18.56,
+    "lng": -43.13,
+    "country": "Brazil",
+    "region": "Americas",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "highland-valley",
+    "name": "Highland Valley Copper",
+    "company": "Teck Resources",
+    "lat": 50.48,
+    "lng": -121.04,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "quebrada-blanca",
+    "name": "Quebrada Blanca",
+    "company": "Teck Resources",
+    "lat": -20.98,
+    "lng": -68.82,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": "red-dog",
+    "name": "Red Dog",
+    "company": "Teck Resources",
+    "lat": 68.07,
+    "lng": -162.87,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "zinc",
+      "lead"
+    ]
+  },
+  {
+    "id": "carmen-de-andacollo",
+    "name": "Carmen de Andacollo",
+    "company": "Teck Resources",
+    "lat": -30.23,
+    "lng": -71.08,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "trail",
+    "name": "Trail Operations",
+    "company": "Teck Resources",
+    "lat": 49.1,
+    "lng": -117.71,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "zinc",
+      "lead"
+    ]
+  },
+  {
+    "id": "antamina-teck",
+    "name": "Antamina",
+    "company": "Teck Resources",
+    "lat": -9.55,
+    "lng": -77.05,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "zinc"
+    ]
+  },
+  {
+    "id": "kghm-poland",
+    "name": "Polish Copper Mines",
+    "company": "KGHM",
+    "lat": 51.51,
+    "lng": 16.18,
+    "country": "Poland",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "silver"
+    ]
+  },
+  {
+    "id": "norilsk",
+    "name": "Norilsk",
+    "company": "Nornickel",
+    "lat": 69.35,
+    "lng": 88.2,
+    "country": "Russia",
+    "region": "Europe",
+    "commodities": [
+      "nickel",
+      "copper",
+      "palladium",
+      "platinum"
+    ]
+  },
+  {
+    "id": "worsley",
+    "name": "Worsley Alumina",
+    "company": "South32",
+    "lat": -33.25,
+    "lng": 116.05,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "alumina"
+    ]
+  },
+  {
+    "id": "hillside",
+    "name": "Hillside Aluminium",
+    "company": "South32",
+    "lat": -33.83,
+    "lng": 25.72,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "mozal",
+    "name": "Mozal Aluminium",
+    "company": "South32",
+    "lat": -26.0,
+    "lng": 32.4,
+    "country": "Mozambique",
+    "region": "Africa",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "sierra-gorda",
+    "name": "Sierra Gorda",
+    "company": "South32",
+    "lat": -22.88,
+    "lng": -69.32,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "brazil-alumina",
+    "name": "Brazil Alumina",
+    "company": "South32",
+    "lat": -1.46,
+    "lng": -48.5,
+    "country": "Brazil",
+    "region": "Americas",
+    "commodities": [
+      "alumina"
+    ]
+  },
+  {
+    "id": "los-pelambres",
+    "name": "Los Pelambres",
+    "company": "Antofagasta plc",
+    "lat": -31.71,
+    "lng": -70.49,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "gold",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": "centinela",
+    "name": "Centinela",
+    "company": "Antofagasta plc",
+    "lat": -23.06,
+    "lng": -69.14,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "antucoya",
+    "name": "Antucoya",
+    "company": "Antofagasta plc",
+    "lat": -23.38,
+    "lng": -69.72,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "zaldivar",
+    "name": "Zaldivar",
+    "company": "Antofagasta plc",
+    "lat": -24.22,
+    "lng": -69.07,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "toquepala",
+    "name": "Toquepala",
+    "company": "Southern Copper Corporation",
+    "lat": -17.26,
+    "lng": -70.6,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "cuajone",
+    "name": "Cuajone",
+    "company": "Southern Copper Corporation",
+    "lat": -17.04,
+    "lng": -70.71,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "buenavista",
+    "name": "Buenavista",
+    "company": "Southern Copper Corporation",
+    "lat": 30.97,
+    "lng": -110.0,
+    "country": "Mexico",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "la-caridad",
+    "name": "La Caridad",
+    "company": "Southern Copper Corporation",
+    "lat": 30.35,
+    "lng": -109.55,
+    "country": "Mexico",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "aktogay",
+    "name": "Aktogay",
+    "company": "KAZ Minerals",
+    "lat": 46.93,
+    "lng": 79.98,
+    "country": "Kazakhstan",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "bozshakol",
+    "name": "Bozshakol",
+    "company": "KAZ Minerals",
+    "lat": 52.42,
+    "lng": 68.72,
+    "country": "Kazakhstan",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "dilokong",
+    "name": "Dilokong",
+    "company": "Jubilee Platinum",
+    "lat": -24.18,
+    "lng": 30.08,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "chromite"
+    ]
+  },
+  {
+    "id": "pueblo-viejo",
+    "name": "Pueblo Viejo",
+    "company": "Barrick Gold",
+    "lat": 19.05,
+    "lng": -70.17,
+    "country": "Dominican Republic",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "nevada-gold-mines",
+    "name": "Nevada Gold Mines",
+    "company": "Barrick Gold",
+    "lat": 40.73,
+    "lng": -116.18,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "carlin",
+    "name": "Carlin",
+    "company": "Barrick Gold",
+    "lat": 40.72,
+    "lng": -116.07,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "cortez",
+    "name": "Cortez",
+    "company": "Barrick Gold",
+    "lat": 40.2,
+    "lng": -116.62,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "turquoise-ridge",
+    "name": "Turquoise Ridge",
+    "company": "Barrick Gold",
+    "lat": 41.23,
+    "lng": -117.23,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "phoenix",
+    "name": "Phoenix",
+    "company": "Barrick Gold",
+    "lat": 40.86,
+    "lng": -116.35,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "loulo-gounkoto",
+    "name": "Loulo-Gounkoto",
+    "company": "Barrick Gold",
+    "lat": 14.43,
+    "lng": -11.42,
+    "country": "Mali",
+    "region": "Africa",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "kibali",
+    "name": "Kibali",
+    "company": "Barrick Gold",
+    "lat": 3.01,
+    "lng": 29.59,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "north-mara",
+    "name": "North Mara",
+    "company": "Barrick Gold",
+    "lat": -1.42,
+    "lng": 34.58,
+    "country": "Tanzania",
+    "region": "Africa",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "bulyanhulu",
+    "name": "Bulyanhulu",
+    "company": "Barrick Gold",
+    "lat": -3.12,
+    "lng": 31.95,
+    "country": "Tanzania",
+    "region": "Africa",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "veladero",
+    "name": "Veladero",
+    "company": "Barrick Gold",
+    "lat": -29.37,
+    "lng": -69.25,
+    "country": "Argentina",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "porgera",
+    "name": "Porgera",
+    "company": "Barrick Gold",
+    "lat": -5.46,
+    "lng": 143.09,
+    "country": "Papua New Guinea",
+    "region": "Asia Pacific",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "hemlo",
+    "name": "Hemlo",
+    "company": "Barrick Gold",
+    "lat": 48.71,
+    "lng": -85.84,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "lumwana",
+    "name": "Lumwana",
+    "company": "Barrick Gold",
+    "lat": -12.28,
+    "lng": 25.87,
+    "country": "Zambia",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "jabal-sayid",
+    "name": "Jabal Sayid",
+    "company": "Barrick Gold",
+    "lat": 23.68,
+    "lng": 40.92,
+    "country": "Saudi Arabia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "zaldivar-barrick",
+    "name": "Zaldivar",
+    "company": "Barrick Gold",
+    "lat": -24.22,
+    "lng": -69.07,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kamoa-kakula",
+    "name": "Kamoa-Kakula",
+    "company": "Ivanhoe Mines",
+    "lat": -10.77,
+    "lng": 25.28,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "penasquito",
+    "name": "Penasquito",
+    "company": "Newmont",
+    "lat": 24.05,
+    "lng": -101.6,
+    "country": "Mexico",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "silver",
+      "zinc"
+    ]
+  },
+  {
+    "id": "brucejack",
+    "name": "Brucejack",
+    "company": "Newmont",
+    "lat": 56.47,
+    "lng": -130.17,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "red-chris",
+    "name": "Red Chris",
+    "company": "Newmont",
+    "lat": 57.69,
+    "lng": -129.78,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "new-afton",
+    "name": "New Afton",
+    "company": "New Gold",
+    "lat": 50.65,
+    "lng": -120.5,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "mount-milligan",
+    "name": "Mount Milligan",
+    "company": "Centerra Gold",
+    "lat": 55.13,
+    "lng": -124.03,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "paragominas",
+    "name": "Paragominas",
+    "company": "Norsk Hydro",
+    "lat": -3.0,
+    "lng": -47.35,
+    "country": "Brazil",
+    "region": "Americas",
+    "commodities": [
+      "bauxite"
+    ]
+  },
+  {
+    "id": "qatalum",
+    "name": "Qatalum",
+    "company": "Norsk Hydro",
+    "lat": 25.1,
+    "lng": 51.25,
+    "country": "Qatar",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "zinc-india",
+    "name": "Zinc India (Rampura Agucha)",
+    "company": "Vedanta",
+    "lat": 25.8,
+    "lng": 74.7,
+    "country": "India",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc",
+      "lead",
+      "silver"
+    ]
+  },
+  {
+    "id": "jharsuguda",
+    "name": "Jharsuguda Smelter",
+    "company": "Vedanta",
+    "lat": 21.85,
+    "lng": 84.02,
+    "country": "India",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "lanjigarh",
+    "name": "Lanjigarh Refinery",
+    "company": "Vedanta",
+    "lat": 19.69,
+    "lng": 83.37,
+    "country": "India",
+    "region": "Asia Pacific",
+    "commodities": [
+      "alumina"
+    ]
+  },
+  {
+    "id": "gamsberg",
+    "name": "Gamsberg",
+    "company": "Vedanta",
+    "lat": -29.23,
+    "lng": 18.97,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "balco",
+    "name": "BALCO",
+    "company": "Vedanta",
+    "lat": 22.1,
+    "lng": 82.13,
+    "country": "India",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "northparkes",
+    "name": "Northparkes",
+    "company": "China Molybdenum",
+    "lat": -32.93,
+    "lng": 148.1,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "tfm",
+    "name": "TFM (Tenke Fungurume)",
+    "company": "China Molybdenum",
+    "lat": -10.57,
+    "lng": 26.12,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper",
+      "cobalt"
+    ]
+  },
+  {
+    "id": "batu-hijau",
+    "name": "Batu Hijau",
+    "company": "Amman Mineral",
+    "lat": -8.97,
+    "lng": 116.87,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "hengjaya",
+    "name": "Hengjaya Mine",
+    "company": "Nickel Industries",
+    "lat": -2.55,
+    "lng": 121.6,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "angel-nickel",
+    "name": "Angel Nickel (ANI)",
+    "company": "Nickel Industries",
+    "lat": -2.52,
+    "lng": 121.55,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "alro-slatina",
+    "name": "ALRO S.A.",
+    "company": "Alro SA",
+    "lat": 44.43,
+    "lng": 24.36,
+    "country": "Romania",
+    "region": "Europe",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "tujuh-bukit",
+    "name": "Tujuh Bukit Gold Mine",
+    "company": "Merdeka Copper Gold",
+    "lat": -8.22,
+    "lng": 114.05,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "gold",
+      "copper"
+    ]
+  },
+  {
+    "id": "wetar",
+    "name": "Wetar Copper-Pyrite Mine",
+    "company": "Merdeka Copper Gold",
+    "lat": -7.87,
+    "lng": 126.45,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "scm",
+    "name": "SCM Mine",
+    "company": "Merdeka Copper Gold",
+    "lat": -8.25,
+    "lng": 114.1,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "gold"
+    ]
+  },
+  {
+    "id": "yulong",
+    "name": "Yulong Copper",
+    "company": "Zijin Mining",
+    "lat": 31.51,
+    "lng": 97.39,
+    "country": "China",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kamoa-zijin",
+    "name": "Kamoa",
+    "company": "Zijin Mining",
+    "lat": -10.77,
+    "lng": 25.28,
+    "country": "DRC",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "befesa-duisburg",
+    "name": "Steel Dust Recycling Services",
+    "company": "Befesa SA",
+    "lat": 51.43,
+    "lng": 6.76,
+    "country": "Germany",
+    "region": "Europe",
+    "commodities": [
+      "zinc"
+    ]
+  },
+  {
+    "id": "alcoa-portland",
+    "name": "Portland",
+    "company": "Alcoa",
+    "lat": -38.34,
+    "lng": 141.6,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "alcoa-san-ciprian",
+    "name": "San Ciprian",
+    "company": "Alcoa",
+    "lat": 43.68,
+    "lng": -7.46,
+    "country": "Spain",
+    "region": "Europe",
+    "commodities": [
+      "aluminium",
+      "alumina"
+    ]
+  },
+  {
+    "id": "alcoa-fjardaal",
+    "name": "Fjardaal",
+    "company": "Alcoa",
+    "lat": 64.68,
+    "lng": -14.02,
+    "country": "Iceland",
+    "region": "Europe",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "alcoa-warrick",
+    "name": "Warrick",
+    "company": "Alcoa",
+    "lat": 37.95,
+    "lng": -87.38,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "alcoa-baie-comeau",
+    "name": "Baie Comeau",
+    "company": "Alcoa",
+    "lat": 49.22,
+    "lng": -68.16,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "alcoa-sao-luis",
+    "name": "Sao Luis (Alumar)",
+    "company": "Alcoa",
+    "lat": -2.59,
+    "lng": -44.24,
+    "country": "Brazil",
+    "region": "Americas",
+    "commodities": [
+      "aluminium",
+      "alumina"
+    ]
+  },
+  {
+    "id": "alba",
+    "name": "Alba Smelter",
+    "company": "Aluminium Bahrain",
+    "lat": 26.04,
+    "lng": 50.52,
+    "country": "Bahrain",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "century-jamalco",
+    "name": "Jamalco",
+    "company": "Century Aluminum",
+    "lat": 17.88,
+    "lng": -77.18,
+    "country": "Jamaica",
+    "region": "Americas",
+    "commodities": [
+      "alumina"
+    ]
+  },
+  {
+    "id": "century-iceland",
+    "name": "Grundartangi",
+    "company": "Century Aluminum",
+    "lat": 64.35,
+    "lng": -21.67,
+    "country": "Iceland",
+    "region": "Europe",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "century-us",
+    "name": "Hawesville",
+    "company": "Century Aluminum",
+    "lat": 37.9,
+    "lng": -86.75,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "kroondal",
+    "name": "Kroondal",
+    "company": "Sibanye Stillwater",
+    "lat": -25.67,
+    "lng": 27.29,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "platinum",
+      "palladium"
+    ]
+  },
+  {
+    "id": "stillwater",
+    "name": "US PGM underground operations",
+    "company": "Sibanye Stillwater",
+    "lat": 45.38,
+    "lng": -109.87,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "platinum",
+      "palladium"
+    ]
+  },
+  {
+    "id": "mimosa",
+    "name": "Mimosa",
+    "company": "Sibanye Stillwater",
+    "lat": -20.42,
+    "lng": 30.08,
+    "country": "Zimbabwe",
+    "region": "Africa",
+    "commodities": [
+      "platinum",
+      "palladium"
+    ]
+  },
+  {
+    "id": "platinum-mile",
+    "name": "Platinum Mile",
+    "company": "Sibanye Stillwater",
+    "lat": -25.68,
+    "lng": 27.09,
+    "country": "South Africa",
+    "region": "Africa",
+    "commodities": [
+      "platinum"
+    ]
+  },
+  {
+    "id": "rusal-bratsk",
+    "name": "Bratsk",
+    "company": "RUSAL",
+    "lat": 56.13,
+    "lng": 101.61,
+    "country": "Russia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "hongqiao-zouping",
+    "name": "Zouping",
+    "company": "China Hongqiao",
+    "lat": 36.87,
+    "lng": 117.75,
+    "country": "China",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "china-daye",
+    "name": "Daye",
+    "company": "China Daye",
+    "lat": 30.1,
+    "lng": 114.97,
+    "country": "China",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "cnmc-luanshya",
+    "name": "Luanshya",
+    "company": "China Non-Ferrous Mining",
+    "lat": -13.14,
+    "lng": 28.42,
+    "country": "Zambia",
+    "region": "Africa",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "kaiser-trentwood",
+    "name": "Trentwood",
+    "company": "Kaiser Aluminum",
+    "lat": 47.65,
+    "lng": -117.35,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "aluminium"
+    ]
+  },
+  {
+    "id": "eramet-moanda",
+    "name": "Moanda",
+    "company": "Eramet",
+    "lat": -1.57,
+    "lng": 13.28,
+    "country": "Gabon",
+    "region": "Africa",
+    "commodities": [
+      "manganese"
+    ]
+  },
+  {
+    "id": "eramet-weda-bay",
+    "name": "Weda Bay",
+    "company": "Eramet",
+    "lat": 0.37,
+    "lng": 127.99,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "eramet-sln",
+    "name": "SLN",
+    "company": "Eramet",
+    "lat": -22.27,
+    "lng": 166.45,
+    "country": "New Caledonia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "eramet-gco",
+    "name": "Grande Cote Operations",
+    "company": "Eramet",
+    "lat": 15.17,
+    "lng": -16.95,
+    "country": "Senegal",
+    "region": "Africa",
+    "commodities": [
+      "other"
+    ]
+  },
+  {
+    "id": "jinchuan-jinchang",
+    "name": "Jinchang",
+    "company": "Jinchuan",
+    "lat": 38.49,
+    "lng": 102.17,
+    "country": "China",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel",
+      "copper"
+    ]
+  },
+  {
+    "id": "bhp-waio",
+    "name": "Western Australia Iron Ore",
+    "company": "BHP",
+    "lat": -23.36,
+    "lng": 119.73,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "iron_ore"
+    ]
+  },
+  {
+    "id": "bhp-escondida",
+    "name": "Escondida",
+    "company": "BHP",
+    "lat": -24.27,
+    "lng": -69.07,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "bhp-spence",
+    "name": "Spence",
+    "company": "BHP",
+    "lat": -22.82,
+    "lng": -69.33,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "bhp-olympic-dam",
+    "name": "Olympic Dam",
+    "company": "BHP",
+    "lat": -30.45,
+    "lng": 136.88,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper",
+      "gold",
+      "uranium"
+    ]
+  },
+  {
+    "id": "bhp-bma",
+    "name": "BMA Coal",
+    "company": "BHP",
+    "lat": -22.38,
+    "lng": 148.15,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "coal"
+    ]
+  },
+  {
+    "id": "bhp-nickel-west",
+    "name": "Nickel West",
+    "company": "BHP",
+    "lat": -31.07,
+    "lng": 121.77,
+    "country": "Australia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "nickel"
+    ]
+  },
+  {
+    "id": "bhp-potash",
+    "name": "Jansen Potash",
+    "company": "BHP",
+    "lat": 51.95,
+    "lng": -105.07,
+    "country": "Canada",
+    "region": "Americas",
+    "commodities": [
+      "other"
+    ]
+  },
+  {
+    "id": "hzl-rampura",
+    "name": "Rampura Agucha",
+    "lat": 25.8,
+    "lng": 74.7,
+    "country": "India",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc",
+      "lead",
+      "silver"
+    ],
+    "company": "Hindustan Zinc"
+  },
+  {
+    "id": "korea-zinc-onsan",
+    "name": "Onsan Smelter",
+    "lat": 35.5,
+    "lng": 129.35,
+    "country": "South Korea",
+    "region": "Asia Pacific",
+    "commodities": [
+      "zinc",
+      "lead"
+    ],
+    "company": "Korea Zinc"
+  },
+  {
+    "id": "lundin-candelaria",
+    "name": "Candelaria",
+    "lat": -27.52,
+    "lng": -70.27,
+    "country": "Chile",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ],
+    "company": "Lundin Mining"
+  },
+  {
+    "id": "lundin-neves-corvo",
+    "name": "Neves-Corvo",
+    "lat": 37.59,
+    "lng": -7.97,
+    "country": "Portugal",
+    "region": "Europe",
+    "commodities": [
+      "copper",
+      "zinc"
+    ],
+    "company": "Lundin Mining"
+  },
+  {
+    "id": "maaden-phosphate",
+    "name": "Phosphate",
+    "lat": 30.0,
+    "lng": 38.0,
+    "country": "Saudi Arabia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "phosphate"
+    ],
+    "company": "Maaden"
+  },
+  {
+    "id": "maaden-aluminium",
+    "name": "Ras Al Khair",
+    "lat": 27.05,
+    "lng": 49.14,
+    "country": "Saudi Arabia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "aluminium"
+    ],
+    "company": "Maaden"
+  },
+  {
+    "id": "antam-halmahera",
+    "name": "Halmahera",
+    "lat": 0.8,
+    "lng": 127.8,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "gold",
+      "nickel"
+    ],
+    "company": "PT Aneka Tambang"
+  },
+  {
+    "id": "nexa-cerro-lindo",
+    "name": "Cerro Lindo",
+    "lat": -13.7,
+    "lng": -75.6,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "zinc",
+      "copper"
+    ],
+    "company": "Nexa Resources"
+  },
+  {
+    "id": "nexa-vazante",
+    "name": "Vazante",
+    "lat": -17.98,
+    "lng": -46.9,
+    "country": "Brazil",
+    "region": "Americas",
+    "commodities": [
+      "zinc"
+    ],
+    "company": "Nexa Resources"
+  },
+  {
+    "id": "fcx-grasberg",
+    "name": "Grasberg",
+    "company": "FreePort-McMoRan",
+    "lat": -4.05,
+    "lng": 137.11,
+    "country": "Indonesia",
+    "region": "Asia Pacific",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "fcx-morenci",
+    "name": "Morenci",
+    "company": "FreePort-McMoRan",
+    "lat": 33.08,
+    "lng": -109.35,
+    "country": "USA",
+    "region": "Americas",
+    "commodities": [
+      "copper"
+    ]
+  },
+  {
+    "id": "fcx-cerro-verde",
+    "name": "Cerro Verde",
+    "company": "FreePort-McMoRan",
+    "lat": -16.53,
+    "lng": -71.6,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": "hudbay-constancia",
+    "name": "Constancia",
+    "company": "Hudbay Minerals",
+    "lat": -14.53,
+    "lng": -71.78,
+    "country": "Peru",
+    "region": "Americas",
+    "commodities": [
+      "copper",
+      "gold"
+    ]
+  },
+  {
+    "id": "penoles-fresnillo",
+    "name": "Fresnillo",
+    "company": "Industrias Penoles",
+    "lat": 23.17,
+    "lng": -102.87,
+    "country": "Mexico",
+    "region": "Americas",
+    "commodities": [
+      "silver",
+      "gold",
+      "zinc",
+      "lead"
+    ]
+  }
+]
