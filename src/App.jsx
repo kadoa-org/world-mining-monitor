@@ -264,11 +264,6 @@ export default function App() {
           )}
         </main>
       </div>
-
-      {/* Footer */}
-      <footer className="h-7 flex items-center justify-center px-5 border-t border-white/5 flex-shrink-0 text-[10px] text-white/20">
-        <span>Source: Company quarterly filings (10-Q, 10-K, production reports). Extracted by AI.</span>
-      </footer>
     </div>
   );
 }
