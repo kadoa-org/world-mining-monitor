@@ -22,8 +22,8 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
   };
 
   return (
-    <aside className="w-[85vw] max-w-xs md:w-60 flex-shrink-0 border-r border-white/5 bg-[#0d0d18] overflow-y-auto">
-      <div className="p-4 flex flex-col gap-5">
+    <aside className="w-[85vw] max-w-xs md:w-60 h-full flex-shrink-0 border-r border-white/5 bg-[#0d0d18] flex flex-col">
+      <div className="p-4 flex flex-col gap-4 overflow-y-auto flex-1 min-h-0">
         {/* Reset all */}
         {hasActiveFilters && (
           <button
@@ -113,7 +113,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             onChange={(e) => setCompanySearch(e.target.value)}
             className="mt-2 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50 placeholder:text-white/20"
           />
-          <div className="mt-1.5 flex flex-col gap-0.5 max-h-52 overflow-y-auto">
+          <div className="mt-1.5 flex flex-col gap-0.5">
             {companies
               .filter((c) => !companySearch || c.toLowerCase().includes(companySearch.toLowerCase()))
               .map((company) => {
@@ -150,7 +150,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
           <div className="mt-2 flex flex-col gap-0.5">
             {commodities
               .filter((c) => COMMODITY_COLORS[c])
-              .slice(0, 14)
+              .slice(0, 10)
               .map((commodity) => {
                 const color = COMMODITY_COLORS[commodity] || "#6b7280";
                 const isActive = filters.commodity === "all" || filters.commodity === commodity;

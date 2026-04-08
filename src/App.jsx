@@ -268,7 +268,7 @@ export default function App() {
         {sidebarOpen && (
           <div className="fixed inset-0 bg-black/50 z-[999] md:hidden" onClick={() => setSidebarOpen(false)} />
         )}
-        <div className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:static z-[1000] md:z-auto h-full transition-transform duration-200`}>
+        <div className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:static top-12 md:top-0 z-[1000] md:z-auto h-[calc(100vh-3rem)] md:h-full transition-transform duration-200`}>
           <Sidebar
             filters={filters}
             setFilters={setFilters}
