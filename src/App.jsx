@@ -125,8 +125,26 @@ export default function App() {
   }, [production, filters, activePeriod]);
 
   const mineProduction = useMemo(() => {
+    let records = filteredProduction;
+    // When "All periods" is active, keep only the latest quarterly value per
+    // mine+commodity to avoid double-counting overlapping periods (Q1+Q2+H1+FY).
+    if (!activePeriod) {
+      const latest = new Map();
+      for (const p of filteredProduction) {
+        const key = `${p.mine_id}|${p.commodity}|${p.metric}`;
+        const existing = latest.get(key);
+        if (!existing) { latest.set(key, p); continue; }
+        // Prefer quarterly periods, then compare alphabetically (Q4 2025 > Q3 2025)
+        const isQ = (tp) => /^Q[1-4] \d{4}$/.test(tp);
+        const curIsQ = isQ(p.time_period);
+        const exIsQ = isQ(existing.time_period);
+        if (curIsQ && !exIsQ) { latest.set(key, p); }
+        else if (curIsQ === exIsQ && p.time_period > existing.time_period) { latest.set(key, p); }
+      }
+      records = [...latest.values()];
+    }
     const map = new Map();
-    for (const p of filteredProduction) {
+    for (const p of records) {
       const existing = map.get(p.mine_id) || { total_kt: 0, commodities: {}, records: [] };
       const kt = p.value_normalized || 0;
       existing.total_kt += kt;
@@ -135,7 +153,7 @@ export default function App() {
       map.set(p.mine_id, existing);
     }
     return map;
-  }, [filteredProduction]);
+  }, [filteredProduction, activePeriod]);
 
   const filteredMines = useMemo(() => {
     return mines.filter((m) => {
