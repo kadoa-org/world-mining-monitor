@@ -1,5 +1,7 @@
 # World Mining Monitor
 
+**Live demo: [mining.kadoa.com](https://mining.kadoa.com/)**
+
 Interactive map and open dataset of global mining production data.
 
 For each company we extract mine/operation name, commodity, production volume, unit, normalized value, time period, and a link to the source report PDF.
