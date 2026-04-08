@@ -126,15 +126,16 @@ export default function App() {
 
   const mineProduction = useMemo(() => {
     let records = filteredProduction;
-    // When "All periods" is active, keep only the latest quarterly value per
+    // When "All periods" is active, keep only the latest quarterly production value per
     // mine+commodity to avoid double-counting overlapping periods (Q1+Q2+H1+FY).
+    // Only use production metric for bubble sizing and popup (not sales).
     if (!activePeriod) {
       const latest = new Map();
       for (const p of filteredProduction) {
-        const key = `${p.mine_id}|${p.commodity}|${p.metric}`;
+        if (p.metric !== "production") continue;
+        const key = `${p.mine_id}|${p.commodity}`;
         const existing = latest.get(key);
         if (!existing) { latest.set(key, p); continue; }
-        // Prefer quarterly periods, then compare alphabetically (Q4 2025 > Q3 2025)
         const isQ = (tp) => /^Q[1-4] \d{4}$/.test(tp);
         const curIsQ = isQ(p.time_period);
         const exIsQ = isQ(existing.time_period);
