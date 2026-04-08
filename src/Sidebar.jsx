@@ -23,23 +23,27 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
 
   return (
     <aside className="w-[85vw] max-w-xs md:w-60 h-full flex-shrink-0 border-r border-white/5 bg-[#0d0d18] flex flex-col">
-      <div className="p-4 flex flex-col gap-4 overflow-y-auto flex-1 min-h-0">
-        {/* Reset all */}
-        {hasActiveFilters && (
-          <button
-            onClick={resetAll}
-            className="w-full py-1.5 text-[11px] text-orange-400/70 hover:text-orange-400 border border-orange-500/20 hover:border-orange-500/40 rounded bg-orange-500/5 transition-colors"
-          >
-            Reset all filters
-          </button>
-        )}
+      {/* Fixed top: filters */}
+      <div className="p-4 pb-2 flex flex-col gap-3 flex-shrink-0">
+        {/* Reset - always reserve space to prevent layout shift */}
+        <div className="h-8">
+          {hasActiveFilters && (
+            <button
+              onClick={resetAll}
+              className="w-full py-1.5 text-[11px] text-orange-400/70 hover:text-orange-400 border border-orange-500/20 hover:border-orange-500/40 rounded bg-orange-500/5 transition-colors"
+            >
+              Reset all filters
+            </button>
+          )}
+        </div>
+
         {/* Commodity */}
         <section>
           <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">Commodity</label>
           <select
             value={filters.commodity}
             onChange={(e) => update("commodity", e.target.value)}
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50"
+            className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50"
           >
             <option value="all">All commodities</option>
             {commodities.map((c) => (
@@ -53,7 +57,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
         {/* Region */}
         <section>
           <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">Region</label>
-          <div className="mt-2 flex flex-wrap gap-1">
+          <div className="mt-1.5 flex flex-wrap gap-1">
             {REGIONS.map((r) => (
               <button
                 key={r}
@@ -76,7 +80,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
           <select
             value={filters.period}
             onChange={(e) => update("period", e.target.value)}
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50"
+            className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50"
           >
             <option value="latest">Latest quarter</option>
             <option value="all">All periods</option>
@@ -97,10 +101,13 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             </optgroup>
           </select>
         </section>
+      </div>
 
+      {/* Flexible middle: companies + legend share remaining space */}
+      <div className="flex-1 min-h-0 flex flex-col px-4 gap-3 overflow-hidden">
         {/* Companies */}
-        <section>
-          <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">
+        <section className="flex flex-col min-h-0 flex-1">
+          <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold flex-shrink-0">
             Companies
             {filters.companies.length > 0 && (
               <span className="ml-1.5 text-orange-400/60">({filters.companies.length})</span>
@@ -111,9 +118,9 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             placeholder="Search companies..."
             value={companySearch}
             onChange={(e) => setCompanySearch(e.target.value)}
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50 placeholder:text-white/20"
+            className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50 placeholder:text-white/20 flex-shrink-0"
           />
-          <div className="mt-1.5 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
+          <div className="mt-1 flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-[80px]">
             {companies
               .filter((c) => !companySearch || c.toLowerCase().includes(companySearch.toLowerCase()))
               .map((company) => {
@@ -122,7 +129,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
                   <button
                     key={company}
                     onClick={() => toggleCompany(company)}
-                    className={`text-left px-2 py-1 rounded text-xs transition-colors ${
+                    className={`text-left px-2 py-0.5 rounded text-[11px] transition-colors flex-shrink-0 ${
                       active ? "text-white/80 hover:bg-white/5" : "text-white/20 hover:text-white/40"
                     }`}
                   >
@@ -137,7 +144,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
           {filters.companies.length > 0 && (
             <button
               onClick={() => update("companies", [])}
-              className="mt-1.5 text-[10px] text-orange-400/60 hover:text-orange-400"
+              className="mt-1 text-[10px] text-orange-400/60 hover:text-orange-400 flex-shrink-0"
             >
               Clear selection
             </button>
@@ -145,9 +152,9 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
         </section>
 
         {/* Legend */}
-        <section>
-          <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">Legend</label>
-          <div className="mt-2 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
+        <section className="flex flex-col min-h-0 flex-1">
+          <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold flex-shrink-0">Legend</label>
+          <div className="mt-1 flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-[60px]">
             {commodities
               .filter((c) => COMMODITY_COLORS[c])
               .map((commodity) => {
@@ -157,7 +164,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
                   <button
                     key={commodity}
                     onClick={() => update("commodity", filters.commodity === commodity ? "all" : commodity)}
-                    className={`flex items-center gap-2 text-[11px] px-1 py-0.5 rounded text-left transition-colors ${
+                    className={`flex items-center gap-2 text-[11px] px-1 py-0.5 rounded text-left transition-colors flex-shrink-0 ${
                       isActive ? "text-white/50 hover:text-white/70" : "text-white/15 hover:text-white/30"
                     }`}
                   >
@@ -174,7 +181,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
                 );
               })}
           </div>
-          <div className="mt-3 flex items-end gap-3 text-[10px] text-white/30">
+          <div className="mt-2 flex items-end gap-3 text-[10px] text-white/30 flex-shrink-0">
             <div className="flex items-center gap-1.5">
               <svg width="8" height="8">
                 <circle cx="4" cy="4" r="3" fill="#fd7412" fillOpacity="0.4" />
@@ -195,11 +202,11 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             </div>
           </div>
         </section>
+      </div>
 
-        {/* Attribution */}
-        <div className="pt-4 border-t border-white/5 text-[10px] text-white/20">
-          Data sourced with <a href="https://kadoa.com" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white/50 underline decoration-white/10">kadoa.com</a>
-        </div>
+      {/* Pinned footer */}
+      <div className="px-4 py-3 border-t border-white/5 text-[10px] text-white/20 flex-shrink-0">
+        Data sourced with <a href="https://kadoa.com" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white/50 underline decoration-white/10">kadoa.com</a>
       </div>
     </aside>
   );
