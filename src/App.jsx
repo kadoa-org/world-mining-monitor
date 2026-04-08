@@ -208,16 +208,17 @@ export default function App() {
     <div className="h-screen w-screen flex flex-col">
       {/* Header */}
       <header className="h-12 flex items-center justify-between px-2 md:px-5 border-b border-white/5 flex-shrink-0 relative z-[1000] overflow-hidden">
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
           {/* Mobile sidebar toggle */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden text-white/50 hover:text-white/80 p-1"
+            className="md:hidden text-white/50 hover:text-white/80 p-1 flex-shrink-0"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
           </button>
-          <div className="w-2 h-2 rounded-full bg-orange-500 hidden md:block" />
-          <span className="text-xs md:text-sm font-semibold tracking-tight whitespace-nowrap">World Mining Monitor</span>
+          <div className="w-2 h-2 rounded-full bg-orange-500 hidden md:block flex-shrink-0" />
+          <span className="hidden md:inline text-sm font-semibold tracking-tight whitespace-nowrap">World Mining Monitor</span>
+          <span className="md:hidden text-xs font-semibold tracking-tight whitespace-nowrap">WMM</span>
         </div>
 
         {/* View toggle */}
