@@ -196,6 +196,11 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             </div>
           </div>
         </section>
+
+        {/* Attribution */}
+        <div className="pt-4 border-t border-white/5 text-[10px] text-white/20">
+          Data sourced with <a href="https://kadoa.com" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white/50 underline decoration-white/10">kadoa.com</a>
+        </div>
       </div>
     </aside>
   );
