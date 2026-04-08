@@ -184,45 +184,41 @@ export default function DataTable({ production, mines, filters, activePeriod, in
   return (
     <div className="flex flex-col h-full bg-[#0a0a14]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search company, mine, commodity..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-white/80 w-64 outline-none focus:border-orange-500/50 placeholder:text-white/20"
-          />
-          <span className="text-[11px] text-white/30 tabular-nums">{sorted.length} rows</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => download(toCSV(sorted), `mining-production-${activePeriod}.csv`, "text/csv")}
-            className="px-3 py-1.5 text-[11px] bg-white/5 border border-white/10 rounded text-white/60 hover:text-white/90 hover:border-orange-500/30 transition-colors"
-          >
-            Export CSV
-          </button>
-          <button
-            onClick={() => {
-              const allRows = production.map((p) => {
-                const mine = mineMap.get(p.mine_id);
-                return { ...p, country: mine?.country || "", region: mine?.region || "" };
-              });
-              download(toCSV(allRows), "mining-production-all-periods.csv", "text/csv");
-            }}
-            className="px-3 py-1.5 text-[11px] bg-orange-500/10 border border-orange-500/20 rounded text-orange-400/80 hover:text-orange-400 hover:border-orange-500/40 transition-colors"
-          >
-            Export All Periods
-          </button>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(toCSV(sorted));
-            }}
-            className="px-3 py-1.5 text-[11px] bg-white/5 border border-white/10 rounded text-white/60 hover:text-white/90 hover:border-orange-500/30 transition-colors"
-          >
-            Copy
-          </button>
-        </div>
+      <div className="flex flex-wrap items-center gap-2 px-3 md:px-4 py-2 border-b border-white/5 flex-shrink-0">
+        <input
+          type="text"
+          placeholder="Search company, mine, commodity..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-white/80 flex-1 min-w-[150px] outline-none focus:border-orange-500/50 placeholder:text-white/20"
+        />
+        <span className="text-[11px] text-white/30 tabular-nums">{sorted.length} rows</span>
+        <button
+          onClick={() => download(toCSV(sorted), `mining-production-${activePeriod}.csv`, "text/csv")}
+          className="px-3 py-1.5 text-[11px] bg-white/5 border border-white/10 rounded text-white/60 hover:text-white/90 hover:border-orange-500/30 transition-colors"
+        >
+          Export CSV
+        </button>
+        <button
+          onClick={() => {
+            const allRows = production.map((p) => {
+              const mine = mineMap.get(p.mine_id);
+              return { ...p, country: mine?.country || "", region: mine?.region || "" };
+            });
+            download(toCSV(allRows), "mining-production-all-periods.csv", "text/csv");
+          }}
+          className="hidden md:block px-3 py-1.5 text-[11px] bg-orange-500/10 border border-orange-500/20 rounded text-orange-400/80 hover:text-orange-400 hover:border-orange-500/40 transition-colors"
+        >
+          Export All Periods
+        </button>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(toCSV(sorted));
+          }}
+          className="hidden md:block px-3 py-1.5 text-[11px] bg-white/5 border border-white/10 rounded text-white/60 hover:text-white/90 hover:border-orange-500/30 transition-colors"
+        >
+          Copy
+        </button>
       </div>
 
       {/* Table */}
