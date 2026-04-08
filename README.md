@@ -2,7 +2,7 @@
 
 **Live demo: [mining.kadoa.com](https://mining.kadoa.com/)**
 
-![World Mining Monitor Demo](https://kadoa.b-cdn.net/mining-pdfs/demo.gif)
+![World Mining Monitor](https://kadoa.b-cdn.net/mining-pdfs/screenshot.png)
 
 Interactive map and open dataset of global mining production data.
 
