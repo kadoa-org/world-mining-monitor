@@ -1,20 +1,9 @@
 import L from "leaflet";
-import React, { useEffect, useMemo } from "react";
-import { CircleMarker, Tooltip as LeafletTooltip, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
+import React, { useMemo } from "react";
+import { CircleMarker, Tooltip as LeafletTooltip, MapContainer, Popup, TileLayer } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import { BUBBLE_MAX, BUBBLE_MIN, COMMODITY_COLORS } from "./constants";
-
-// Fix Leaflet not rendering correctly after being hidden (display:none)
-function InvalidateSizeFix() {
-  const map = useMap();
-  useEffect(() => {
-    const observer = new ResizeObserver(() => map.invalidateSize());
-    observer.observe(map.getContainer());
-    return () => observer.disconnect();
-  }, [map]);
-  return null;
-}
 
 function getBubbleRadius(totalKt) {
   if (!totalKt || totalKt <= 0) return BUBBLE_MIN;
@@ -96,7 +85,6 @@ export default function MiningMap({
         attributionControl={false}
         worldCopyJump={false}
       >
-        <InvalidateSizeFix />
         {/* Dark tile layer - no labels at low zoom */}
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png" maxZoom={19} />
         {/* Labels layer - only visible at higher zoom */}

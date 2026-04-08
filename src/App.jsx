@@ -233,8 +233,13 @@ export default function App() {
           periods={periods}
         />
         <main className="flex-1 relative overflow-hidden">
-          {/* Keep map mounted to preserve Leaflet state, just hide it */}
-          <div style={{ display: view === "map" ? "block" : "none", width: "100%", height: "100%" }}>
+          {/* Keep map mounted with dimensions to preserve Leaflet state */}
+          <div style={{
+            width: "100%", height: "100%",
+            visibility: view === "map" ? "visible" : "hidden",
+            position: view === "map" ? "relative" : "absolute",
+            pointerEvents: view === "map" ? "auto" : "none",
+          }}>
             <MiningMap
               mines={filteredMines}
               mineProduction={mineProduction}
