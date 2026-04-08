@@ -26,12 +26,27 @@ export const COMMODITY_COLORS = {
   copper_equivalent: "#fb923c",
   "copper equivalent": "#fb923c",
   ore: "#a8a29e",
+  tungsten: "#ea580c",
+  niobium: "#0ea5e9",
+  phosphate: "#84cc16",
+  manganese: "#d97706",
+  pgm: "#d4d4d8",
+  "2e pgm": "#d4d4d8",
+  "4e pgm": "#d4d4d8",
+  "gold equivalent": "#fbbf24",
+  uranium: "#16a34a",
+  tin: "#737373",
+  "mineral sands": "#c084fc",
+  "recycling materials": "#a3a3a3",
+  "sulfuric acid": "#facc15",
+  ammonia: "#2dd4bf",
+  iron: "#ef4444",
 };
 
 // Merge display synonyms
 export const COMMODITY_ALIASES = {
   aluminum: "aluminium",
-  "iron ore": "iron_ore",
+  iron_ore: "iron ore",
   "titanium dioxide": "titanium_dioxide",
   "copper equivalent": "copper_equivalent",
   Copper: "copper",
@@ -82,8 +97,34 @@ export const COMMODITY_ALIASES = {
   "chrome ore": "chromite",
   "chromite concentrate": "chromite",
   ferrochrome: "chromite",
-  concentrate: null,  // skip generic "concentrate"
-  ore: null,          // skip generic "ore"
+  "phosphate fertilizer": "phosphate",
+  "base metals": null,
+  "physical trade": null,
+  "concentrate metal products": null,
+  "refined metal products": null,
+  metal: null,
+  "2e pgm": "pgm",
+  "4e pgm": "pgm",
+  "gold equivalent": null,
+  "copper_equivalent": null,
+  "copper equivalent": null,
+  "ncm precursor": null,
+  selenium: null,
+  silicon: null,
+  nepheline: null,
+  indium: null,
+  antimony: null,
+  bismuth: null,
+  gallium: null,
+  germanium: null,
+  tellurium: null,
+  "recycling materials": null,
+  "sulfuric_acid": null,
+  "sulfuric acid": null,
+  "titanium dioxide slag": null,
+  iron: "iron ore",
+  concentrate: null,
+  ore: null,
   energy: null,
   power: null,
   freight: null,
@@ -96,8 +137,75 @@ export function normalizeCommodity(c) {
   return mapped || c;
 }
 
+// Display names for commodities that don't capitalize well
+export const COMMODITY_DISPLAY = {
+  pgm: "PGM",
+  "iron ore": "Iron Ore",
+};
+
+export function commodityLabel(c) {
+  return COMMODITY_DISPLAY[c] || c.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
+// Company -> primary ticker mapping
+export const COMPANY_TICKERS = {
+  "Alcoa": "AA",
+  "Alro SA": "ALR.RO",
+  "Aluminium Bahrain": "ALBH.BH",
+  "Amman Mineral": "AMMN.JK",
+  "Anglo American": "AAL.L",
+  "Antofagasta": "ANTO.L",
+  "Aurubis": "NDA.DE",
+  "BHP": "BHP",
+  "Barrick Gold": "B",
+  "Befesa SA": "BFSA.DE",
+  "Boliden": "BOL.ST",
+  "CNMC": "1258.HK",
+  "Centerra Gold": "CG.TO",
+  "Century Aluminum": "CENX",
+  "China Daye": "0661.HK",
+  "China Hongqiao": "1378.HK",
+  "China Molybdenum": "3993.HK",
+  "Eramet": "ERA.PA",
+  "First Quantum Minerals": "FM.TO",
+  "Freeport-McMoRan": "FCX",
+  "Glencore": "GLEN.L",
+  "Hindalco": "HINDALCO.NS",
+  "Hindustan Zinc": "HINDZINC.NS",
+  "Hudbay Minerals": "HBM.TO",
+  "Industrias Penoles": "PE&OLES.MX",
+  "Ivanhoe Mines": "IVN.TO",
+  "Jinchuan": "2362.HK",
+  "Jubilee Platinum": "JLP.L",
+  "KAZ Minerals": "",
+  "KGHM": "KGH.WA",
+  "Kaiser Aluminum": "KALU",
+  "Korea Zinc": "010130.KS",
+  "Lundin Mining": "LUN.TO",
+  "MMG Limited": "1208.HK",
+  "Maaden": "1211.SR",
+  "Merdeka Copper Gold": "MDKA.JK",
+  "New Gold": "",
+  "Newmont": "NEM",
+  "Nexa Resources": "NEXA",
+  "Nickel Industries": "NIC.AX",
+  "Nornickel": "GMKN.ME",
+  "Norsk Hydro": "NHY.OL",
+  "PT Aneka Tambang": "ANTM.JK",
+  "RUSAL": "0486.HK",
+  "Rio Tinto": "RIO",
+  "Sandfire Resources": "SFR.AX",
+  "Sibanye Stillwater": "SSW.JO",
+  "South32": "S32.AX",
+  "Southern Copper": "SCCO",
+  "Teck Resources": "TECK",
+  "Vale SA": "VALE",
+  "Vedanta": "VEDL.NS",
+  "Zijin Mining": "2899.HK",
+};
+
 export const REGIONS = ["All", "Americas", "Europe", "Asia Pacific", "Africa"];
 
 // Bubble size scale: log(value_in_kt) * factor
-export const BUBBLE_MIN = 6;
-export const BUBBLE_MAX = 32;
+export const BUBBLE_MIN = 4;
+export const BUBBLE_MAX = 22;

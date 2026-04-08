@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { COMMODITY_COLORS } from "./constants";
+import { COMMODITY_COLORS, COMPANY_TICKERS } from "./constants";
 
 const SORT_ICONS = { asc: "\u2191", desc: "\u2193", none: "\u2195" };
 
@@ -36,6 +36,7 @@ function formatValue(v, unit) {
 function toCSV(rows) {
   const headers = [
     "company",
+    "ticker",
     "operation",
     "commodity",
     "product_form",
@@ -125,7 +126,7 @@ export default function DataTable({ production, mines, filters, activePeriod, in
           prevVal != null && prevVal > 0 && p.value_normalized != null
             ? ((p.value_normalized - prevVal) / prevVal) * 100
             : null;
-        return { ...p, country: mine?.country || "", region: mine?.region || "", mine_name: mine?.name || "", qoq };
+        return { ...p, ticker: COMPANY_TICKERS[p.company] || "", country: mine?.country || "", region: mine?.region || "", mine_name: mine?.name || "", qoq };
       });
   }, [production, mineMap, filters, activePeriod, prevLookup]);
 
@@ -246,7 +247,10 @@ export default function DataTable({ production, mines, filters, activePeriod, in
               const color = COMMODITY_COLORS[row.commodity] || "#6b7280";
               return (
                 <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                  <td className="px-3 py-1.5 text-white/70 truncate">{row.company}</td>
+                  <td className="px-3 py-1.5 text-white/70 truncate">
+                    {row.company}
+                    {row.ticker && <span className="ml-1.5 text-white/25 text-[10px]">{row.ticker}</span>}
+                  </td>
                   <td className="px-3 py-1.5 text-white/50 truncate">{row.operation || "-"}</td>
                   <td className="px-3 py-1.5">
                     <span className="flex items-center gap-1.5">

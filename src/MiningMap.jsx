@@ -5,11 +5,12 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import { BUBBLE_MAX, BUBBLE_MIN, COMMODITY_COLORS } from "./constants";
 
-function getBubbleRadius(totalKt) {
+function getBubbleRadius(totalKt, logMax) {
   if (!totalKt || totalKt <= 0) return BUBBLE_MIN;
-  // Wider range: small mines (1 kt) = 6px, mega mines (1000+ kt) = 32px
-  const r = Math.log10(totalKt + 1) * 7;
-  return Math.max(BUBBLE_MIN, Math.min(BUBBLE_MAX, r));
+  // Log scale relative to the largest mine in view
+  // Spreads the range well across iron ore (100k kt) to gold (10 koz)
+  const normalized = Math.log10(totalKt + 1) / logMax;
+  return BUBBLE_MIN + normalized * (BUBBLE_MAX - BUBBLE_MIN);
 }
 
 function getPrimaryCommodity(commodities) {
@@ -62,15 +63,17 @@ export default function MiningMap({
   onViewData,
 }) {
   const markers = useMemo(() => {
-    return mines
+    const withProd = mines
       .filter((m) => mineProduction.has(m.id))
-      .map((mine) => {
-        const prod = mineProduction.get(mine.id);
-        const primary = getPrimaryCommodity(prod.commodities);
-        const color = COMMODITY_COLORS[primary] || "#6b7280";
-        const radius = getBubbleRadius(prod.total_kt);
-        return { mine, prod, color, radius };
-      });
+      .map((mine) => ({ mine, prod: mineProduction.get(mine.id) }));
+    const maxKt = Math.max(...withProd.map((m) => m.prod.total_kt || 0), 1);
+    const logMax = Math.log10(maxKt + 1);
+    return withProd.map(({ mine, prod }) => {
+      const primary = getPrimaryCommodity(prod.commodities);
+      const color = COMMODITY_COLORS[primary] || "#6b7280";
+      const radius = getBubbleRadius(prod.total_kt, logMax);
+      return { mine, prod, color, radius };
+    });
   }, [mines, mineProduction]);
 
   return (
@@ -165,7 +168,7 @@ export default function MiningMap({
                     <div
                       style={{ marginTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}
                     >
-                      <span style={{ fontSize: 10, opacity: 0.25 }}>{prod.records[0]?.time_period}</span>
+                      <span style={{ fontSize: 10, opacity: 0.25 }}>{prod.records.length} records</span>
                       <a
                         href="#"
                         onClick={(e) => {

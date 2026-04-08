@@ -80,34 +80,37 @@ export default function App() {
   );
   const periods = useMemo(() => {
     const all = [...new Set(production.map((p) => p.time_period))];
-    // Prioritize standard calendar periods (Q1-Q4 20xx, H1/H2 20xx, FY20xx)
-    const standard = all.filter((p) => /^(Q[1-4]|H[12]|FY|9M) \d{4}$/.test(p) || /^FY\d{4}$/.test(p));
-    return standard.sort((a, b) => {
-      // Sort by year desc, then period desc
-      const ya = a.match(/\d{4}/)?.[0] || "0";
-      const yb = b.match(/\d{4}/)?.[0] || "0";
-      if (ya !== yb) return yb.localeCompare(ya);
-      return b.localeCompare(a);
-    });
+    // Only show quarterly and full-year periods from 2023+
+    const quarters = all
+      .filter((p) => /^Q[1-4] \d{4}$/.test(p) && parseInt(p.slice(3)) >= 2023)
+      .sort((a, b) => {
+        const ya = Number(a.slice(3)), yb = Number(b.slice(3));
+        if (ya !== yb) return yb - ya;
+        return Number(b[1]) - Number(a[1]);
+      });
+    const halves = all
+      .filter((p) => /^H[12] \d{4}$/.test(p) && parseInt(p.slice(3)) >= 2023)
+      .sort((a, b) => {
+        const ya = Number(a.slice(3)), yb = Number(b.slice(3));
+        if (ya !== yb) return yb - ya;
+        return Number(b[1]) - Number(a[1]);
+      });
+    const fullYears = all
+      .filter((p) => /^FY\d{4}$/.test(p) && parseInt(p.slice(2)) >= 2023 && parseInt(p.slice(2)) <= 2026)
+      .sort((a, b) => Number(b.slice(2)) - Number(a.slice(2)));
+    return { quarters, halves, fullYears };
   }, [production]);
 
   // Find the latest quarter with the most data (at least 5 mines reporting)
   const latestPeriod = useMemo(() => {
-    const stdQuarters = periods.filter((p) => /^Q[1-4] \d{4}$/.test(p));
-    if (stdQuarters.length === 0) return periods[0] || "";
-    // Sort by year desc, quarter desc
-    const sorted = stdQuarters.sort((a, b) => {
-      const ya = Number(a.slice(3));
-      const yb = Number(b.slice(3));
-      if (ya !== yb) return yb - ya;
-      return Number(b[1]) - Number(a[1]);
-    });
-    // Pick the most recent quarter that has at least 5 production records
-    for (const p of sorted) {
+    const stdQuarters = periods.quarters;
+    if (stdQuarters.length === 0) return "";
+    // Already sorted desc - pick the most recent with at least 5 production records
+    for (const p of stdQuarters) {
       const count = production.filter((r) => r.time_period === p && r.metric === "production").length;
       if (count >= 5) return p;
     }
-    return sorted[0];
+    return stdQuarters[0];
   }, [periods, production]);
   const activePeriod = filters.period === "latest" ? latestPeriod : filters.period === "all" ? "" : filters.period;
 
@@ -214,12 +217,19 @@ export default function App() {
           </button>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-white/40 flex-shrink-0">
+        <div className="flex items-center gap-2.5 text-[11px] text-white/40 flex-shrink-0">
           <span>{stats.mines} mines</span>
           <span className="text-white/10">|</span>
           <span>{stats.companies} companies</span>
-          <span className="text-white/10">|</span>
-          <span>{stats.countries} countries</span>
+          <a
+            href="https://github.com/kadoa-org/world-mining-monitor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-1 text-white/30 hover:text-white/70 transition-colors"
+            title="View on GitHub"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          </a>
         </div>
       </header>
 

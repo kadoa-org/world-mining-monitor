@@ -1,9 +1,16 @@
 import React, { useMemo, useState } from "react";
-import { COMMODITY_COLORS, REGIONS } from "./constants";
+import { COMMODITY_COLORS, REGIONS, commodityLabel } from "./constants";
 
 export default function Sidebar({ filters, setFilters, companies, commodities, periods }) {
   const update = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
   const [companySearch, setCompanySearch] = useState("");
+
+  const hasActiveFilters = filters.commodity !== "all" || filters.region !== "All" || filters.period !== "all" || filters.companies.length > 0;
+
+  const resetAll = () => {
+    setFilters({ commodity: "all", companies: [], region: "All", period: "all" });
+    setCompanySearch("");
+  };
 
   const toggleCompany = (company) => {
     setFilters((prev) => {
@@ -17,6 +24,15 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
   return (
     <aside className="w-60 flex-shrink-0 border-r border-white/5 bg-[#0d0d18] overflow-y-auto">
       <div className="p-4 flex flex-col gap-5">
+        {/* Reset all */}
+        {hasActiveFilters && (
+          <button
+            onClick={resetAll}
+            className="w-full py-1.5 text-[11px] text-orange-400/70 hover:text-orange-400 border border-orange-500/20 hover:border-orange-500/40 rounded bg-orange-500/5 transition-colors"
+          >
+            Reset all filters
+          </button>
+        )}
         {/* Commodity */}
         <section>
           <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">Commodity</label>
@@ -28,7 +44,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             <option value="all">All commodities</option>
             {commodities.map((c) => (
               <option key={c} value={c}>
-                {c.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                {commodityLabel(c)}
               </option>
             ))}
           </select>
@@ -64,11 +80,21 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
           >
             <option value="latest">Latest quarter</option>
             <option value="all">All periods</option>
-            {periods.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
+            <optgroup label="Quarters">
+              {periods.quarters.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Half-years">
+              {periods.halves.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Full year">
+              {periods.fullYears.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </optgroup>
           </select>
         </section>
 
@@ -144,7 +170,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
                         opacity: isActive ? 1 : 0.3,
                       }}
                     />
-                    {commodity.replace(/_/g, " ")}
+                    {commodityLabel(commodity)}
                   </button>
                 );
               })}
@@ -157,14 +183,14 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
               Small
             </div>
             <div className="flex items-center gap-1.5">
-              <svg width="16" height="16">
-                <circle cx="8" cy="8" r="7" fill="#fd7412" fillOpacity="0.4" />
+              <svg width="14" height="14">
+                <circle cx="7" cy="7" r="6" fill="#fd7412" fillOpacity="0.4" />
               </svg>
               Medium
             </div>
             <div className="flex items-center gap-1.5">
-              <svg width="24" height="24">
-                <circle cx="12" cy="12" r="11" fill="#fd7412" fillOpacity="0.4" />
+              <svg width="20" height="20">
+                <circle cx="10" cy="10" r="9" fill="#fd7412" fillOpacity="0.4" />
               </svg>
               Large
             </div>
