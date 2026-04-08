@@ -113,7 +113,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
             onChange={(e) => setCompanySearch(e.target.value)}
             className="mt-2 w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs text-white/80 outline-none focus:border-orange-500/50 placeholder:text-white/20"
           />
-          <div className="mt-1.5 flex flex-col gap-0.5">
+          <div className="mt-1.5 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
             {companies
               .filter((c) => !companySearch || c.toLowerCase().includes(companySearch.toLowerCase()))
               .map((company) => {
@@ -147,10 +147,9 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
         {/* Legend */}
         <section>
           <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">Legend</label>
-          <div className="mt-2 flex flex-col gap-0.5">
+          <div className="mt-2 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
             {commodities
               .filter((c) => COMMODITY_COLORS[c])
-              .slice(0, 10)
               .map((commodity) => {
                 const color = COMMODITY_COLORS[commodity] || "#6b7280";
                 const isActive = filters.commodity === "all" || filters.commodity === commodity;
