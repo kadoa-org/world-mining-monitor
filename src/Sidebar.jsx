@@ -22,7 +22,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
   };
 
   return (
-    <aside className="w-60 flex-shrink-0 border-r border-white/5 bg-[#0d0d18] overflow-y-auto">
+    <aside className="w-[85vw] max-w-xs md:w-60 flex-shrink-0 border-r border-white/5 bg-[#0d0d18] overflow-y-auto">
       <div className="p-4 flex flex-col gap-5">
         {/* Reset all */}
         {hasActiveFilters && (
