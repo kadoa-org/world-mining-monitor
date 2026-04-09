@@ -314,6 +314,19 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {/* Map attribution overlay - outside main to avoid Leaflet z-index */}
+      {view === "map" && (
+        <a
+          href="https://kadoa.com/contact"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-3 right-3 z-[2000] flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-sm border border-white/10 text-[11px] hover:border-orange-500/30 transition-colors"
+        >
+          <span className="text-white/40">Powered by kadoa</span>
+          <span className="text-orange-400/80">Get full dataset &rarr;</span>
+        </a>
+      )}
     </div>
   );
 }

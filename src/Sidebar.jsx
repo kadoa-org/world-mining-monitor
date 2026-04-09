@@ -104,7 +104,7 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
       </div>
 
       {/* Flexible middle: companies + legend share remaining space */}
-      <div className="flex-1 min-h-0 flex flex-col px-4 gap-3 overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col px-4 pb-4 gap-3 overflow-hidden">
         {/* Companies */}
         <section className="flex flex-col min-h-0 flex-1">
           <label className="text-[10px] uppercase tracking-widest text-white/30 font-semibold flex-shrink-0">
@@ -204,10 +204,6 @@ export default function Sidebar({ filters, setFilters, companies, commodities, p
         </section>
       </div>
 
-      {/* Pinned footer */}
-      <div className="px-4 py-3 border-t border-white/5 text-[10px] text-white/20 flex-shrink-0">
-        Data sourced with <a href="https://kadoa.com" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white/50 underline decoration-white/10">kadoa.com</a>
-      </div>
     </aside>
   );
 }

@@ -63,6 +63,8 @@ We use [kadoa.com](https://kadoa.com) to source and normalize the data at scale.
 - Expand company coverage
 - Expand dataset with more KPIs
 
+Need the full historical dataset with continuous updates? [Get in touch](https://kadoa.com/contact).
+
 ## License
 
 MIT -- see [LICENSE](LICENSE).
