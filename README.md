@@ -54,6 +54,7 @@ The dataset is stored as a SQLite database (`public/data/mining.db`) and loaded 
 ## Data sources
 
 All data is extracted from publicly available quarterly reports, 10-Q/10-K SEC filings, and production reports published by the mining companies themselves.
+
 We use [kadoa.com](https://kadoa.com) to source and normalize the data at scale.
 Need the full historical dataset with continuous updates? [Get in touch](https://www.kadoa.com/contact/sales).
 
