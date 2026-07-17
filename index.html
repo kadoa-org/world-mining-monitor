@@ -1,15 +1,66 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>World Mining Monitor</title>
+
+    <title>World Mining Monitor - Global Mine Production Data by Company & Commodity</title>
+    <meta
+      name="description"
+      content="Open dataset of quarterly mine-level production volumes from 60+ global mining companies: copper, gold, iron ore, aluminium, zinc and more. Extracted from company reports, mapped and normalized."
+    />
+    <meta
+      name="keywords"
+      content="mining production data, copper production by company, gold production, quarterly mining reports, mine output dataset, iron ore production, mining companies"
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Kadoa" />
+    <meta name="theme-color" content="#1d70b8" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="World Mining Monitor" />
+    <meta property="og:title" content="World Mining Monitor - Global Mine Production Data" />
+    <meta
+      property="og:description"
+      content="Quarterly mine-level production volumes from 60+ global mining companies, extracted from their own reports. Interactive map, rankings, open data."
+    />
+    <meta property="og:url" content="https://mining.kadoa.com/" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="World Mining Monitor" />
+    <meta
+      name="twitter:description"
+      content="Quarterly mine-level production from 60+ global mining companies. Interactive map, rankings, open data."
+    />
+
+    <link rel="canonical" href="https://mining.kadoa.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "World Mining Monitor",
+        "description": "Open dataset of quarterly mine-level production volumes from 60+ global mining companies, extracted from their quarterly and annual reports and normalized by commodity and unit.",
+        "url": "https://mining.kadoa.com/",
+        "isAccessibleForFree": true,
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "creator": { "@type": "Organization", "name": "Kadoa", "url": "https://kadoa.com" },
+        "keywords": ["mining production", "copper", "gold", "iron ore", "quarterly reports", "mine output"],
+        "distribution": [
+          {
+            "@type": "DataDownload",
+            "encodingFormat": "application/x-sqlite3",
+            "contentUrl": "https://mining.kadoa.com/data/mining.db"
+          }
+        ]
+      }
+    </script>
   </head>
-  <body class="bg-[#0a0a14] text-[#e4e5e9] font-['Inter',sans-serif] overflow-hidden">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

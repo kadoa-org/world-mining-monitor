@@ -8,8 +8,10 @@
   "scripts": {
     "build-db": "bun scripts/build-db.js",
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node scripts/build-stats.js && vite build && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "build-stats": "node scripts/build-stats.js",
+    "prerender": "node scripts/prerender.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

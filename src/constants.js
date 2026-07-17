@@ -17,9 +17,9 @@ export const COMMODITY_COLORS = {
   lithium: "#22d3ee",
   chromite: "#a3a3a3",
   diamonds: "#e879f9",
-  platinum: "#d4d4d8",
-  palladium: "#fafafa",
-  salt: "#d6d3d1",
+  platinum: "#64748b",
+  palladium: "#78716c",
+  salt: "#a8a29e",
   oil: "#854d0e",
   titanium_dioxide: "#f472b6",
   "titanium dioxide": "#f472b6",
@@ -30,9 +30,9 @@ export const COMMODITY_COLORS = {
   niobium: "#0ea5e9",
   phosphate: "#84cc16",
   manganese: "#d97706",
-  pgm: "#d4d4d8",
-  "2e pgm": "#d4d4d8",
-  "4e pgm": "#d4d4d8",
+  pgm: "#64748b",
+  "2e pgm": "#64748b",
+  "4e pgm": "#64748b",
   "gold equivalent": "#fbbf24",
   uranium: "#16a34a",
   tin: "#737373",
@@ -209,3 +209,16 @@ export const REGIONS = ["All", "Americas", "Europe", "Asia Pacific", "Africa"];
 // Bubble size scale: log(value_in_kt) * factor
 export const BUBBLE_MIN = 4;
 export const BUBBLE_MAX = 22;
+
+// URL-safe slug for companies and commodities. Shared by the app (via ui.jsx)
+// and scripts/prerender.mjs — keep it here (plain JS, importable from node).
+export function slugify(name) {
+  if (!name) return "unknown";
+  return String(name)
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
