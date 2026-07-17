@@ -56,11 +56,11 @@ export default function OverviewPage({ data }) {
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
       <h1 className="text-title sm:text-display font-semibold text-ink mb-2">
-        Global mining production, mapped from primary sources
+        Global mining production
       </h1>
       <p className="text-regular text-ink_muted max-w-3xl mb-6">
-        Quarterly production volumes for {fmtInt(companies.length)} of the world's largest mining companies, extracted
-        from their own quarterly and annual reports. Open data — every number links back to the source PDF.
+        Quarterly production volumes of the world's largest mining companies, extracted
+        from their own quarterly and annual reports. Every number is traceable back to the source PDF.
       </p>
 
       <StatGrid
