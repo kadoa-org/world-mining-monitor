@@ -7,13 +7,15 @@ import CommoditiesPage from "./pages/CommoditiesPage";
 import CommodityPage from "./pages/CommodityPage";
 import CompaniesPage from "./pages/CompaniesPage";
 import CompanyPage from "./pages/CompanyPage";
+import LargestMinesPage from "./pages/LargestMinesPage";
+import MinePage from "./pages/MinePage";
 import OverviewPage from "./pages/OverviewPage";
 import ProductionPage from "./pages/ProductionPage";
 import { useRoute } from "./router";
 import { useDatabase } from "./useDatabase";
 
 // Every route except About renders from the SQLite dataset.
-const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commodities", "company", "commodity"]);
+const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commodities", "company", "commodity", "mine", "largestMines"]);
 
 function LoadingScreen() {
   return (
@@ -85,6 +87,8 @@ export default function App() {
           {route.name === "companies" && <CompaniesPage data={data} />}
           {route.name === "commodities" && <CommoditiesPage data={data} />}
           {route.name === "company" && <CompanyPage data={data} slug={route.slug} />}
+          {route.name === "mine" && <MinePage data={data} slug={route.slug} />}
+          {route.name === "largestMines" && <LargestMinesPage data={data} slug={route.slug} />}
           {route.name === "commodity" && <CommodityPage data={data} slug={route.slug} />}
           {route.name === "about" && <AboutPage />}
         </>

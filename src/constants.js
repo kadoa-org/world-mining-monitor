@@ -222,3 +222,30 @@ export function slugify(name) {
     .replace(/^-|-$/g, "")
     .slice(0, 60);
 }
+
+// Quarterly production pivot for a set of records: quarters (newest first,
+// capped) x top commodities by volume. Shared by the app pages and
+// scripts/prerender.mjs (plain JS, importable from node) — this table is the
+// crawler-visible answer to "<company|mine> production by quarter".
+export function quarterlyPivot(records, { maxQuarters = 8, maxCommodities = 6 } = {}) {
+  const prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
+  const qKey = (tp) => tp.slice(3) + tp[1];
+  const quarters = [...new Set(prod.map((r) => r.time_period))]
+    .sort((a, b) => qKey(b).localeCompare(qKey(a)))
+    .slice(0, maxQuarters);
+  const totals = new Map();
+  for (const r of prod) totals.set(r.commodity, (totals.get(r.commodity) || 0) + (r.value_normalized || 0));
+  const commodities = [...totals.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maxCommodities)
+    .map(([c]) => c);
+  const unit = {};
+  const cell = new Map();
+  for (const r of prod) {
+    if (!quarters.includes(r.time_period) || !commodities.includes(r.commodity)) continue;
+    unit[r.commodity] ||= r.unit_normalized || r.unit || "kt";
+    const k = `${r.commodity}|${r.time_period}`;
+    cell.set(k, (cell.get(k) || 0) + (r.value_normalized || 0));
+  }
+  return { quarters, commodities, unit, get: (c, q) => cell.get(`${c}|${q}`) ?? null };
+}

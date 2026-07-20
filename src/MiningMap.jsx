@@ -53,7 +53,7 @@ function createClusterIcon(cluster) {
   });
 }
 
-export default function MiningMap({ mines, mineProduction, height = 560 }) {
+export default function MiningMap({ mines, mineProduction, height = 560, center = [20, 10], zoom = 2 }) {
   const markers = useMemo(() => {
     const withProd = mines
       .filter((m) => mineProduction.has(m.id))
@@ -71,8 +71,8 @@ export default function MiningMap({ mines, mineProduction, height = 560 }) {
   return (
     <div style={{ width: "100%", height }}>
       <MapContainer
-        center={[20, 10]}
-        zoom={2}
+        center={center}
+        zoom={zoom}
         minZoom={2}
         maxZoom={10}
         style={{ width: "100%", height: "100%" }}

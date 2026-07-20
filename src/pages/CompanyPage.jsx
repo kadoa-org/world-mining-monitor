@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { COMMODITY_COLORS, COMPANY_TICKERS, commodityLabel } from "../constants";
+import { COMMODITY_COLORS, COMPANY_TICKERS, commodityLabel, quarterlyPivot } from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMap";
 import {
   Card,
   DownloadCsvButton,
+  QuarterlySeriesTable,
   downloadCsv,
   fmtInt,
   fmtValue,
@@ -37,6 +38,8 @@ export default function CompanyPage({ data, slug }) {
     () => [...new Set(companyProduction.map((p) => p.commodity))].filter(Boolean).sort(),
     [companyProduction],
   );
+
+  const pivot = useMemo(() => quarterlyPivot(companyProduction), [companyProduction]);
 
   const latestQuarter = useMemo(() => {
     const qs = companyProduction
@@ -126,6 +129,15 @@ export default function CompanyPage({ data, slug }) {
         </div>
       )}
 
+      {pivot.quarters.length > 0 && (
+        <div className="mt-8">
+          <SectionHeader title="Production by quarter" subtitle="Company-wide normalized volumes per commodity, newest first" />
+          <Card className="overflow-hidden">
+            <QuarterlySeriesTable pivot={pivot} labelFor={commodityLabel} colorFor={(c) => COMMODITY_COLORS[c] || "#6b7280"} />
+          </Card>
+        </div>
+      )}
+
       <div className="mt-8">
         <SectionHeader
           title="Production by period"
@@ -170,7 +182,13 @@ export default function CompanyPage({ data, slug }) {
                     key={`${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
                     className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_60px] h-10 items-center border-b border-stroke_soft last:border-b-0"
                   >
-                    <span className="truncate">{r.operation || mineById.get(r.mine_id)?.name || "--"}</span>
+                    <span className="truncate">
+                      {r.mine_id && mineById.has(r.mine_id) ? (
+                        <Link to={`/mine/${r.mine_id}`}>{r.operation || mineById.get(r.mine_id).name}</Link>
+                      ) : (
+                        r.operation || "--"
+                      )}
+                    </span>
                     <span className="flex items-center gap-1.5 truncate">
                       <span
                         className="w-1.5 h-1.5 rounded-full shrink-0"

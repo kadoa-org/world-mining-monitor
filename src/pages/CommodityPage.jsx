@@ -96,7 +96,12 @@ export default function CommodityPage({ data, slug }) {
         <SectionHeader
           title={`Largest ${label.toLowerCase()} producers — ${quarter}`}
           subtitle={`Sum of disclosed mine-level production, ${stats.unit}. QoQ vs ${prevQuarter}.`}
-          right={<Link to={`/production?commodity=${encodeURIComponent(commodity)}`}>All {label} records →</Link>}
+          right={
+            <span className="flex items-center gap-3">
+              <Link to={`/largest-${slug}-mines`}>Largest {label.toLowerCase()} mines →</Link>
+              <Link to={`/production?commodity=${encodeURIComponent(commodity)}`}>All {label} records →</Link>
+            </span>
+          }
         />
         <Card className="overflow-hidden">
           <div className="grid gap-3 px-4 grid-cols-[30px_1fr_110px_90px] sm:grid-cols-[40px_1fr_140px_110px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">

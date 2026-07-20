@@ -26,12 +26,15 @@ export function parseRoute(pathname = window.location.pathname, search = window.
   if (segments.length === 0) return { name: "overview", query };
   if (segments[0] === "company" && segments[1])
     return { name: "company", slug: decodeURIComponent(segments[1]), query };
+  if (segments[0] === "mine" && segments[1]) return { name: "mine", slug: decodeURIComponent(segments[1]), query };
   if (segments[0] === "commodity" && segments[1])
     return { name: "commodity", slug: decodeURIComponent(segments[1]), query };
   if (segments[0] === "companies") return { name: "companies", query };
   if (segments[0] === "commodities") return { name: "commodities", query };
   if (segments[0] === "production") return { name: "production", query };
   if (segments[0] === "about") return { name: "about", query };
+  const largest = segments[0] && segments.length === 1 ? segments[0].match(/^largest-([a-z0-9-]+)-mines$/) : null;
+  if (largest) return { name: "largestMines", slug: largest[1], query };
   return { name: "overview", query };
 }
 
