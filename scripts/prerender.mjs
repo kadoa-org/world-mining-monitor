@@ -23,9 +23,9 @@ import initSqlJs from "sql.js";
 import { commodityLabel, normalizeCommodity, slugify } from "../src/constants.js";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DIST = path.join(ROOT, "dist");
-const PREFIX = ""; // app-relative prefix ("" on mining.kadoa.com; "/mining" after the subfolder cutover)
-const BASE = "https://mining.kadoa.com";
+const DIST = path.join(ROOT, "dist", "mining"); // vite outDir (site lives under /mining/)
+const PREFIX = "/mining"; // public path prefix behind the www.kadoa.com reverse proxy
+const BASE = `https://www.kadoa.com${PREFIX}`;
 
 const esc = (s) =>
   String(s ?? "")

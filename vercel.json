@@ -1,8 +1,32 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "mining.kadoa.com"
+        }
+      ],
+      "destination": "https://www.kadoa.com/mining/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "mining.kadoa.com"
+        }
+      ],
+      "destination": "https://www.kadoa.com/mining/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!data/|assets/|favicon|robots|sitemap|sql-wasm|world-110m).*)",
-      "destination": "/index.html"
+      "source": "/mining/((?!data/|assets/|favicon|robots|sitemap|sql-wasm|world-110m).*)",
+      "destination": "/mining/index.html"
     }
   ]
 }
