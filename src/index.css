@@ -54,14 +54,16 @@ html, body {
 /* Align the kit header + nav container with the page content container
    (max-w-[1440px] mx-auto px-4 sm:px-6) so their left/right edges line up. */
 .dk-header .dk-container,
-.dk-nav .dk-container {
+.dk-nav .dk-container,
+.dk-footer .dk-container {
   max-width: 1440px;
   padding-left: 16px;
   padding-right: 16px;
 }
 @media (min-width: 640px) {
   .dk-header .dk-container,
-  .dk-nav .dk-container {
+  .dk-nav .dk-container,
+  .dk-footer .dk-container {
     padding-left: 24px;
     padding-right: 24px;
   }
