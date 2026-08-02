@@ -100,6 +100,8 @@ function buildRoutes(production, mines) {
       path: "/production",
       title: "Mining Production Data - Quarterly Volumes by Mine & Company | World Mining Monitor",
       description: `${production.length.toLocaleString("en-US")} normalized production records from ${companies.length} global mining companies: mine, commodity, period, volume, and source filing. Filterable, CSV export.`,
+      h1: "Mining production data",
+      body: `<p>${production.length.toLocaleString("en-US")} normalized production records covering ${companies.length} global mining companies and ${commodities.length} commodities — mine, commodity, period, volume, and the source filing each figure came from. Filterable in the app, exportable as CSV.</p><p>Browse <a href="${PREFIX}/companies">all companies</a>, <a href="${PREFIX}/commodities">all commodities</a>, or <a href="${PREFIX}/mines">every tracked mine</a>.</p>`,
     },
     {
       path: "/companies",
@@ -127,6 +129,8 @@ function buildRoutes(production, mines) {
       title: "About the Data - Methodology & Sources | World Mining Monitor",
       description:
         "How the World Mining Monitor works: report discovery with Kadoa, LLM extraction from quarterly PDFs, commodity and unit normalization, and validation. Open data under CC BY 4.0.",
+      h1: "About the data",
+      body: `<p>Every figure here is extracted from an operator's own quarterly or annual report. Kadoa discovers each new report as it is published, extracts mine-level production from the PDF, then normalizes commodity names and units so volumes are comparable across companies that report in different measures. Each record keeps a link back to its source filing.</p><p>Coverage is ${production.length.toLocaleString("en-US")} records across ${companies.length} companies and ${commodities.length} commodities. Open data under CC BY 4.0. Start with <a href="${PREFIX}/production">the production data</a>, <a href="${PREFIX}/companies">companies</a>, or <a href="${PREFIX}/commodities">commodities</a>.</p>`,
     },
   );
 
@@ -203,11 +207,13 @@ function buildRoutes(production, mines) {
     byMine.get(p.mine_id).push(p);
   }
   const mineById = new Map(mines.map((m) => [m.id, m]));
+  const minesWithPage = [];
   for (const [mineId, rows] of byMine) {
     const mine = mineById.get(mineId);
     if (!mine) continue;
     const series = pivotTable(rows);
     if (!series) continue;
+    minesWithPage.push(mine);
     const comms = [...new Set(rows.map((p) => p.commodity))].filter(Boolean).sort().map(commodityLabel);
     const latest = latestQuarterOf(rows);
     routes.push({
@@ -215,9 +221,26 @@ function buildRoutes(production, mines) {
       title: `${mine.name} Mine Production by Quarter - ${comms.slice(0, 3).join(", ")} | World Mining Monitor`,
       description: `${mine.name} (${mine.company}${mine.country ? `, ${mine.country}` : ""}) quarterly production: ${comms.join(", ")}${latest ? `, latest ${latest}` : ""}. From ${mine.company}'s own reports.`,
       h1: `${mine.name}: production by quarter`,
-      body: `<p>${esc(mine.name)} is operated by <a href="${PREFIX}/company/${esc(slugify(mine.company))}">${esc(mine.company)}</a>${mine.country ? ` in ${esc(mine.country)}` : ""} and produces ${esc(comms.join(", "))}.</p>${series}<p><a href="${PREFIX}/production">All production data</a></p>`,
+      body: `<p>${esc(mine.name)} is operated by <a href="${PREFIX}/company/${esc(slugify(mine.company))}">${esc(mine.company)}</a>${mine.country ? ` in ${esc(mine.country)}` : ""} and produces ${esc(comms.join(", "))}.</p>${series}<p><a href="${PREFIX}/mines">All tracked mines</a> · <a href="${PREFIX}/production">All production data</a></p>`,
     });
   }
+
+  // Index of every mine page. Without it the only inbound links a mine gets are
+  // from the top-25 "largest <commodity> mines" rankings, which left 104 of them
+  // orphaned (sitemap-only) in the Site Audit.
+  minesWithPage.sort((a, b) => a.name.localeCompare(b.name));
+  routes.push({
+    path: "/mines",
+    title: `Mines Tracked - Quarterly Production for ${minesWithPage.length} Operations | World Mining Monitor`,
+    description: `Quarterly production data for ${minesWithPage.length} individual mines worldwide, by operator and country, extracted from company reports.`,
+    h1: "Mines tracked",
+    body: `<p>Quarterly production for ${minesWithPage.length} individual operations, extracted from their operators' own reports. Also browse <a href="${PREFIX}/companies">by company</a> or <a href="${PREFIX}/commodities">by commodity</a>.</p><ul>${minesWithPage
+      .map(
+        (m) =>
+          `<li><a href="${PREFIX}/mine/${esc(m.id)}">${esc(m.name)}</a> — ${esc(m.company)}${m.country ? `, ${esc(m.country)}` : ""}</li>`,
+      )
+      .join("")}</ul>`,
+  });
 
   // "Largest <commodity> mines" rankings: live counterpart to the annual
   // listicles. Only commodities with enough mine-level coverage to rank.
@@ -293,13 +316,20 @@ function renderRoute(template, route) {
     );
 
   if (route.h1) {
-    html = html.replace(
-      /(<div id="root">)(<\/div>)/,
-      (_m, open, close) =>
-        `${open}<main><h1>${esc(route.h1)}</h1>${route.body ?? ""}<p><a href="${PREFIX}/">World Mining Monitor home</a></p></main>${close}`,
-    );
+    html = injectRoot(html, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
   }
   return html;
+}
+
+// Every prerendered page must ship an <h1> and crawlable links: the SPA shell
+// is an empty <div id="root">, so whatever is not injected here does not exist
+// for a crawler. Link to PREFIX, not PREFIX + "/" — the trailing slash 308s,
+// which is why the audit found 233 internal links pointing at a redirect.
+function injectRoot(html, h1, body) {
+  return html.replace(
+    /(<div id="root">)(<\/div>)/,
+    (_m, open, close) => `${open}<main><h1>${esc(h1)}</h1>${body}</main>${close}`,
+  );
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
@@ -316,10 +346,34 @@ for (const r of routes) {
   written++;
 }
 
+// Homepage: the SPA shell shipped with no h1 and no links, so every company,
+// commodity and mine page was reachable only from sitemap.xml.
+const companyList = [...new Set(production.map((p) => p.company))].sort();
+const commodityList = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
+const homeBody = [
+  `<p>Mine-level production volumes for ${companyList.length} global mining companies, extracted from their own quarterly and annual reports and normalized so commodities and units are comparable across operators.</p>`,
+  `<p>Browse <a href="${PREFIX}/production">all production data</a>, <a href="${PREFIX}/companies">companies</a>, <a href="${PREFIX}/commodities">commodities</a>, <a href="${PREFIX}/mines">tracked mines</a>, or read <a href="${PREFIX}/about">about the data</a>.</p>`,
+  `<h2>Companies tracked</h2><ul>${companyList
+    .map((c) => `<li><a href="${PREFIX}/company/${esc(slugify(c))}">${esc(c)} production data</a></li>`)
+    .join("")}</ul>`,
+  `<h2>Commodities</h2><ul>${commodityList
+    .map(
+      (c) =>
+        `<li><a href="${PREFIX}/commodity/${esc(slugify(c))}">${esc(commodityLabel(c))} production by company</a></li>`,
+    )
+    .join("")}</ul>`,
+].join("");
+fs.writeFileSync(
+  path.join(DIST, "index.html"),
+  injectRoot(template, "World Mining Monitor", homeBody),
+);
+
 const today = new Date().toISOString().slice(0, 10);
+// No trailing slash: `${BASE}/` 308s to `${BASE}`, which the audit flagged as a
+// redirect in the sitemap.
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>${BASE}/</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+<url><loc>${BASE}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
 ${routes
   .map(
     (r) =>
