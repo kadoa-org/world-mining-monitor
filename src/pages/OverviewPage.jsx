@@ -60,7 +60,7 @@ export default function OverviewPage({ data }) {
       </h1>
       <p className="text-regular text-ink_muted max-w-3xl mb-6">
         Quarterly production volumes of the world's largest mining companies, extracted
-        from their own quarterly and annual reports. Every number is traceable back to the source PDF.
+        from their own quarterly and annual reports. Newly extracted facts include source evidence and lineage.
       </p>
 
       <StatGrid

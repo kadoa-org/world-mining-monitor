@@ -128,9 +128,9 @@ function buildRoutes(production, mines) {
       path: "/about",
       title: "About the Data - Methodology & Sources | World Mining Monitor",
       description:
-        "How the World Mining Monitor works: report discovery with Kadoa, LLM extraction from quarterly PDFs, commodity and unit normalization, and validation. Open data under CC BY 4.0.",
+        "How the World Mining Monitor works: report discovery with Kadoa, extraction from company reports, source evidence, normalization, and validation. Open data under CC BY 4.0.",
       h1: "About the data",
-      body: `<p>Every figure here is extracted from an operator's own quarterly or annual report. Kadoa discovers each new report as it is published, extracts mine-level production from the PDF, then normalizes commodity names and units so volumes are comparable across companies that report in different measures. Each record keeps a link back to its source filing.</p><p>Coverage is ${production.length.toLocaleString("en-US")} records across ${companies.length} companies and ${commodities.length} commodities. Open data under CC BY 4.0. Start with <a href="${PREFIX}/production">the production data</a>, <a href="${PREFIX}/companies">companies</a>, or <a href="${PREFIX}/commodities">commodities</a>.</p>`,
+      body: `<p>Kadoa discovers each new quarterly or annual report as it is published, extracts mine-level production from PDF and spreadsheet reports, then normalizes commodity names and units so volumes are comparable across companies that report in different measures. Newly extracted facts retain the original source value, report location, and transformation history.</p><p>Coverage is ${production.length.toLocaleString("en-US")} records across ${companies.length} companies and ${commodities.length} commodities. Open data under CC BY 4.0. Start with <a href="${PREFIX}/production">the production data</a>, <a href="${PREFIX}/companies">companies</a>, or <a href="${PREFIX}/commodities">commodities</a>.</p>`,
     },
   );
 

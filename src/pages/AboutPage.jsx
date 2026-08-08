@@ -9,7 +9,8 @@ export default function AboutPage() {
       <div className="space-y-4 text-regular text-ink_secondary leading-relaxed">
         <p>
           The World Mining Monitor tracks mine-level production volumes for the world's largest publicly listed
-          mining companies. Every number is extracted from the company's own quarterly or annual report and links back to the exact PDF it came from.
+          mining companies. The data is extracted from each company's quarterly and annual reports. Newly extracted
+          facts include the original source value and its location in the report.
         </p>
 
         <h2 className="text-large font-semibold text-ink pt-4">How it works</h2>
@@ -18,9 +19,16 @@ export default function AboutPage() {
           <a href="https://www.kadoa.com" target="_blank" rel="noreferrer" className="dk-link">
             Kadoa
           </a>
-          . New report PDFs are parsed with an LLM extraction pipeline, then normalized: commodity names are mapped to a
-          canonical list, units converted for comparison (kt for base metals, koz for precious metals), fiscal quarters
-          mapped to calendar quarters, and values validated against range and consistency checks.
+          . New PDF and spreadsheet reports are parsed with an extraction pipeline, then normalized: commodity names are
+          mapped to a canonical list, units converted for comparison (kt for base metals, koz for precious metals), fiscal
+          quarters mapped to calendar quarters, and values validated against range and consistency checks.
+        </p>
+
+        <h2 className="text-large font-semibold text-ink pt-4">Evidence and lineage</h2>
+        <p>
+          Source evidence records the report, page or table location, original text, reported value, unit, and period.
+          The pipeline also records normalization and fiscal-period transformations without changing the original
+          observation. Open an evidence link in a production table or download the CSV to inspect these fields.
         </p>
 
         <h2 className="text-large font-semibold text-ink pt-4">What's covered</h2>

@@ -4,6 +4,7 @@ import { getPrevPeriod } from "../data";
 import {
   Card,
   DownloadCsvButton,
+  EvidenceLink,
   downloadCsv,
   fmtInt,
   fmtValue,
@@ -45,6 +46,25 @@ const CSV_COLUMNS = [
   ["country", "country"],
   ["basis", "basis"],
   ["source_url", "source_url"],
+  ["evidence_id", "evidence_id"],
+  ["source_document_name", "source_document_name"],
+  ["source_document_sha256", "source_document_sha256"],
+  ["source_page", "source_page"],
+  ["source_section", "source_section"],
+  ["source_table", "source_table"],
+  ["source_row", "source_row"],
+  ["source_column", "source_column"],
+  ["source_excerpt", "source_excerpt"],
+  ["reported_value", "reported_value"],
+  ["reported_unit", "reported_unit"],
+  ["reported_period", "reported_period"],
+  ["document_parser", "document_parser"],
+  ["schema_extractor", "schema_extractor"],
+  ["parser_job_id", "parser_job_id"],
+  ["extracted_at", "extracted_at"],
+  ["derivation_formula", "derivation_formula"],
+  ["input_evidence_ids", "input_evidence_ids"],
+  ["transformations", "transformations"],
 ];
 
 export default function ProductionPage({ data, initialQuery = {} }) {
@@ -213,7 +233,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <div className="min-w-[900px]">
-            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_60px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
               <SortHeader label="Company" sortKey="company" sort={sort} setSort={setSort} />
               <SortHeader label="Operation" sortKey="operation" sort={sort} setSort={setSort} />
               <SortHeader label="Commodity" sortKey="commodity" sort={sort} setSort={setSort} />
@@ -229,7 +249,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
               {rendered.map((r, i) => (
                 <div
                   key={`${r.mine_id}-${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_60px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
                 >
                   <span className="truncate">
                     <Link to={`/company/${slugify(r.company)}`}>{r.company}</Link>
@@ -257,13 +277,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
                   </span>
                   <span className="truncate text-ink_muted">{r.country || "--"}</span>
                   <span>
-                    {r.source_url ? (
-                      <a href={r.source_url} target="_blank" rel="noopener noreferrer" className="dk-link">
-                        PDF
-                      </a>
-                    ) : (
-                      <span className="text-ink_faint">--</span>
-                    )}
+                    <EvidenceLink record={r} />
                   </span>
                 </div>
               ))}

@@ -189,6 +189,63 @@ export function DownloadCsvButton({ onClick, count }) {
   );
 }
 
+export function EvidenceLink({ record }) {
+  const provenance = record.provenance;
+  const href = record.source_url || provenance?.source?.document_url;
+
+  if (provenance?.kind === "derived") {
+    const title = [
+      provenance.derivation?.formula ? `Derived fact: ${provenance.derivation.formula}` : "Derived fact",
+      provenance.derivation?.input_evidence_ids?.length
+        ? `Input evidence: ${provenance.derivation.input_evidence_ids.join(", ")}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    return (
+      <span className="text-ink_muted" title={title}>
+        Derived
+      </span>
+    );
+  }
+
+  if (!href) return <span className="text-ink_faint">--</span>;
+
+  const source = provenance?.source;
+  const observation = provenance?.observation;
+  const location = [
+    source?.page != null ? `Page ${source.page}` : null,
+    source?.section,
+    source?.table,
+    source?.row_label ? `Row: ${source.row_label}` : null,
+    source?.column_label ? `Column: ${source.column_label}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const reportedValue = [observation?.reported_value, observation?.reported_unit].filter(Boolean).join(" ");
+  const reported = observation
+    ? `Reported: ${reportedValue}${observation.reported_period ? ` · ${observation.reported_period}` : ""}`
+    : null;
+  const excerpt = observation?.verbatim_text ? `Source text: ${observation.verbatim_text}` : null;
+  const transformations = provenance?.transformations?.length
+    ? `Transformations: ${provenance.transformations.map((item) => item.stage).join(", ")}`
+    : null;
+  const title = [reported, location, excerpt, transformations].filter(Boolean).join("\n");
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="dk-link"
+      title={title || "Open source"}
+      aria-label={provenance ? "Open source evidence" : "Open source"}
+    >
+      {provenance ? "Evidence" : "Source"}
+    </a>
+  );
+}
+
 // SPA row link: real <a href> (cmd/ctrl-click works) that routes client-side
 // on plain clicks. Used for primary cells inside kit DataTables.
 export function RowLinkNav({ to, children }) {

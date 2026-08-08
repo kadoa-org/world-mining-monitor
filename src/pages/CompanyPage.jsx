@@ -5,6 +5,7 @@ import MiningMap from "../MiningMap";
 import {
   Card,
   DownloadCsvButton,
+  EvidenceLink,
   QuarterlySeriesTable,
   downloadCsv,
   fmtInt,
@@ -24,6 +25,25 @@ const CSV_COLUMNS = [
   ["unit_normalized", "unit"],
   ["basis", "basis"],
   ["source_url", "source_url"],
+  ["evidence_id", "evidence_id"],
+  ["source_document_name", "source_document_name"],
+  ["source_document_sha256", "source_document_sha256"],
+  ["source_page", "source_page"],
+  ["source_section", "source_section"],
+  ["source_table", "source_table"],
+  ["source_row", "source_row"],
+  ["source_column", "source_column"],
+  ["source_excerpt", "source_excerpt"],
+  ["reported_value", "reported_value"],
+  ["reported_unit", "reported_unit"],
+  ["reported_period", "reported_period"],
+  ["document_parser", "document_parser"],
+  ["schema_extractor", "schema_extractor"],
+  ["parser_job_id", "parser_job_id"],
+  ["extracted_at", "extracted_at"],
+  ["derivation_formula", "derivation_formula"],
+  ["input_evidence_ids", "input_evidence_ids"],
+  ["transformations", "transformations"],
 ];
 
 export default function CompanyPage({ data, slug }) {
@@ -166,7 +186,7 @@ export default function CompanyPage({ data, slug }) {
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <div className="min-w-[760px]">
-              <div className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_60px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+              <div className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
                 <span>Operation</span>
                 <span>Commodity</span>
                 <span>Metric</span>
@@ -180,7 +200,7 @@ export default function CompanyPage({ data, slug }) {
                 {rows.map((r, i) => (
                   <div
                     key={`${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                    className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_60px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                    className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="truncate">
                       {r.mine_id && mineById.has(r.mine_id) ? (
@@ -204,13 +224,7 @@ export default function CompanyPage({ data, slug }) {
                     <span className="text-ink_muted">{r.unit_normalized || r.unit}</span>
                     <span className="text-ink_muted truncate">{r.basis || "--"}</span>
                     <span>
-                      {r.source_url ? (
-                        <a href={r.source_url} target="_blank" rel="noopener noreferrer" className="dk-link">
-                          PDF
-                        </a>
-                      ) : (
-                        <span className="text-ink_faint">--</span>
-                      )}
+                      <EvidenceLink record={r} />
                     </span>
                   </div>
                 ))}
