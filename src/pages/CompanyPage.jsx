@@ -5,6 +5,7 @@ import MiningMap from "../MiningMap";
 import {
   Card,
   DownloadCsvButton,
+  EvidenceDialog,
   EvidenceLink,
   QuarterlySeriesTable,
   downloadCsv,
@@ -19,6 +20,7 @@ import {
 const CSV_COLUMNS = [
   ["operation", "operation"],
   ["commodity", "commodity"],
+  ["product_form", "product_form"],
   ["metric", "metric"],
   ["time_period", "period"],
   ["value_normalized", "value"],
@@ -50,6 +52,7 @@ export default function CompanyPage({ data, slug }) {
   const { production, mines, mineById, companyBySlug } = data;
   const company = companyBySlug.get(slug);
   const [commodity, setCommodity] = useState("all");
+  const [evidenceRecord, setEvidenceRecord] = useState(null);
 
   const companyProduction = useMemo(() => production.filter((p) => p.company === company), [production, company]);
   const companyMines = useMemo(() => mines.filter((m) => m.company === company), [mines, company]);
@@ -59,7 +62,10 @@ export default function CompanyPage({ data, slug }) {
     [companyProduction],
   );
 
-  const pivot = useMemo(() => quarterlyPivot(companyProduction), [companyProduction]);
+  const pivot = useMemo(
+    () => quarterlyPivot(companyProduction, { preferCompanyTotals: true }),
+    [companyProduction],
+  );
 
   const latestQuarter = useMemo(() => {
     const qs = companyProduction
@@ -116,6 +122,9 @@ export default function CompanyPage({ data, slug }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      {evidenceRecord ? (
+        <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
+      ) : null}
       <p className="text-mini text-ink_muted mb-1">
         <Link to="/companies">Companies</Link> / {company}
       </p>
@@ -224,7 +233,7 @@ export default function CompanyPage({ data, slug }) {
                     <span className="text-ink_muted">{r.unit_normalized || r.unit}</span>
                     <span className="text-ink_muted truncate">{r.basis || "--"}</span>
                     <span>
-                      <EvidenceLink record={r} />
+                      <EvidenceLink record={r} onOpen={setEvidenceRecord} />
                     </span>
                   </div>
                 ))}

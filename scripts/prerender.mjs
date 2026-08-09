@@ -63,8 +63,8 @@ async function loadData() {
 
 // Crawler-visible quarterly series table (quarters x commodities) — the
 // direct answer to "<company|mine> production by quarter" queries.
-function pivotTable(records) {
-  const pivot = quarterlyPivot(records);
+function pivotTable(records, options) {
+  const pivot = quarterlyPivot(records, options);
   if (!pivot.quarters.length) return "";
   const head = `<tr><th>Quarter</th>${pivot.commodities
     .map((c) => `<th>${esc(commodityLabel(c))} (${esc(pivot.unit[c])})</th>`)
@@ -155,7 +155,7 @@ function buildRoutes(production, mines) {
 
     const ticker = COMPANY_TICKERS[company];
     const tickerSuffix = ticker ? ` (${ticker})` : "";
-    const series = pivotTable(rows);
+    const series = pivotTable(rows, { preferCompanyTotals: true });
     routes.push({
       path: `/company/${slug}`,
       title: `${company}${tickerSuffix} Production Data - ${commLabels.slice(0, 3).join(", ")} Output by Quarter | World Mining Monitor`,

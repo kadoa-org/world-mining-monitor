@@ -102,6 +102,7 @@ export const COMMODITY_ALIASES = {
   "physical trade": null,
   "concentrate metal products": null,
   "refined metal products": null,
+  "multi-commodity": null,
   metal: null,
   "2e pgm": "pgm",
   "4e pgm": "pgm",
@@ -227,8 +228,17 @@ export function slugify(name) {
 // capped) x top commodities by volume. Shared by the app pages and
 // scripts/prerender.mjs (plain JS, importable from node) — this table is the
 // crawler-visible answer to "<company|mine> production by quarter".
-export function quarterlyPivot(records, { maxQuarters = 8, maxCommodities = 6 } = {}) {
-  const prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
+export function quarterlyPivot(
+  records,
+  { maxQuarters = 8, maxCommodities = 6, preferCompanyTotals = false } = {},
+) {
+  let prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
+  if (preferCompanyTotals) {
+    const aggregateKeys = new Set(
+      prod.filter((r) => !r.operation).map((r) => `${r.commodity}|${r.time_period}`),
+    );
+    prod = prod.filter((r) => !aggregateKeys.has(`${r.commodity}|${r.time_period}`) || !r.operation);
+  }
   const qKey = (tp) => tp.slice(3) + tp[1];
   const quarters = [...new Set(prod.map((r) => r.time_period))]
     .sort((a, b) => qKey(b).localeCompare(qKey(a)))

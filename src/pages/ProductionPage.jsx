@@ -4,6 +4,7 @@ import { getPrevPeriod } from "../data";
 import {
   Card,
   DownloadCsvButton,
+  EvidenceDialog,
   EvidenceLink,
   downloadCsv,
   fmtInt,
@@ -38,6 +39,7 @@ const CSV_COLUMNS = [
   ["company", "company"],
   ["operation", "operation"],
   ["commodity", "commodity"],
+  ["product_form", "product_form"],
   ["metric", "metric"],
   ["time_period", "period"],
   ["value_normalized", "value"],
@@ -75,6 +77,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
   const [period, setPeriod] = useState(initialQuery.period || "all");
   const [metric, setMetric] = useState(initialQuery.metric || "production");
   const [sort, setSort] = useState("-time_period");
+  const [evidenceRecord, setEvidenceRecord] = useState(null);
 
   // Previous-period lookup for QoQ deltas (operation included to avoid collisions).
   const prevLookup = useMemo(() => {
@@ -149,6 +152,9 @@ export default function ProductionPage({ data, initialQuery = {} }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      {evidenceRecord ? (
+        <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
+      ) : null}
       <SectionHeader
         title="Production data"
         subtitle={`${fmtInt(sorted.length)} records · quarterly and annual disclosures, normalized`}
@@ -277,7 +283,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
                   </span>
                   <span className="truncate text-ink_muted">{r.country || "--"}</span>
                   <span>
-                    <EvidenceLink record={r} />
+                    <EvidenceLink record={r} onOpen={setEvidenceRecord} />
                   </span>
                 </div>
               ))}
