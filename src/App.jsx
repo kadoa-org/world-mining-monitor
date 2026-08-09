@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMiningData } from "./data";
 import { SiteFooter } from "./kit";
 import Masthead from "./Masthead";
@@ -11,6 +11,7 @@ import LargestMinesPage from "./pages/LargestMinesPage";
 import MinePage from "./pages/MinePage";
 import OverviewPage from "./pages/OverviewPage";
 import ProductionPage from "./pages/ProductionPage";
+import PrerenderShell from "./PrerenderShell";
 import { useRoute } from "./router";
 import { useDatabase } from "./useDatabase";
 
@@ -51,10 +52,15 @@ function ErrorScreen({ error }) {
 }
 
 export default function App() {
+  const [clientReady, setClientReady] = useState(false);
   const route = useRoute();
   const needsDb = ROUTES_NEEDING_DB.has(route.name);
   const { db, loading, error } = useDatabase(needsDb);
   const data = useMiningData(db);
+
+  useEffect(() => {
+    setClientReady(true);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -73,6 +79,7 @@ export default function App() {
     link.href = `${window.location.origin}${window.location.pathname}`;
   }, [route.name, route.slug]);
 
+  if (!clientReady) return <PrerenderShell />;
   if (needsDb && error) return <ErrorScreen error={error} />;
 
   return (

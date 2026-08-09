@@ -6,7 +6,7 @@
  * invisible to search engines. Runs after `vite build` and writes a static
  * `dist/<route>/index.html` per route with:
  *   - unique <title>, meta description, canonical, og/twitter tags
- *   - a crawler-visible content block inside #root (replaced on hydration)
+ *   - a crawler-visible content block after #root
  * plus dist/sitemap.xml and dist/robots.txt.
  *
  * Routes are enumerated from public/data/mining.db (read via sql.js) using
@@ -20,6 +20,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import initSqlJs from "sql.js";
+import { createServer } from "vite";
 import { commodityLabel, COMPANY_TICKERS, normalizeCommodity, quarterlyPivot, slugify } from "../src/constants.js";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -295,7 +296,7 @@ function buildRoutes(production, mines) {
 
 // ── templating ───────────────────────────────────────────────────────────────
 
-function renderRoute(template, route) {
+function renderRoute(template, route, shell) {
   const url = `${BASE}${route.path}`;
   // Function replacements throughout: replacement STRINGS treat `$` as
   // capture-group syntax, which corrupts output when titles/values contain it.
@@ -316,33 +317,50 @@ function renderRoute(template, route) {
     );
 
   if (route.h1) {
-    html = injectRoot(html, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
+    html = injectRoot(html, shell, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
   }
   return html;
 }
 
-// Every prerendered page must ship an <h1> and crawlable links: the SPA shell
-// is an empty <div id="root">, so whatever is not injected here does not exist
-// for a crawler. Link to PREFIX, not PREFIX + "/" — the trailing slash 308s,
-// which is why the audit found 233 internal links pointing at a redirect.
-function injectRoot(html, h1, body) {
+// Ship the same loading shell React hydrates, followed by crawler-visible
+// content outside #root. The shell owns the first viewport; the client removes
+// the SEO block as soon as hydration starts.
+function injectRoot(html, shell, h1, body) {
   return html.replace(
     /(<div id="root">)(<\/div>)/,
-    (_m, open, close) => `${open}<main><h1>${esc(h1)}</h1>${body}</main>${close}`,
+    (_m, open, close) => `${open}${shell}${close}<main class="seo-shell"><h1>${esc(h1)}</h1>${body}</main>`,
   );
+}
+
+async function buildShell() {
+  const server = await createServer({
+    configFile: false,
+    root: ROOT,
+    server: { middlewareMode: true, hmr: false },
+    appType: "custom",
+    logLevel: "error",
+    optimizeDeps: { noDiscovery: true },
+  });
+  try {
+    const mod = await server.ssrLoadModule("/src/renderPrerenderShell.jsx");
+    return mod.renderPrerenderShell();
+  } finally {
+    await server.close();
+  }
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
 
 const { production, mines } = await loadData();
 const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+const shell = await buildShell();
 const routes = buildRoutes(production, mines);
 
 let written = 0;
 for (const r of routes) {
   const dir = path.join(DIST, r.path.slice(1));
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, "index.html"), renderRoute(template, r));
+  fs.writeFileSync(path.join(dir, "index.html"), renderRoute(template, r, shell));
   written++;
 }
 
@@ -365,7 +383,7 @@ const homeBody = [
 ].join("");
 fs.writeFileSync(
   path.join(DIST, "index.html"),
-  injectRoot(template, "World Mining Monitor", homeBody),
+  injectRoot(template, shell, "World Mining Monitor", homeBody),
 );
 
 const today = new Date().toISOString().slice(0, 10);
