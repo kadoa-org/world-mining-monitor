@@ -196,7 +196,7 @@ export function EvidenceLink({ record, onOpen }) {
   if (verification && onOpen) {
     return (
       <button type="button" className="dk-link cursor-pointer" onClick={() => onOpen(record)}>
-        Verify
+        Source
       </button>
     );
   }
@@ -271,12 +271,12 @@ export function EvidenceDialog({ record, onClose }) {
       <div className="max-h-[calc(100vh-34px)] overflow-y-auto">
         <div className="sticky top-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-stroke bg-white">
           <div>
-            <h2 id={titleId} className="text-large font-semibold">Verify value</h2>
+            <h2 id={titleId} className="text-large font-semibold">Source details</h2>
             <p className="text-mini text-ink_muted mt-0.5">
               {record.company} · {record.operation || "Company total"} · {record.time_period}
             </p>
           </div>
-          <button type="button" onClick={close} className="text-ink_muted hover:text-ink p-2 -mr-2" aria-label="Close value verification">
+          <button type="button" onClick={close} className="text-ink_muted hover:text-ink p-2 -mr-2" aria-label="Close source details">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
