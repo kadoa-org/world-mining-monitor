@@ -27,9 +27,7 @@ const CSV_COLUMNS = [
   ["unit_normalized", "unit"],
   ["basis", "basis"],
   ["source_url", "source_url"],
-  ["evidence_id", "evidence_id"],
   ["source_document_name", "source_document_name"],
-  ["source_document_sha256", "source_document_sha256"],
   ["source_page", "source_page"],
   ["source_section", "source_section"],
   ["source_table", "source_table"],
@@ -39,13 +37,6 @@ const CSV_COLUMNS = [
   ["reported_value", "reported_value"],
   ["reported_unit", "reported_unit"],
   ["reported_period", "reported_period"],
-  ["document_parser", "document_parser"],
-  ["schema_extractor", "schema_extractor"],
-  ["parser_job_id", "parser_job_id"],
-  ["extracted_at", "extracted_at"],
-  ["derivation_formula", "derivation_formula"],
-  ["input_evidence_ids", "input_evidence_ids"],
-  ["transformations", "transformations"],
 ];
 
 export default function CompanyPage({ data, slug }) {

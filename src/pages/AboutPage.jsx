@@ -24,11 +24,11 @@ export default function AboutPage() {
           quarters mapped to calendar quarters, and values validated against range and consistency checks.
         </p>
 
-        <h2 className="text-large font-semibold text-ink pt-4">Evidence and lineage</h2>
+        <h2 className="text-large font-semibold text-ink pt-4">Verify a value</h2>
         <p>
-          Source evidence records the report, page or table location, original text, reported value, unit, and period.
-          The pipeline also records normalization and fiscal-period transformations without changing the original
-          observation. Open an evidence link in a production table or download the CSV to inspect these fields.
+          Verified rows include the source report, its page or table location, the exact excerpt, and the value, unit,
+          and period as reported by the company. Select Verify in a production table to compare the value with the
+          archived source file, or download the CSV to use the same source fields directly.
         </p>
 
         <h2 className="text-large font-semibold text-ink pt-4">What's covered</h2>

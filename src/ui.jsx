@@ -190,13 +190,13 @@ export function DownloadCsvButton({ onClick, count }) {
 }
 
 export function EvidenceLink({ record, onOpen }) {
-  const provenance = record.provenance;
-  const href = record.source_url || provenance?.source?.document_url;
+  const verification = record.verification;
+  const href = record.source_url;
 
-  if (provenance && onOpen) {
+  if (verification && onOpen) {
     return (
       <button type="button" className="dk-link cursor-pointer" onClick={() => onOpen(record)}>
-        Evidence
+        Verify
       </button>
     );
   }
@@ -216,33 +216,26 @@ export function EvidenceLink({ record, onOpen }) {
   );
 }
 
-function EvidenceField({ label, children, mono = false }) {
+function EvidenceField({ label, children }) {
   if (children == null || children === "") return null;
   return (
     <div className="min-w-0">
       <div className="text-mini text-ink_muted mb-1">{label}</div>
-      <div className={`${mono ? "font-mono text-mini break-all whitespace-pre-wrap" : "text-small"} text-ink`}>
-        {children}
-      </div>
+      <div className="text-small text-ink">{children}</div>
     </div>
   );
 }
 
-function evidenceLocation(source) {
+function evidenceLocation(verification) {
   return [
-    source?.page != null ? `Page ${source.page}` : null,
-    source?.section,
-    source?.table ? `Table: ${source.table}` : null,
-    source?.row_label ? `Row: ${source.row_label}` : null,
-    source?.column_label ? `Column: ${source.column_label}` : null,
+    verification?.page != null ? `Page ${verification.page}` : null,
+    verification?.section,
+    verification?.table ? `Table: ${verification.table}` : null,
+    verification?.row ? `Row: ${verification.row}` : null,
+    verification?.column ? `Column: ${verification.column}` : null,
   ]
     .filter(Boolean)
     .join(" · ");
-}
-
-function formatLineageValue(value) {
-  if (value == null || value === "") return "--";
-  return typeof value === "object" ? JSON.stringify(value) : String(value);
 }
 
 export function EvidenceDialog({ record, onClose }) {
@@ -257,15 +250,12 @@ export function EvidenceDialog({ record, onClose }) {
     };
   }, []);
 
-  if (!record?.provenance) return null;
+  if (!record?.verification) return null;
 
-  const provenance = record.provenance;
-  const source = provenance.kind === "extracted" ? provenance.source : null;
-  const observation = provenance.kind === "extracted" ? provenance.observation : null;
-  const extraction = provenance.kind === "extracted" ? provenance.extraction : null;
-  const href = record.source_url || source?.document_url;
-  const sourceAction = /\.pdf(?:$|[?#])/i.test(href || "") ? "Open source PDF" : "Open source document";
-  const reportedValue = [observation?.reported_value, observation?.reported_unit].filter(Boolean).join(" ");
+  const verification = record.verification;
+  const href = verification.sourceUrl;
+  const sourceAction = /\.pdf(?:$|[?#])/i.test(href || "") ? "Open source PDF" : "Open source file";
+  const reportedValue = [verification.reportedValue, verification.reportedUnit].filter(Boolean).join(" ");
   const close = () => dialogRef.current?.close();
 
   return (
@@ -281,12 +271,12 @@ export function EvidenceDialog({ record, onClose }) {
       <div className="max-h-[calc(100vh-34px)] overflow-y-auto">
         <div className="sticky top-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-stroke bg-white">
           <div>
-            <h2 id={titleId} className="text-large font-semibold">Evidence details</h2>
+            <h2 id={titleId} className="text-large font-semibold">Verify value</h2>
             <p className="text-mini text-ink_muted mt-0.5">
               {record.company} · {record.operation || "Company total"} · {record.time_period}
             </p>
           </div>
-          <button type="button" onClick={close} className="text-ink_muted hover:text-ink p-2 -mr-2" aria-label="Close evidence details">
+          <button type="button" onClick={close} className="text-ink_muted hover:text-ink p-2 -mr-2" aria-label="Close value verification">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
@@ -294,81 +284,23 @@ export function EvidenceDialog({ record, onClose }) {
         </div>
 
         <div className="p-5 space-y-5">
-          {provenance.kind === "extracted" ? (
-            <>
-              <section>
-                <h3 className="text-small font-semibold mb-3">Original observation</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <EvidenceField label="Reported value">{reportedValue}</EvidenceField>
-                  <EvidenceField label="Reported period">{observation?.reported_period}</EvidenceField>
-                  <div className="sm:col-span-2">
-                    <EvidenceField label="Location">{evidenceLocation(source)}</EvidenceField>
-                  </div>
-                </div>
-                {observation?.verbatim_text ? (
-                  <blockquote className="mt-4 px-3 py-2.5 border-l-2 border-accent bg-muted/50 font-mono text-mini break-words">
-                    {observation.verbatim_text}
-                  </blockquote>
-                ) : null}
-              </section>
-
-              <section className="pt-4 border-t border-stroke_soft">
-                <h3 className="text-small font-semibold mb-3">Source and extraction</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <EvidenceField label="Document">{source?.document_name}</EvidenceField>
-                  <EvidenceField label="Extracted at">{extraction?.extracted_at}</EvidenceField>
-                  <EvidenceField label="Document parser">{extraction?.document_parser}</EvidenceField>
-                  <EvidenceField label="Schema extractor">{extraction?.schema_extractor}</EvidenceField>
-                  <div className="sm:col-span-2">
-                    <EvidenceField label="Document SHA-256" mono>{source?.document_sha256}</EvidenceField>
-                  </div>
-                </div>
-              </section>
-            </>
-          ) : (
-            <section>
-              <h3 className="text-small font-semibold mb-3">Derivation</h3>
-              <EvidenceField label="Formula">{provenance.derivation?.formula}</EvidenceField>
-              <div className="mt-4">
-                <EvidenceField label="Input evidence IDs" mono>
-                  {provenance.derivation?.input_evidence_ids?.join("\n")}
-                </EvidenceField>
-              </div>
-            </section>
-          )}
-
-          {provenance.transformations?.length ? (
-            <section className="pt-4 border-t border-stroke_soft">
-              <h3 className="text-small font-semibold mb-3">Transformations</h3>
-              <div className="space-y-3">
-                {provenance.transformations.map((transformation, index) => (
-                  <div key={`${transformation.stage}-${index}`} className="border border-stroke_soft px-3 py-2.5">
-                    <div className="text-small font-medium">
-                      {transformation.stage.replace(/_/g, " ")} · v{transformation.version}
-                    </div>
-                    <ul className="mt-1.5 space-y-1 text-mini text-ink_muted">
-                      {Object.entries(transformation.changes || {}).map(([field, change]) => (
-                        <li key={field}>
-                          {field.replace(/_/g, " ")}: {formatLineageValue(change.from)} → {formatLineageValue(change.to)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <EvidenceField label="Evidence ID" mono>{provenance.evidence_id}</EvidenceField>
+          <section>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <EvidenceField label="Reported value">{reportedValue}</EvidenceField>
+              <EvidenceField label="Reported period">{verification.reportedPeriod}</EvidenceField>
+              <EvidenceField label="Document">{verification.documentName}</EvidenceField>
+              <EvidenceField label="Location">{evidenceLocation(verification)}</EvidenceField>
+            </div>
+            <blockquote className="mt-4 px-3 py-2.5 border-l-2 border-accent bg-muted/50 font-mono text-mini break-words">
+              {verification.excerpt}
+            </blockquote>
+          </section>
         </div>
 
-        <div className="sticky bottom-0 flex items-center justify-end gap-2 px-5 py-3 border-t border-stroke bg-white">
-          <button type="button" onClick={close} className="dk-btn">Close</button>
-          {href ? (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="dk-btn">
-              {sourceAction}
-            </a>
-          ) : null}
+        <div className="sticky bottom-0 flex items-center justify-end px-5 py-3 border-t border-stroke bg-white">
+          <a href={href} target="_blank" rel="noopener noreferrer" className="dk-btn">
+            {sourceAction}
+          </a>
         </div>
       </div>
     </dialog>

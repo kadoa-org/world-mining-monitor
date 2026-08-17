@@ -6,52 +6,20 @@ import { normalizeCommodity } from "./constants";
 import { slugify } from "./ui";
 import { query } from "./useDatabase";
 
-function parseJsonArray(value) {
-  return value ? JSON.parse(value) : [];
-}
-
-function provenanceFromRow(row) {
-  if (!row.evidence_id) return null;
-
-  const transformations = parseJsonArray(row.provenance_transformations);
-  if (row.evidence_kind === "derived") {
-    return {
-      kind: "derived",
-      evidence_id: row.evidence_id,
-      derivation: {
-        formula: row.evidence_derivation_formula,
-        input_evidence_ids: parseJsonArray(row.evidence_input_evidence_ids),
-      },
-      transformations,
-    };
-  }
-
+function verificationFromRow(row) {
+  if (!row.source_url || !row.source_excerpt) return null;
   return {
-    kind: "extracted",
-    evidence_id: row.evidence_id,
-    source: {
-      document_url: row.evidence_source_url,
-      document_name: row.evidence_document_name,
-      document_sha256: row.evidence_document_sha256,
-      page: row.evidence_page,
-      section: row.evidence_section,
-      table: row.evidence_table,
-      row_label: row.evidence_row_label,
-      column_label: row.evidence_column_label,
-    },
-    observation: {
-      verbatim_text: row.evidence_verbatim_text,
-      reported_value: row.evidence_reported_value,
-      reported_unit: row.evidence_reported_unit,
-      reported_period: row.evidence_reported_period,
-    },
-    extraction: {
-      document_parser: row.evidence_document_parser,
-      schema_extractor: row.evidence_schema_extractor,
-      parser_job_id: row.evidence_parser_job_id,
-      extracted_at: row.evidence_extracted_at,
-    },
-    transformations,
+    sourceUrl: row.source_url,
+    documentName: row.source_document_name,
+    page: row.source_page,
+    section: row.source_section,
+    table: row.source_table,
+    row: row.source_row,
+    column: row.source_column,
+    excerpt: row.source_excerpt,
+    reportedValue: row.reported_value,
+    reportedUnit: row.reported_unit,
+    reportedPeriod: row.reported_period,
   };
 }
 
@@ -64,56 +32,13 @@ export function useMiningData(db) {
       commodities: r.commodities ? JSON.parse(r.commodities) : [],
     }));
 
-    const production = query(
-      db,
-      `SELECT p.*,
-        e.kind AS evidence_kind,
-        e.source_url AS evidence_source_url,
-        e.document_name AS evidence_document_name,
-        e.document_sha256 AS evidence_document_sha256,
-        e.page AS evidence_page,
-        e.section AS evidence_section,
-        e.table_name AS evidence_table,
-        e.row_label AS evidence_row_label,
-        e.column_label AS evidence_column_label,
-        e.verbatim_text AS evidence_verbatim_text,
-        e.reported_value AS evidence_reported_value,
-        e.reported_unit AS evidence_reported_unit,
-        e.reported_period AS evidence_reported_period,
-        e.document_parser AS evidence_document_parser,
-        e.schema_extractor AS evidence_schema_extractor,
-        e.parser_job_id AS evidence_parser_job_id,
-        e.extracted_at AS evidence_extracted_at,
-        e.derivation_formula AS evidence_derivation_formula,
-        e.input_evidence_ids AS evidence_input_evidence_ids
-      FROM production p
-      LEFT JOIN evidence e ON e.id = p.evidence_id`,
-    )
+    const production = query(db, "SELECT * FROM production")
       .map((r) => {
-        const provenance = provenanceFromRow(r);
+        const verification = verificationFromRow(r);
         return {
           ...r,
           commodity: normalizeCommodity(r.commodity),
-          source_url: r.source_url || provenance?.source?.document_url || null,
-          provenance,
-          source_page: provenance?.source?.page ?? "",
-          source_document_name: provenance?.source?.document_name || "",
-          source_document_sha256: provenance?.source?.document_sha256 || "",
-          source_section: provenance?.source?.section || "",
-          source_table: provenance?.source?.table || "",
-          source_row: provenance?.source?.row_label || "",
-          source_column: provenance?.source?.column_label || "",
-          source_excerpt: provenance?.observation?.verbatim_text || "",
-          reported_value: provenance?.observation?.reported_value ?? "",
-          reported_unit: provenance?.observation?.reported_unit || "",
-          reported_period: provenance?.observation?.reported_period || "",
-          document_parser: provenance?.extraction?.document_parser || "",
-          schema_extractor: provenance?.extraction?.schema_extractor || "",
-          parser_job_id: provenance?.extraction?.parser_job_id || "",
-          extracted_at: provenance?.extraction?.extracted_at || "",
-          derivation_formula: provenance?.derivation?.formula || "",
-          input_evidence_ids: (provenance?.derivation?.input_evidence_ids || []).join("|"),
-          transformations: JSON.stringify(provenance?.transformations || []),
+          verification,
         };
       })
       .filter((r) => r.commodity !== null);
