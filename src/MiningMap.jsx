@@ -119,6 +119,8 @@ export default function MiningMap({
             const sorted = Object.entries(prod.commodities)
               .sort(([, a], [, b]) => b - a)
               .slice(0, 6);
+            const recordPeriods = [...new Set(prod.records.map((record) => record.time_period).filter(Boolean))];
+            const period = recordPeriods.length === 1 ? recordPeriods[0] : "";
 
             return (
               <CircleMarker
@@ -138,67 +140,82 @@ export default function MiningMap({
                   <br />
                   <span style={{ opacity: 0.6, fontSize: 10 }}>{mine.company}</span>
                 </LeafletTooltip>
-                <Popup className="mine-popup" maxWidth={260} minWidth={200}>
-                  <div style={{ fontFamily: "Inter, sans-serif", color: "#23252a" }}>
-                    <div style={{ marginBottom: 10 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>{mine.name}</div>
-                      <div style={{ fontSize: 11, opacity: 0.55 }}>
-                        {mine.company} · {mine.country}
-                      </div>
-                    </div>
-                    {sorted.map(([commodity, value]) => {
-                      const cColor = COMMODITY_COLORS[commodity] || "#6b7280";
-                      const display = formatOutput(value, prod.units?.[commodity]);
-                      return (
-                        <div
-                          key={commodity}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "3px 0",
-                            fontSize: 12,
-                          }}
-                        >
-                          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span
-                              style={{ width: 6, height: 6, borderRadius: "50%", background: cColor, flexShrink: 0 }}
-                            />
-                            <span style={{ opacity: 0.65 }}>{commodityLabel(commodity)}</span>
-                          </span>
-                          {showOutputValues ? (
-                            <span style={{ fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{display}</span>
-                          ) : null}
+                <Popup className="mine-popup" maxWidth={300} minWidth={228}>
+                  <section className="mine-popup-card" aria-labelledby={`mine-popup-${mine.id}`}>
+                    <header className="mine-popup-header">
+                      <h3 id={`mine-popup-${mine.id}`}>{mine.name}</h3>
+                    </header>
+
+                    <div className="mine-popup-body">
+                      <dl className="mine-popup-summary">
+                        <div>
+                          <dt>Company</dt>
+                          <dd>{mine.company}</dd>
                         </div>
-                      );
-                    })}
-                    <div
-                      style={{ marginTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                    >
-                      <span style={{ fontSize: 10, opacity: 0.35 }}>
-                        {prod.records.length} production {prod.records.length === 1 ? "observation" : "observations"}
-                      </span>
+                        <div>
+                          <dt>Country</dt>
+                          <dd>{mine.country || "Not available"}</dd>
+                        </div>
+                        {period ? (
+                          <div>
+                            <dt>Period</dt>
+                            <dd>{period}</dd>
+                          </div>
+                        ) : null}
+                      </dl>
+
+                      <div className="mine-popup-production">
+                        <h4>{showOutputValues ? "Production" : "Reported commodities"}</h4>
+                        {showOutputValues ? (
+                          <dl>
+                            {sorted.map(([commodity, value]) => (
+                              <div key={commodity}>
+                                <dt>
+                                  <span
+                                    className="mine-popup-dot"
+                                    style={{ backgroundColor: COMMODITY_COLORS[commodity] || "#6b7280" }}
+                                    aria-hidden="true"
+                                  />
+                                  {commodityLabel(commodity)}
+                                </dt>
+                                <dd>{formatOutput(value, prod.units?.[commodity])}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        ) : (
+                          <ul>
+                            {sorted.map(([commodity]) => (
+                              <li key={commodity}>
+                                <span
+                                  className="mine-popup-dot"
+                                  style={{ backgroundColor: COMMODITY_COLORS[commodity] || "#6b7280" }}
+                                  aria-hidden="true"
+                                />
+                                {commodityLabel(commodity)}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      <p className="mine-popup-observations">
+                        {prod.records.length} production {prod.records.length === 1 ? "observation" : "observations"} in this view
+                      </p>
+                    </div>
+
+                    <footer className="mine-popup-footer">
                       <a
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
                           navigate(`/company/${slugify(mine.company)}`);
                         }}
-                        style={{
-                          color: "#1d70b8",
-                          textDecoration: "none",
-                          fontSize: 11,
-                          fontWeight: 500,
-                          padding: "4px 12px",
-                          borderRadius: 4,
-                          background: "rgba(29,112,184,0.08)",
-                          border: "1px solid rgba(29,112,184,0.3)",
-                        }}
                       >
-                        View company &rarr;
+                        View company
+                        <span className="sr-only">: {mine.company}</span>
                       </a>
-                    </div>
-                  </div>
+                    </footer>
+                  </section>
                 </Popup>
               </CircleMarker>
             );
