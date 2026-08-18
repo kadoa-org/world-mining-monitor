@@ -207,7 +207,7 @@ export const COMPANY_TICKERS = {
 
 export const REGIONS = ["All", "Americas", "Europe", "Asia Pacific", "Africa"];
 
-// Bubble size scale: log(value_in_kt) * factor
+// Bubble size scale for a single comparable commodity/unit series.
 export const BUBBLE_MIN = 4;
 export const BUBBLE_MAX = 22;
 
@@ -239,12 +239,15 @@ export function quarterlyPivot(
     );
     prod = prod.filter((r) => !aggregateKeys.has(`${r.commodity}|${r.time_period}`) || !r.operation);
   }
+  // This table compares normalized values. A missing normalization is unknown,
+  // not a reported zero, so it must not create a cell or affect ranking.
+  prod = prod.filter((r) => Number.isFinite(r.value_normalized));
   const qKey = (tp) => tp.slice(3) + tp[1];
   const quarters = [...new Set(prod.map((r) => r.time_period))]
     .sort((a, b) => qKey(b).localeCompare(qKey(a)))
     .slice(0, maxQuarters);
   const totals = new Map();
-  for (const r of prod) totals.set(r.commodity, (totals.get(r.commodity) || 0) + (r.value_normalized || 0));
+  for (const r of prod) totals.set(r.commodity, (totals.get(r.commodity) || 0) + r.value_normalized);
   const commodities = [...totals.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, maxCommodities)
@@ -253,9 +256,9 @@ export function quarterlyPivot(
   const cell = new Map();
   for (const r of prod) {
     if (!quarters.includes(r.time_period) || !commodities.includes(r.commodity)) continue;
-    unit[r.commodity] ||= r.unit_normalized || r.unit || "kt";
+    unit[r.commodity] ||= r.unit_normalized;
     const k = `${r.commodity}|${r.time_period}`;
-    cell.set(k, (cell.get(k) || 0) + (r.value_normalized || 0));
+    cell.set(k, (cell.get(k) || 0) + r.value_normalized);
   }
   return { quarters, commodities, unit, get: (c, q) => cell.get(`${c}|${q}`) ?? null };
 }
