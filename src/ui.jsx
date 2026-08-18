@@ -99,9 +99,9 @@ export function Card({ children, className = "" }) {
   return <div className={`border border-[#b1b4b6] bg-white ${className}`}>{children}</div>;
 }
 
-export function SectionHeader({ title, subtitle, right }) {
+export function SectionHeader({ title, subtitle, right, className = "" }) {
   return (
-    <div className="dk-section-head">
+    <div className={`dk-section-head ${className}`}>
       <div style={{ minWidth: 0 }}>
         <h2>{title}</h2>
         {subtitle && <p className="dk-hint">{subtitle}</p>}

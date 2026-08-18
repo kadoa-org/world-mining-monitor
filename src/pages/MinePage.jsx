@@ -87,6 +87,7 @@ export default function MinePage({ data, slug }) {
               height={320}
               center={[mine.lat, mine.lng]}
               zoom={5}
+              scaleByOutput={false}
             />
           </Card>
         </div>

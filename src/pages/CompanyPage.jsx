@@ -72,10 +72,11 @@ export default function CompanyPage({ data, slug }) {
     );
     const map = new Map();
     for (const p of records) {
-      const existing = map.get(p.mine_id) || { total_kt: 0, commodities: {}, records: [] };
+      const existing = map.get(p.mine_id) || { total_kt: 0, commodities: {}, units: {}, records: [] };
       const kt = p.value_normalized || 0;
       existing.total_kt += kt;
       existing.commodities[p.commodity] = (existing.commodities[p.commodity] || 0) + kt;
+      if (p.unit_normalized) existing.units[p.commodity] = p.unit_normalized;
       existing.records.push(p);
       map.set(p.mine_id, existing);
     }
@@ -144,6 +145,7 @@ export default function CompanyPage({ data, slug }) {
               mines={companyMines.filter((m) => mineProduction.has(m.id))}
               mineProduction={mineProduction}
               height={380}
+              scaleByOutput={commodity !== "all"}
             />
           </Card>
         </div>

@@ -96,3 +96,25 @@ html, body {
 .mine-popup .leaflet-popup-close-button:hover { color: rgba(0, 0, 0, 0.75) !important; }
 .mine-popup .leaflet-popup-content { margin: 12px 14px !important; }
 .custom-cluster-icon { background: transparent; border: none; }
+
+/* Overview filters and drill-down links stack instead of squeezing section
+   copy into a narrow column on phone-width screens. */
+@media (max-width: 639px) {
+  .overview-map-head,
+  .overview-results-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .overview-map-head > :last-child,
+  .overview-results-head > :last-child {
+    white-space: normal !important;
+  }
+  .overview-map-controls {
+    width: 100%;
+  }
+  .overview-map-controls select {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 0;
+  }
+}

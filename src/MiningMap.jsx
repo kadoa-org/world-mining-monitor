@@ -3,15 +3,13 @@ import React, { useMemo } from "react";
 import { CircleMarker, Tooltip as LeafletTooltip, MapContainer, Popup, TileLayer } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
-import { BUBBLE_MAX, BUBBLE_MIN, COMMODITY_COLORS } from "./constants";
+import { BUBBLE_MAX, BUBBLE_MIN, COMMODITY_COLORS, commodityLabel } from "./constants";
 import { navigate } from "./router";
 import { slugify } from "./ui";
 
-function getBubbleRadius(totalKt, logMax) {
-  if (!totalKt || totalKt <= 0) return BUBBLE_MIN;
-  // Log scale relative to the largest mine in view — spreads the range well
-  // across iron ore (100k kt) to gold (10 koz).
-  const normalized = Math.log10(totalKt + 1) / logMax;
+function getBubbleRadius(output, logMax) {
+  if (!output || output <= 0) return BUBBLE_MIN;
+  const normalized = Math.log10(output + 1) / logMax;
   return BUBBLE_MIN + normalized * (BUBBLE_MAX - BUBBLE_MIN);
 }
 
@@ -26,6 +24,18 @@ function getPrimaryCommodity(commodities) {
     }
   }
   return primary;
+}
+
+function formatOutput(value, unit) {
+  if (!Number.isFinite(Number(value))) return "--";
+  const number = Number(value);
+  if (unit === "kt") {
+    if (number >= 1000) return `${(number / 1000).toFixed(1)} Mt`;
+    if (number >= 1) return `${number.toFixed(1)} kt`;
+    return `${(number * 1000).toFixed(0)} t`;
+  }
+  const display = number.toLocaleString("en-US", { maximumFractionDigits: number >= 1 ? 1 : 3 });
+  return unit ? `${display} ${unit}` : display;
 }
 
 function createClusterIcon(cluster) {
@@ -53,20 +63,31 @@ function createClusterIcon(cluster) {
   });
 }
 
-export default function MiningMap({ mines, mineProduction, height = 560, center = [20, 10], zoom = 2 }) {
+export default function MiningMap({
+  mines,
+  mineProduction,
+  height = 560,
+  center = [20, 10],
+  zoom = 2,
+  scaleByOutput = true,
+  showOutputValues = scaleByOutput,
+}) {
   const markers = useMemo(() => {
     const withProd = mines
       .filter((m) => mineProduction.has(m.id))
       .map((mine) => ({ mine, prod: mineProduction.get(mine.id) }));
-    const maxKt = Math.max(...withProd.map((m) => m.prod.total_kt || 0), 1);
-    const logMax = Math.log10(maxKt + 1);
+    const outputFor = (prod) => prod.output_value ?? prod.total_kt ?? 0;
+    const maxOutput = Math.max(...withProd.map((m) => outputFor(m.prod)), 1);
+    const logMax = Math.log10(maxOutput + 1);
     return withProd.map(({ mine, prod }) => {
-      const primary = getPrimaryCommodity(prod.commodities);
+      const primary = scaleByOutput
+        ? getPrimaryCommodity(prod.commodities)
+        : Object.keys(prod.commodities || {})[0] || mine.commodities?.[0] || "copper";
       const color = COMMODITY_COLORS[primary] || "#6b7280";
-      const radius = getBubbleRadius(prod.total_kt, logMax);
+      const radius = scaleByOutput ? getBubbleRadius(outputFor(prod), logMax) : BUBBLE_MIN + 2;
       return { mine, prod, color, radius };
     });
-  }, [mines, mineProduction]);
+  }, [mines, mineProduction, scaleByOutput]);
 
   return (
     <div style={{ width: "100%", height }}>
@@ -127,12 +148,7 @@ export default function MiningMap({ mines, mineProduction, height = 560, center 
                     </div>
                     {sorted.map(([commodity, value]) => {
                       const cColor = COMMODITY_COLORS[commodity] || "#6b7280";
-                      const display =
-                        value >= 1000
-                          ? `${(value / 1000).toFixed(1)} Mt`
-                          : value >= 1
-                            ? `${value.toFixed(1)} kt`
-                            : `${(value * 1000).toFixed(0)} t`;
+                      const display = formatOutput(value, prod.units?.[commodity]);
                       return (
                         <div
                           key={commodity}
@@ -148,16 +164,20 @@ export default function MiningMap({ mines, mineProduction, height = 560, center 
                             <span
                               style={{ width: 6, height: 6, borderRadius: "50%", background: cColor, flexShrink: 0 }}
                             />
-                            <span style={{ opacity: 0.65 }}>{commodity.replace(/_/g, " ")}</span>
+                            <span style={{ opacity: 0.65 }}>{commodityLabel(commodity)}</span>
                           </span>
-                          <span style={{ fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{display}</span>
+                          {showOutputValues ? (
+                            <span style={{ fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{display}</span>
+                          ) : null}
                         </div>
                       );
                     })}
                     <div
                       style={{ marginTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}
                     >
-                      <span style={{ fontSize: 10, opacity: 0.35 }}>{prod.records.length} records</span>
+                      <span style={{ fontSize: 10, opacity: 0.35 }}>
+                        {prod.records.length} production {prod.records.length === 1 ? "observation" : "observations"}
+                      </span>
                       <a
                         href="#"
                         onClick={(e) => {
