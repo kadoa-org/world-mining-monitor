@@ -216,31 +216,76 @@ export function EvidenceLink({ record, onOpen }) {
   );
 }
 
-function EvidenceField({ label, children }) {
+function EvidenceField({ label, children, prominent = false, className = "" }) {
   if (children == null || children === "") return null;
   return (
-    <div className="min-w-0">
-      <div className="text-mini text-ink_muted mb-1">{label}</div>
-      <div className="text-small text-ink">{children}</div>
+    <div className={`min-w-0 ${className}`}>
+      <dt className="text-mini text-ink_muted mb-1">{label}</dt>
+      <dd className={`text-small text-ink break-words ${prominent ? "font-semibold tabular-nums" : ""}`}>{children}</dd>
     </div>
   );
 }
 
 function evidenceLocation(verification) {
+  const isSpreadsheet = /\.xlsx?(?:$|[?#])/i.test(verification?.documentName || verification?.sourceUrl || "");
   return [
-    verification?.page != null ? `Page ${verification.page}` : null,
-    verification?.section,
-    verification?.table ? `Table: ${verification.table}` : null,
-    verification?.row ? `Row: ${verification.row}` : null,
-    verification?.column ? `Column: ${verification.column}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+    verification?.page != null ? { label: "Page", value: verification.page } : null,
+    verification?.section ? { label: isSpreadsheet ? "Worksheet" : "Section", value: verification.section } : null,
+    verification?.table ? { label: "Table", value: verification.table } : null,
+    verification?.row ? { label: "Row", value: verification.row } : null,
+    verification?.column ? { label: "Column", value: verification.column } : null,
+  ].filter(Boolean);
+}
+
+function spreadsheetExcerpt(excerpt) {
+  if (typeof excerpt !== "string") return null;
+  const cells = excerpt.split(/\s+\|\s+/).map((part) => {
+    const match = part.match(/^\s*([A-Z]{1,3}\d+)\s*=\s*(.*?)\s*$/);
+    return match ? { reference: match[1], value: match[2] } : null;
+  });
+  return cells.length > 1 && cells.every(Boolean) ? cells : null;
+}
+
+function EvidenceLocation({ items }) {
+  if (!items.length) return null;
+  return (
+    <dl className="mt-3 border-y border-stroke divide-y divide-stroke_soft">
+      {items.map(({ label, value }) => (
+        <div key={label} className="grid grid-cols-[88px_minmax(0,1fr)] gap-3 py-2.5">
+          <dt className="text-mini font-medium text-ink_muted">{label}</dt>
+          <dd className="text-small text-ink break-words">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function EvidenceExcerpt({ excerpt }) {
+  const cells = spreadsheetExcerpt(excerpt);
+  if (cells) {
+    return (
+      <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(84px,1fr))] gap-px border border-stroke bg-stroke">
+        {cells.map(({ reference, value }) => (
+          <div key={reference} className="min-w-0 px-3 py-2.5 bg-white">
+            <div className="font-mono text-mini font-medium text-ink_muted">{reference}</div>
+            <div className="mt-1 font-mono text-small text-ink break-words">{value}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <blockquote className="mt-3 border-l-4 border-[#b1b4b6] pl-4 py-0.5 text-small leading-relaxed text-ink">
+      <p>{excerpt}</p>
+    </blockquote>
+  );
 }
 
 export function EvidenceDialog({ record, onClose }) {
   const dialogRef = useRef(null);
   const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -256,48 +301,60 @@ export function EvidenceDialog({ record, onClose }) {
   const href = verification.sourceUrl;
   const sourceAction = /\.pdf(?:$|[?#])/i.test(href || "") ? "Open source PDF" : "Open source file";
   const reportedValue = [verification.reportedValue, verification.reportedUnit].filter(Boolean).join(" ");
+  const location = evidenceLocation(verification);
   const close = () => dialogRef.current?.close();
 
   return (
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
+      aria-describedby={descriptionId}
       onClose={onClose}
       onClick={(event) => {
         if (event.target === event.currentTarget) close();
       }}
-      className="w-[min(600px,calc(100vw-32px))] max-h-[calc(100vh-32px)] p-0 border border-[#b1b4b6] rounded-lg bg-white text-ink shadow-xl backdrop:bg-black/25"
+      className="w-[min(640px,calc(100vw-32px))] max-h-[calc(100vh-32px)] p-0 border border-[#b1b4b6] rounded-lg bg-white text-ink shadow-xl backdrop:bg-black/25"
     >
       <div className="max-h-[calc(100vh-34px)] overflow-y-auto">
         <div className="sticky top-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-stroke bg-white">
           <div>
             <h2 id={titleId} className="text-large font-semibold">Source details</h2>
-            <p className="text-mini text-ink_muted mt-0.5">
+            <p id={descriptionId} className="text-mini text-ink_muted mt-0.5">
               {record.company} · {record.operation || "Company total"} · {record.time_period}
             </p>
           </div>
-          <button type="button" onClick={close} className="text-ink_muted hover:text-ink p-2 -mr-2" aria-label="Close source details">
+          <button type="button" onClick={close} className="text-ink_muted hover:text-ink hover:bg-hover p-2 -mr-2 rounded" aria-label="Close source details">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
         </div>
 
-        <div className="p-5 space-y-5">
-          <section>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <EvidenceField label="Reported value">{reportedValue}</EvidenceField>
+        <div className="p-5 space-y-6">
+          <section aria-label="Reported data">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <EvidenceField label="Reported value" prominent>{reportedValue}</EvidenceField>
               <EvidenceField label="Reported period">{verification.reportedPeriod}</EvidenceField>
-              <EvidenceField label="Document">{verification.documentName}</EvidenceField>
-              <EvidenceField label="Location">{evidenceLocation(verification)}</EvidenceField>
-            </div>
-            <blockquote className="mt-4 px-3 py-2.5 border-l-2 border-accent bg-muted/50 font-mono text-mini break-words">
-              {verification.excerpt}
-            </blockquote>
+              <EvidenceField label="Document" className="sm:col-span-2">{verification.documentName}</EvidenceField>
+            </dl>
+          </section>
+
+          {location.length ? (
+            <section aria-labelledby={`${titleId}-location`}>
+              <h3 id={`${titleId}-location`} className="text-small font-semibold text-ink">Location in source</h3>
+              <p className="mt-0.5 text-mini text-ink_muted">Follow these references to find the reported value.</p>
+              <EvidenceLocation items={location} />
+            </section>
+          ) : null}
+
+          <section aria-labelledby={`${titleId}-excerpt`}>
+            <h3 id={`${titleId}-excerpt`} className="text-small font-semibold text-ink">Source excerpt</h3>
+            <p className="mt-0.5 text-mini text-ink_muted">Exact text or cells used to verify the reported value.</p>
+            <EvidenceExcerpt excerpt={verification.excerpt} />
           </section>
         </div>
 
-        <div className="sticky bottom-0 flex items-center justify-end px-5 py-3 border-t border-stroke bg-white">
+        <div className="sticky bottom-0 flex items-center justify-start px-5 py-3 border-t border-stroke bg-white">
           <a href={href} target="_blank" rel="noopener noreferrer" className="dk-btn">
             {sourceAction}
           </a>

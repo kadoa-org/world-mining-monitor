@@ -185,8 +185,8 @@ export default function CompanyPage({ data, slug }) {
         />
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <div className="min-w-[760px]">
-              <div className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+            <div className="min-w-[940px]">
+              <div className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_100px_60px_90px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
                 <span>Operation</span>
                 <span>Commodity</span>
                 <span>Metric</span>
@@ -200,7 +200,7 @@ export default function CompanyPage({ data, slug }) {
                 {rows.map((r, i) => (
                   <div
                     key={`${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                    className="grid gap-3 px-4 grid-cols-[1.4fr_110px_100px_90px_100px_60px_90px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                    className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_100px_60px_90px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="truncate">
                       {r.mine_id && mineById.has(r.mine_id) ? (
@@ -216,8 +216,8 @@ export default function CompanyPage({ data, slug }) {
                       />
                       <span className="truncate">{r.commodity?.replace(/_/g, " ")}</span>
                     </span>
-                    <span className="text-ink_muted">{r.metric}</span>
-                    <span className="tabular-nums">{r.time_period}</span>
+                    <span className="text-ink_muted truncate" title={r.metric}>{r.metric}</span>
+                    <span className="tabular-nums truncate" title={r.time_period}>{r.time_period}</span>
                     <span className="text-right tabular-nums font-medium">
                       {fmtValue(r.value_normalized ?? r.value)}
                     </span>
