@@ -97,11 +97,6 @@ export default function OverviewPage({ data }) {
     [filteredMines],
   );
 
-  const reportingCompanies = useMemo(
-    () => new Set(filteredProduction.map((p) => p.company).filter(Boolean)).size,
-    [filteredProduction],
-  );
-
   const coverageRows = useMemo(() => {
     const records = activePeriod
       ? production.filter((p) => p.metric === "production" && p.time_period === activePeriod)
@@ -178,9 +173,8 @@ export default function OverviewPage({ data }) {
         items={[
           { label: "Mines & operations", value: fmtInt(filteredMines.length) },
           {
-            label: "Reporting companies",
-            value: fmtInt(reportingCompanies),
-            sub: `of ${fmtInt(companies.length)} in the dataset`,
+            label: "Companies tracked",
+            value: fmtInt(companies.length),
           },
           { label: "Countries", value: fmtInt(countries) },
           { label: "Reporting period", value: activePeriod || "Latest available" },
