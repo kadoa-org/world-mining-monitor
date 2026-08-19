@@ -1,6 +1,22 @@
 {
   "redirects": [
     {
+      "source": "/mining/company/pt-merdeka-copper-gold",
+      "has": [
+        {
+          "type": "host",
+          "value": "mining.kadoa.com"
+        }
+      ],
+      "destination": "https://www.kadoa.com/mining/company/merdeka-copper-gold",
+      "permanent": true
+    },
+    {
+      "source": "/mining/company/pt-merdeka-copper-gold",
+      "destination": "/mining/company/merdeka-copper-gold",
+      "permanent": true
+    },
+    {
       "source": "/",
       "has": [
         {
