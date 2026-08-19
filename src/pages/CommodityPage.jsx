@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { COMMODITY_COLORS, commodityLabel } from "../constants";
+import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // Company ranking for one commodity: latest-quarter production per company,
@@ -30,12 +30,11 @@ export default function CommodityPage({ data, slug }) {
 
   const ranking = useMemo(() => {
     const sum = (tp) => {
-      const byCompany = new Map();
-      for (const p of records) {
-        if (p.time_period !== tp) continue;
-        byCompany.set(p.company, (byCompany.get(p.company) || 0) + (p.value_normalized || 0));
-      }
-      return byCompany;
+      const aggregates = aggregateProductionBy(
+        records.filter((record) => record.time_period === tp),
+        (record) => record.company,
+      );
+      return new Map([...aggregates].map(([company, aggregate]) => [company, aggregate.value]));
     };
     const cur = sum(quarter);
     const prev = prevQuarter ? sum(prevQuarter) : new Map();

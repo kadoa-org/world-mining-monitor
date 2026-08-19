@@ -211,6 +211,80 @@ export const REGIONS = ["All", "Americas", "Europe", "Asia Pacific", "Africa"];
 export const BUBBLE_MIN = 4;
 export const BUBBLE_MAX = 22;
 
+const productionSemanticKey = (record) =>
+  `${record.unit_normalized || ""}|${record.product_form || ""}|${record.basis || "unknown"}`;
+
+// Resolve one disclosed production fact without inventing comparability.
+// A company total is authoritative over its component operations. If that
+// total is unresolved, callers must display unknown rather than reconstructing
+// a different number from components. Components are additive only when unit,
+// product form, and reporting basis all agree.
+export function aggregateProductionGroup(records, { preferCompanyTotals = true } = {}) {
+  const production = records.filter((record) => record.metric === "production");
+  let totals = production.filter((record) => !record.operation);
+  const components = production.filter((record) => record.operation && Number.isFinite(record.value_normalized));
+  const finiteTotals = totals.filter((record) => Number.isFinite(record.value_normalized));
+  if (finiteTotals.length > 1 && components.length > 0) {
+    const plausibleTotals = totals.filter(
+      (total) =>
+        !Number.isFinite(total.value_normalized) ||
+        !components.some(
+          (component) =>
+            component.unit_normalized === total.unit_normalized && component.value_normalized > total.value_normalized,
+        ),
+    );
+    if (plausibleTotals.some((record) => Number.isFinite(record.value_normalized))) totals = plausibleTotals;
+  }
+  let selected = preferCompanyTotals && totals.length > 0 ? totals : production;
+  if (preferCompanyTotals && totals.some((record) => record.basis === "consolidated")) {
+    selected = totals.filter((record) => record.basis === "consolidated");
+  }
+  if (preferCompanyTotals && selected.some((record) => !record.product_form)) {
+    selected = selected.filter((record) => !record.product_form);
+  }
+  const preferredProductForm = { nickel: "nickel content" }[selected[0]?.commodity];
+  if (!totals.length && preferredProductForm && selected.some((record) => record.product_form === preferredProductForm)) {
+    selected = selected.filter((record) => record.product_form === preferredProductForm);
+  }
+  const selectedForms = new Set(selected.map((record) => record.product_form).filter(Boolean));
+  const hasUnrepresentedForm = production.some(
+    (record) => record.product_form && !selectedForms.has(record.product_form),
+  );
+  if (
+    totals.length > 0 &&
+    selected.every((record) => record.product_form) &&
+    hasUnrepresentedForm &&
+    !selected.every((record) => record.product_form === preferredProductForm)
+  ) {
+    return null;
+  }
+  if (selected.length === 0 || selected.some((record) => !Number.isFinite(record.value_normalized))) return null;
+  if (new Set(selected.map(productionSemanticKey)).size !== 1) return null;
+
+  return {
+    value: selected.reduce((sum, record) => sum + record.value_normalized, 0),
+    unit: selected[0].unit_normalized,
+    records: selected,
+  };
+}
+
+export function aggregateProductionBy(records, keyOf, options) {
+  const groups = new Map();
+  for (const record of records) {
+    const key = keyOf(record);
+    if (key == null) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(record);
+  }
+
+  const aggregates = new Map();
+  for (const [key, group] of groups) {
+    const aggregate = aggregateProductionGroup(group, options);
+    if (aggregate) aggregates.set(key, aggregate);
+  }
+  return aggregates;
+}
+
 // URL-safe slug for companies and commodities. Shared by the app (via ui.jsx)
 // and scripts/prerender.mjs — keep it here (plain JS, importable from node).
 export function slugify(name) {
@@ -232,33 +306,32 @@ export function quarterlyPivot(
   records,
   { maxQuarters = 8, maxCommodities = 6, preferCompanyTotals = false } = {},
 ) {
-  let prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
-  if (preferCompanyTotals) {
-    const aggregateKeys = new Set(
-      prod.filter((r) => !r.operation).map((r) => `${r.commodity}|${r.time_period}`),
-    );
-    prod = prod.filter((r) => !aggregateKeys.has(`${r.commodity}|${r.time_period}`) || !r.operation);
-  }
-  // This table compares normalized values. A missing normalization is unknown,
-  // not a reported zero, so it must not create a cell or affect ranking.
-  prod = prod.filter((r) => Number.isFinite(r.value_normalized));
+  const prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
+  const aggregates = aggregateProductionBy(
+    prod,
+    (record) => `${record.commodity}|${record.time_period}`,
+    { preferCompanyTotals },
+  );
   const qKey = (tp) => tp.slice(3) + tp[1];
-  const quarters = [...new Set(prod.map((r) => r.time_period))]
+  const quarters = [...new Set([...aggregates.values()].flatMap((aggregate) => aggregate.records.map((r) => r.time_period)))]
     .sort((a, b) => qKey(b).localeCompare(qKey(a)))
     .slice(0, maxQuarters);
   const totals = new Map();
-  for (const r of prod) totals.set(r.commodity, (totals.get(r.commodity) || 0) + r.value_normalized);
+  for (const aggregate of aggregates.values()) {
+    const commodity = aggregate.records[0].commodity;
+    totals.set(commodity, (totals.get(commodity) || 0) + aggregate.value);
+  }
   const commodities = [...totals.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, maxCommodities)
     .map(([c]) => c);
   const unit = {};
   const cell = new Map();
-  for (const r of prod) {
+  for (const [key, aggregate] of aggregates) {
+    const r = aggregate.records[0];
     if (!quarters.includes(r.time_period) || !commodities.includes(r.commodity)) continue;
-    unit[r.commodity] ||= r.unit_normalized;
-    const k = `${r.commodity}|${r.time_period}`;
-    cell.set(k, (cell.get(k) || 0) + r.value_normalized);
+    unit[r.commodity] ||= aggregate.unit;
+    cell.set(key, aggregate.value);
   }
   return { quarters, commodities, unit, get: (c, q) => cell.get(`${c}|${q}`) ?? null };
 }

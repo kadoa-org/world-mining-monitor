@@ -19,8 +19,9 @@ export default function MinePage({ data, slug }) {
     const latest = latestPerMineCommodity(records);
     const map = new Map();
     for (const p of latest) {
+      if (!p.mine_id || !Number.isFinite(p.value_normalized)) continue;
       const existing = map.get(p.mine_id) || { total_kt: 0, commodities: {}, records: [] };
-      const kt = p.value_normalized || 0;
+      const kt = p.value_normalized;
       existing.total_kt += kt;
       existing.commodities[p.commodity] = (existing.commodities[p.commodity] || 0) + kt;
       existing.records.push(p);

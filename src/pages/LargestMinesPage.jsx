@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { COMMODITY_COLORS, commodityLabel, normalizeCommodity } from "../constants";
+import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, normalizeCommodity } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // "Largest <commodity> mines" ranking: mines by latest-quarter disclosed
@@ -23,11 +23,12 @@ export default function LargestMinesPage({ data, slug }) {
 
   const ranking = useMemo(() => {
     if (!quarter) return [];
-    const byMine = new Map();
-    for (const p of records) {
-      if (p.time_period !== quarter) continue;
-      byMine.set(p.mine_id, (byMine.get(p.mine_id) || 0) + (p.value_normalized || 0));
-    }
+    const aggregates = aggregateProductionBy(
+      records.filter((record) => record.time_period === quarter),
+      (record) => record.mine_id,
+      { preferCompanyTotals: false },
+    );
+    const byMine = new Map([...aggregates].map(([mineId, aggregate]) => [mineId, aggregate.value]));
     // Same guard as the prerenderer: a mine only ranks for commodities it
     // declares, so company-wide totals mis-attributed to a flagship mine
     // don't top the list. Mines with no declared list pass.

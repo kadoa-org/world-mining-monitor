@@ -72,8 +72,9 @@ export default function CompanyPage({ data, slug }) {
     );
     const map = new Map();
     for (const p of records) {
+      if (!p.mine_id || !Number.isFinite(p.value_normalized)) continue;
       const existing = map.get(p.mine_id) || { total_kt: 0, commodities: {}, units: {}, records: [] };
-      const kt = p.value_normalized || 0;
+      const kt = p.value_normalized;
       existing.total_kt += kt;
       existing.commodities[p.commodity] = (existing.commodities[p.commodity] || 0) + kt;
       if (p.unit_normalized) existing.units[p.commodity] = p.unit_normalized;

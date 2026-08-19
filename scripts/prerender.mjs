@@ -21,7 +21,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import initSqlJs from "sql.js";
 import { createServer } from "vite";
-import { commodityLabel, COMPANY_TICKERS, normalizeCommodity, quarterlyPivot, slugify } from "../src/constants.js";
+import {
+  aggregateProductionBy,
+  commodityLabel,
+  COMPANY_TICKERS,
+  normalizeCommodity,
+  quarterlyPivot,
+  slugify,
+} from "../src/constants.js";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist", "mining"); // vite outDir (site lives under /mining/)
@@ -175,11 +182,13 @@ function buildRoutes(production, mines) {
 
     // Company ranking for the latest quarter — the crawler-visible answer to
     // "who produces the most X".
-    const byCompany = new Map();
-    for (const p of rows) {
-      if (p.time_period !== latest) continue;
-      byCompany.set(p.company, (byCompany.get(p.company) || 0) + (p.value_normalized || 0));
-    }
+    const companyAggregates = aggregateProductionBy(
+      rows.filter((record) => record.time_period === latest),
+      (record) => record.company,
+    );
+    const byCompany = new Map(
+      [...companyAggregates].map(([company, aggregate]) => [company, aggregate.value]),
+    );
     const ranking = [...byCompany.entries()].sort((a, b) => b[1] - a[1]);
     const rankingHtml = ranking.length
       ? `<h2>Largest ${esc(label.toLowerCase())} producers — ${esc(latest)}</h2><ol>${ranking
@@ -249,11 +258,12 @@ function buildRoutes(production, mines) {
     const rows = production.filter((p) => p.commodity === commodity && p.metric === "production" && p.mine_id);
     const latest = latestQuarterOf(rows);
     if (!latest) continue;
-    const byM = new Map();
-    for (const p of rows) {
-      if (p.time_period !== latest) continue;
-      byM.set(p.mine_id, (byM.get(p.mine_id) || 0) + (p.value_normalized || 0));
-    }
+    const mineAggregates = aggregateProductionBy(
+      rows.filter((record) => record.time_period === latest),
+      (record) => record.mine_id,
+      { preferCompanyTotals: false },
+    );
+    const byM = new Map([...mineAggregates].map(([mineId, aggregate]) => [mineId, aggregate.value]));
     // Guard against company-wide totals mis-attributed to a flagship mine
     // (e.g. BHP group copper attached to the WAIO iron-ore id): a mine only
     // ranks for commodities it declares. Mines with no declared list pass.
