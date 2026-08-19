@@ -89,6 +89,7 @@ export default function MinePage({ data, slug }) {
               center={[mine.lat, mine.lng]}
               zoom={5}
               scaleByOutput={false}
+              popupAction="company"
             />
           </Card>
         </div>

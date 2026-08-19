@@ -71,6 +71,7 @@ export default function MiningMap({
   zoom = 2,
   scaleByOutput = true,
   showOutputValues = scaleByOutput,
+  popupAction = "operation",
 }) {
   const markers = useMemo(() => {
     const withProd = mines
@@ -121,6 +122,12 @@ export default function MiningMap({
               .slice(0, 6);
             const recordPeriods = [...new Set(prod.records.map((record) => record.time_period).filter(Boolean))];
             const period = recordPeriods.length === 1 ? recordPeriods[0] : "";
+            const actionIsCompany = popupAction === "company";
+            const actionPath = actionIsCompany
+              ? `/company/${slugify(mine.company)}`
+              : `/mine/${mine.id}`;
+            const actionLabel = actionIsCompany ? "View company" : "View operation";
+            const actionContext = actionIsCompany ? mine.company : mine.name;
 
             return (
               <CircleMarker
@@ -208,11 +215,11 @@ export default function MiningMap({
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          navigate(`/company/${slugify(mine.company)}`);
+                          navigate(actionPath);
                         }}
                       >
-                        View company
-                        <span className="sr-only">: {mine.company}</span>
+                        {actionLabel}
+                        <span className="sr-only">: {actionContext}</span>
                       </a>
                     </footer>
                   </section>
