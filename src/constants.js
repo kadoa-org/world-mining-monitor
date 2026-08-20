@@ -221,17 +221,20 @@ export const productionSeriesKey = (record) =>
 
 export const splitProductionSeriesKey = (series) => series.split(PRODUCTION_SERIES_SEPARATOR);
 
-const comparableGroupKey = (record) =>
-  `${record.commodity}|${record.basis || "unknown"}|${record.time_period}`;
+const comparableGroupKey = (record, preferCompanyTotals) =>
+  preferCompanyTotals
+    ? `${record.commodity}|${record.time_period}`
+    : `${record.commodity}|${record.basis || "unknown"}|${record.time_period}`;
 
-// Prefer an explicitly disclosed unqualified total for one period and basis.
-// Otherwise preserve every product form so callers can render them as separate
-// series. A null company total remains authoritative: components must not be
-// substituted merely because they happen to be normalizable.
+// Prefer explicitly disclosed company totals for one commodity and period,
+// even when components use another reporting basis. Otherwise preserve every
+// product form so callers can render them as separate series. A null company
+// total remains authoritative: components must not be substituted merely
+// because they happen to be normalizable.
 export function selectComparableProductionRecords(records, { preferCompanyTotals = false } = {}) {
   const groups = new Map();
   for (const record of records) {
-    const key = comparableGroupKey(record);
+    const key = comparableGroupKey(record, preferCompanyTotals);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(record);
   }
@@ -239,9 +242,13 @@ export function selectComparableProductionRecords(records, { preferCompanyTotals
   const selected = [];
   for (const group of groups.values()) {
     const unqualified = group.filter((record) => !record.product_form);
-    const explicitCompanyTotals = preferCompanyTotals
-      ? unqualified.filter((record) => !record.operation)
+    const companyTotals = preferCompanyTotals
+      ? group.filter((record) => !record.operation)
       : [];
+    const unqualifiedCompanyTotals = companyTotals.filter((record) => !record.product_form);
+    const explicitCompanyTotals = unqualifiedCompanyTotals.length > 0
+      ? unqualifiedCompanyTotals
+      : companyTotals;
     if (explicitCompanyTotals.length > 0) {
       selected.push(...explicitCompanyTotals);
       continue;
@@ -378,6 +385,7 @@ export function quarterlyPivot(
     .slice(0, maxQuarters);
   const totals = new Map();
   for (const aggregate of aggregates.values()) {
+    if (!quarters.includes(aggregate.records[0].time_period)) continue;
     const series = seriesKey(aggregate.records[0]);
     totals.set(series, (totals.get(series) || 0) + aggregate.value);
   }

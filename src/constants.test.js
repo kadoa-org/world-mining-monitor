@@ -172,6 +172,24 @@ describe("quarterlyPivot", () => {
 
     expect(selectComparableProductionRecords([total, component], { preferCompanyTotals: true })).toEqual([total]);
   });
+
+  test("company totals suppress operation components reported on another basis", () => {
+    const consolidated = production({ operation: "", basis: "consolidated", value_normalized: 356.5 });
+    const operation = production({ operation: "Morenci", basis: "attributable", value_normalized: 53.1 });
+
+    expect(
+      selectComparableProductionRecords([consolidated, operation], { preferCompanyTotals: true }),
+    ).toEqual([consolidated]);
+  });
+
+  test("only ranks series that have a value in the visible quarter window", () => {
+    const current = production({ commodity: "copper", time_period: "Q2 2026", value_normalized: 10 });
+    const old = production({ commodity: "gold", time_period: "Q1 2026", value_normalized: 1_000 });
+    const pivot = quarterlyPivot([current, old], { maxQuarters: 1, maxCommodities: 1 });
+
+    expect(pivot.quarters).toEqual(["Q2 2026"]);
+    expect(pivot.commodities).toEqual(["copper"]);
+  });
 });
 
 function production(overrides = {}) {

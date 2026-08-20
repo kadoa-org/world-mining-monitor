@@ -84,6 +84,7 @@ export default function CompanyPage({ data, slug }) {
 
   const latestQuarter = useMemo(() => {
     const qs = companyProduction
+      .filter((p) => p.metric === "production")
       .map((p) => p.time_period)
       .filter((tp) => /^Q[1-4] \d{4}$/.test(tp))
       .sort((a, b) => (b.slice(3) + b[1]).localeCompare(a.slice(3) + a[1]));
