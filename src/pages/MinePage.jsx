@@ -101,7 +101,7 @@ export default function MinePage({ data, slug }) {
             colorFor={(series) => COMMODITY_COLORS[splitMineSeries(series)[0]] || "#6b7280"}
             actionFor={(series, quarter) => {
               const [record] = pivot.getRecords(series, quarter);
-              return record ? <EvidenceLink record={record} onOpen={setEvidenceRecord} /> : null;
+              return record?.source_url ? <EvidenceLink record={record} onOpen={setEvidenceRecord} /> : null;
             }}
           />
           {!pivot.quarters.length && (
