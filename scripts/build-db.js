@@ -48,6 +48,7 @@ async function build() {
       confidence REAL,
       source_url TEXT,
       source_document_name TEXT,
+      source_extracted_at TEXT,
       source_page INTEGER,
       source_section TEXT,
       source_table TEXT,
@@ -81,8 +82,8 @@ async function build() {
   // Load production
   const production = JSON.parse(readFileSync(join(root, "public/data/production.json"), "utf-8"));
   const prodStmt = db.prepare(
-    `INSERT INTO production (mine_id, company, operation, commodity, product_form, metric, value, unit, value_normalized, unit_normalized, time_period, calendar_period, period_type, basis, confidence, source_url, source_document_name, source_page, source_section, source_table, source_row, source_column, source_excerpt, reported_value, reported_unit, reported_period)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO production (mine_id, company, operation, commodity, product_form, metric, value, unit, value_normalized, unit_normalized, time_period, calendar_period, period_type, basis, confidence, source_url, source_document_name, source_extracted_at, source_page, source_section, source_table, source_row, source_column, source_excerpt, reported_value, reported_unit, reported_period)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   for (const r of production) {
     const provenance = r.provenance || null;
@@ -95,6 +96,7 @@ async function build() {
       r.time_period, r.calendar_period || null, r.period_type || "quarterly", r.basis, r.confidence,
       r.source_url || null,
       r.source_document_name || source.document_name || null,
+      provenance?.kind === "extracted" ? provenance.extraction?.extracted_at || null : null,
       source.page ?? null,
       source.section || null,
       source.table || null,

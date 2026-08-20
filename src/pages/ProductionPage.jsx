@@ -229,8 +229,8 @@ export default function ProductionPage({ data, initialQuery = {} }) {
 
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="min-w-[900px]">
-            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+          <div className="min-w-[1240px]">
+            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_120px_90px_190px_120px_80px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
               <SortHeader label="Company" sortKey="company" sort={sort} setSort={setSort} />
               <SortHeader label="Operation" sortKey="operation" sort={sort} setSort={setSort} />
               <SortHeader label="Commodity" sortKey="commodity" sort={sort} setSort={setSort} />
@@ -246,7 +246,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
               {rendered.map((r, i) => (
                 <div
                   key={`${r.mine_id}-${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_90px_90px_100px_80px_80px_100px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_120px_90px_190px_120px_80px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
                 >
                   <span className="truncate">
                     <Link to={`/company/${slugify(r.company)}`}>{r.company}</Link>
@@ -263,8 +263,8 @@ export default function ProductionPage({ data, initialQuery = {} }) {
                   <span className="tabular-nums truncate" title={r.time_period}>
                     {r.time_period}
                   </span>
-                  <span className="text-right tabular-nums font-medium">{fmtValue(r.value_normalized ?? r.value)}</span>
-                  <span className="text-ink_muted truncate" title={r.unit_normalized || r.unit}>
+                  <span className="text-right tabular-nums font-medium whitespace-nowrap">{fmtValue(r.value_normalized ?? r.value)}</span>
+                  <span className="text-ink_muted whitespace-nowrap" title={r.unit_normalized || r.unit}>
                     {r.unit_normalized || r.unit}
                   </span>
                   <span

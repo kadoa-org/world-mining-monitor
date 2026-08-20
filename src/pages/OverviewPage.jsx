@@ -23,6 +23,20 @@ function mostCommonUnit(records) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "";
 }
 
+function reportPeriod(records) {
+  const quarterly = records.map((record) => record.time_period).filter((period) => /^Q[1-4] \d{4}$/.test(period));
+  if (quarterly.length) {
+    return quarterly.sort((left, right) => {
+      const leftKey = `${left.slice(3)}${left[1]}`;
+      const rightKey = `${right.slice(3)}${right[1]}`;
+      return rightKey.localeCompare(leftKey);
+    })[0];
+  }
+  return records.map((record) => record.time_period).find(Boolean) || "--";
+}
+
+const reportDateFormatter = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" });
+
 export default function OverviewPage({ data }) {
   const { mines, production, mineById, companies, commodities, periods, latestPeriod } = data;
   const [commodity, setCommodity] = useState("all");
@@ -155,6 +169,29 @@ export default function OverviewPage({ data }) {
     const latestIndex = periods.quarters.indexOf(latestPeriod);
     return latestIndex >= 0 ? periods.quarters.slice(latestIndex) : periods.quarters;
   }, [latestPeriod, periods.quarters]);
+
+  const recentReports = useMemo(() => {
+    const bySource = new Map();
+    for (const record of production) {
+      if (!record.source_url || !record.source_extracted_at || !record.source_document_name?.toLowerCase().endsWith(".pdf")) {
+        continue;
+      }
+      const report = bySource.get(record.source_url) || {
+        sourceUrl: record.source_url,
+        documentName: record.source_document_name,
+        company: record.company,
+        extractedAt: record.source_extracted_at,
+        records: [],
+      };
+      report.records.push(record);
+      if (record.source_extracted_at > report.extractedAt) report.extractedAt = record.source_extracted_at;
+      bySource.set(record.source_url, report);
+    }
+    return [...bySource.values()]
+      .sort((left, right) => right.extractedAt.localeCompare(left.extractedAt))
+      .slice(0, 6)
+      .map((report) => ({ ...report, period: reportPeriod(report.records) }));
+  }, [production]);
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
@@ -357,6 +394,45 @@ export default function OverviewPage({ data }) {
           </>
         )}
       </div>
+
+      {recentReports.length > 0 && (
+        <div className="mt-10">
+          <SectionHeader
+            title="Recently processed source reports"
+            subtitle="Company reports most recently processed by the extraction pipeline"
+          />
+          <Card className="overflow-hidden">
+            <div className="grid gap-3 px-4 grid-cols-[1fr_90px] sm:grid-cols-[minmax(180px,1fr)_120px_130px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+              <span>Company</span>
+              <span className="hidden sm:block">Period</span>
+              <span className="hidden sm:block">Processed</span>
+              <span>Source</span>
+            </div>
+            <div className="text-small [&>*:nth-child(even)]:bg-muted/30">
+              {recentReports.map((report) => (
+                <div
+                  key={report.sourceUrl}
+                  className="grid gap-3 px-4 grid-cols-[1fr_90px] sm:grid-cols-[minmax(180px,1fr)_120px_130px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
+                >
+                  <span className="min-w-0">
+                    <Link to={`/company/${slugify(report.company)}`}>{report.company}</Link>
+                    <span className="block text-mini text-ink_faint truncate" title={report.documentName}>
+                      {report.documentName}
+                    </span>
+                  </span>
+                  <span className="hidden sm:block tabular-nums">{report.period}</span>
+                  <span className="hidden sm:block text-ink_muted tabular-nums">
+                    {reportDateFormatter.format(new Date(report.extractedAt))}
+                  </span>
+                  <a href={report.sourceUrl} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+                    Source
+                  </a>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

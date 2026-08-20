@@ -4,6 +4,20 @@ import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMap";
 import { Card, fmtInt, Link, QuarterlySeriesTable, SectionHeader, StatGrid, slugify } from "../ui";
 
+const SERIES_SEPARATOR = "\u001f";
+const mineSeriesKey = (record) => `${record.commodity}${SERIES_SEPARATOR}${record.basis || "unknown"}`;
+const splitMineSeries = (series) => series.split(SERIES_SEPARATOR);
+const mineSeriesLabel = (series, mineId) => {
+  const [commodity, basis] = splitMineSeries(series);
+  const basisLabel =
+    mineId === "bhp-waio" && basis === "equity"
+      ? "BHP share"
+      : mineId === "bhp-waio" && basis === "consolidated"
+        ? "100% basis"
+        : basis.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return `${commodityLabel(commodity)} · ${basisLabel}`;
+};
+
 // Per-mine page: the structured answer to "<mine> production" queries —
 // quarterly output series straight from the operator's own reports.
 export default function MinePage({ data, slug }) {
@@ -11,7 +25,7 @@ export default function MinePage({ data, slug }) {
   const mine = mineById.get(slug);
 
   const records = useMemo(() => production.filter((p) => p.mine_id === slug), [production, slug]);
-  const pivot = useMemo(() => quarterlyPivot(records), [records]);
+  const pivot = useMemo(() => quarterlyPivot(records, { seriesKey: mineSeriesKey }), [records]);
 
   const commodities = useMemo(() => [...new Set(records.map((p) => p.commodity))].filter(Boolean).sort(), [records]);
 
@@ -63,14 +77,14 @@ export default function MinePage({ data, slug }) {
       <div className="mt-8">
         <SectionHeader
           title="Quarterly production"
-          subtitle="Normalized volumes per commodity, newest first"
+          subtitle="Normalized volumes by commodity and reporting basis, newest first"
           right={<Link to={`/company/${slugify(mine.company)}`}>All {mine.company} data →</Link>}
         />
         <Card className="overflow-hidden">
           <QuarterlySeriesTable
             pivot={pivot}
-            labelFor={commodityLabel}
-            colorFor={(c) => COMMODITY_COLORS[c] || "#6b7280"}
+            labelFor={(series) => mineSeriesLabel(series, slug)}
+            colorFor={(series) => COMMODITY_COLORS[splitMineSeries(series)[0]] || "#6b7280"}
           />
           {!pivot.quarters.length && (
             <p className="px-4 py-6 text-small text-ink_muted">No quarterly production records for this mine.</p>

@@ -188,8 +188,8 @@ export default function CompanyPage({ data, slug }) {
         />
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <div className="min-w-[940px]">
-              <div className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_100px_60px_90px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+            <div className="min-w-[1120px]">
+              <div className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_180px_110px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
                 <span>Operation</span>
                 <span>Commodity</span>
                 <span>Metric</span>
@@ -203,7 +203,7 @@ export default function CompanyPage({ data, slug }) {
                 {rows.map((r, i) => (
                   <div
                     key={`${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                    className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_100px_60px_90px_70px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                    className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_180px_110px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="truncate">
                       {r.mine_id && mineById.has(r.mine_id) ? (
@@ -221,10 +221,10 @@ export default function CompanyPage({ data, slug }) {
                     </span>
                     <span className="text-ink_muted truncate" title={r.metric}>{r.metric}</span>
                     <span className="tabular-nums truncate" title={r.time_period}>{r.time_period}</span>
-                    <span className="text-right tabular-nums font-medium">
+                    <span className="text-right tabular-nums font-medium whitespace-nowrap">
                       {fmtValue(r.value_normalized ?? r.value)}
                     </span>
-                    <span className="text-ink_muted">{r.unit_normalized || r.unit}</span>
+                    <span className="text-ink_muted whitespace-nowrap">{r.unit_normalized || r.unit}</span>
                     <span className="text-ink_muted truncate">{r.basis || "--"}</span>
                     <span>
                       <EvidenceLink record={r} onOpen={setEvidenceRecord} />

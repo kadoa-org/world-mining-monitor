@@ -304,12 +304,17 @@ export function slugify(name) {
 // crawler-visible answer to "<company|mine> production by quarter".
 export function quarterlyPivot(
   records,
-  { maxQuarters = 8, maxCommodities = 6, preferCompanyTotals = false } = {},
+  {
+    maxQuarters = 8,
+    maxCommodities = 6,
+    preferCompanyTotals = false,
+    seriesKey = (record) => record.commodity,
+  } = {},
 ) {
   const prod = records.filter((r) => r.metric === "production" && /^Q[1-4] \d{4}$/.test(r.time_period));
   const aggregates = aggregateProductionBy(
     prod,
-    (record) => `${record.commodity}|${record.time_period}`,
+    (record) => `${seriesKey(record)}|${record.time_period}`,
     { preferCompanyTotals },
   );
   const qKey = (tp) => tp.slice(3) + tp[1];
@@ -318,8 +323,8 @@ export function quarterlyPivot(
     .slice(0, maxQuarters);
   const totals = new Map();
   for (const aggregate of aggregates.values()) {
-    const commodity = aggregate.records[0].commodity;
-    totals.set(commodity, (totals.get(commodity) || 0) + aggregate.value);
+    const series = seriesKey(aggregate.records[0]);
+    totals.set(series, (totals.get(series) || 0) + aggregate.value);
   }
   const commodities = [...totals.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -329,8 +334,9 @@ export function quarterlyPivot(
   const cell = new Map();
   for (const [key, aggregate] of aggregates) {
     const r = aggregate.records[0];
-    if (!quarters.includes(r.time_period) || !commodities.includes(r.commodity)) continue;
-    unit[r.commodity] ||= aggregate.unit;
+    const series = seriesKey(r);
+    if (!quarters.includes(r.time_period) || !commodities.includes(series)) continue;
+    unit[series] ||= aggregate.unit;
     cell.set(key, aggregate.value);
   }
   return { quarters, commodities, unit, get: (c, q) => cell.get(`${c}|${q}`) ?? null };

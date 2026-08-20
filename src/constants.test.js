@@ -42,6 +42,21 @@ describe("quarterlyPivot", () => {
     expect(pivot.get("iron ore", "Q2 2026")).toBe(87.1);
   });
 
+  test("keeps alternate mine reporting bases as separate series", () => {
+    const separator = "\u001f";
+    const pivot = quarterlyPivot(
+      [
+        production({ basis: "equity", value_normalized: 66_200 }),
+        production({ basis: "consolidated", value_normalized: 74_800 }),
+      ],
+      { seriesKey: (record) => `${record.commodity}${separator}${record.basis}` },
+    );
+
+    expect(pivot.commodities).toEqual([`iron ore${separator}consolidated`, `iron ore${separator}equity`]);
+    expect(pivot.get(`iron ore${separator}equity`, "Q2 2026")).toBe(66_200);
+    expect(pivot.get(`iron ore${separator}consolidated`, "Q2 2026")).toBe(74_800);
+  });
+
   test("prefers a consolidated total over alternate company reporting bases", () => {
     const aggregate = aggregateProductionGroup([
       production({ operation: "", basis: "consolidated", value_normalized: 87.1 }),

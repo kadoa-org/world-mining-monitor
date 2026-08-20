@@ -57,7 +57,7 @@ export function fmtCompact(n) {
 // Sub-1 values are real (e.g. 0.4 kt of molybdenum), so keep precision there.
 export function fmtValue(v) {
   if (v == null) return "--";
-  if (typeof v === "string") return v;
+  if (typeof v === "string") return v.replace(/(\d)\s*[-–—]\s*(?=\d)/g, "$1–");
   if (Math.abs(v) >= 1000) return v.toLocaleString("en-US", { maximumFractionDigits: 1 });
   if (Math.abs(v) >= 1) return v.toFixed(1);
   return v.toFixed(3);
