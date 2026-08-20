@@ -4,9 +4,7 @@ An open dataset of global mine-level production, extracted from company reports 
 
 **[Open the live app](https://mining.kadoa.com/)** · **[Browse the production data](https://mining.kadoa.com/production)**
 
-[![World Mining Monitor demo](assets/mining-demo.jpg)](assets/mining-demo.mp4)
-
-▶ [Watch the 36-second demo](assets/mining-demo.mp4)
+![World Mining Monitor](assets/mining-demo.jpg)
 
 ## Why I built this
 
