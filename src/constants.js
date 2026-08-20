@@ -332,12 +332,20 @@ export function quarterlyPivot(
     .map(([c]) => c);
   const unit = {};
   const cell = new Map();
+  const cellRecords = new Map();
   for (const [key, aggregate] of aggregates) {
     const r = aggregate.records[0];
     const series = seriesKey(r);
     if (!quarters.includes(r.time_period) || !commodities.includes(series)) continue;
     unit[series] ||= aggregate.unit;
     cell.set(key, aggregate.value);
+    cellRecords.set(key, aggregate.records);
   }
-  return { quarters, commodities, unit, get: (c, q) => cell.get(`${c}|${q}`) ?? null };
+  return {
+    quarters,
+    commodities,
+    unit,
+    get: (c, q) => cell.get(`${c}|${q}`) ?? null,
+    getRecords: (c, q) => cellRecords.get(`${c}|${q}`) ?? [],
+  };
 }

@@ -385,11 +385,14 @@ export function RowLinkNav({ to, children }) {
 
 // Quarterly series pivot table (quarters newest-first x commodities). The
 // SPA twin of the crawler-visible table the prerenderer emits.
-export function QuarterlySeriesTable({ pivot, labelFor, colorFor }) {
+export function QuarterlySeriesTable({ pivot, labelFor, colorFor, actionFor }) {
   if (!pivot.quarters.length) return null;
   return (
     <div className="overflow-x-auto">
-      <div className="min-w-[520px]">
+      <div
+        className="min-w-[520px]"
+        style={actionFor ? { minWidth: 110 + pivot.commodities.length * 170 } : undefined}
+      >
         <div
           className="grid gap-3 px-4 text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke"
           style={{ gridTemplateColumns: `110px repeat(${pivot.commodities.length}, 1fr)` }}
@@ -410,11 +413,15 @@ export function QuarterlySeriesTable({ pivot, labelFor, colorFor }) {
               style={{ gridTemplateColumns: `110px repeat(${pivot.commodities.length}, 1fr)` }}
             >
               <span className="tabular-nums">{q}</span>
-              {pivot.commodities.map((c) => (
-                <span key={c} className="text-right tabular-nums">
-                  {pivot.get(c, q) != null ? fmtValue(pivot.get(c, q)) : "--"}
-                </span>
-              ))}
+              {pivot.commodities.map((c) => {
+                const value = pivot.get(c, q);
+                return (
+                  <span key={c} className="flex items-center justify-end gap-2 text-right tabular-nums">
+                    <span>{value != null ? fmtValue(value) : "--"}</span>
+                    {value != null && actionFor ? actionFor(c, q) : null}
+                  </span>
+                );
+              })}
             </div>
           ))}
         </div>

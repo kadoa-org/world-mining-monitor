@@ -1,8 +1,18 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { COMMODITY_COLORS, commodityLabel, quarterlyPivot } from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMap";
-import { Card, fmtInt, Link, QuarterlySeriesTable, SectionHeader, StatGrid, slugify } from "../ui";
+import {
+  Card,
+  EvidenceDialog,
+  EvidenceLink,
+  fmtInt,
+  Link,
+  QuarterlySeriesTable,
+  SectionHeader,
+  StatGrid,
+  slugify,
+} from "../ui";
 
 const SERIES_SEPARATOR = "\u001f";
 const mineSeriesKey = (record) => `${record.commodity}${SERIES_SEPARATOR}${record.basis || "unknown"}`;
@@ -23,6 +33,7 @@ const mineSeriesLabel = (series, mineId) => {
 export default function MinePage({ data, slug }) {
   const { production, mineById } = data;
   const mine = mineById.get(slug);
+  const [evidenceRecord, setEvidenceRecord] = useState(null);
 
   const records = useMemo(() => production.filter((p) => p.mine_id === slug), [production, slug]);
   const pivot = useMemo(() => quarterlyPivot(records, { seriesKey: mineSeriesKey }), [records]);
@@ -57,6 +68,9 @@ export default function MinePage({ data, slug }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      {evidenceRecord ? (
+        <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
+      ) : null}
       <p className="text-mini text-ink_muted mb-1">
         <Link to={`/company/${slugify(mine.company)}`}>{mine.company}</Link> / {mine.name}
       </p>
@@ -85,6 +99,10 @@ export default function MinePage({ data, slug }) {
             pivot={pivot}
             labelFor={(series) => mineSeriesLabel(series, slug)}
             colorFor={(series) => COMMODITY_COLORS[splitMineSeries(series)[0]] || "#6b7280"}
+            actionFor={(series, quarter) => {
+              const [record] = pivot.getRecords(series, quarter);
+              return record ? <EvidenceLink record={record} onOpen={setEvidenceRecord} /> : null;
+            }}
           />
           {!pivot.quarters.length && (
             <p className="px-4 py-6 text-small text-ink_muted">No quarterly production records for this mine.</p>

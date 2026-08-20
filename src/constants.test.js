@@ -44,17 +44,26 @@ describe("quarterlyPivot", () => {
 
   test("keeps alternate mine reporting bases as separate series", () => {
     const separator = "\u001f";
+    const equity = production({
+      basis: "equity",
+      value_normalized: 66_200,
+      source_url: "https://example.com/equity.pdf",
+    });
+    const consolidated = production({
+      basis: "consolidated",
+      value_normalized: 74_800,
+      source_url: "https://example.com/consolidated.pdf",
+    });
     const pivot = quarterlyPivot(
-      [
-        production({ basis: "equity", value_normalized: 66_200 }),
-        production({ basis: "consolidated", value_normalized: 74_800 }),
-      ],
+      [equity, consolidated],
       { seriesKey: (record) => `${record.commodity}${separator}${record.basis}` },
     );
 
     expect(pivot.commodities).toEqual([`iron ore${separator}consolidated`, `iron ore${separator}equity`]);
     expect(pivot.get(`iron ore${separator}equity`, "Q2 2026")).toBe(66_200);
     expect(pivot.get(`iron ore${separator}consolidated`, "Q2 2026")).toBe(74_800);
+    expect(pivot.getRecords(`iron ore${separator}equity`, "Q2 2026")).toEqual([equity]);
+    expect(pivot.getRecords(`iron ore${separator}consolidated`, "Q1 2026")).toEqual([]);
   });
 
   test("prefers a consolidated total over alternate company reporting bases", () => {
