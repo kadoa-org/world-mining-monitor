@@ -189,14 +189,20 @@ export function DownloadCsvButton({ onClick, count }) {
   );
 }
 
-export function EvidenceLink({ record, onOpen }) {
+export function EvidenceLink({ record, onOpen, children = "Source", ariaLabel, className = "" }) {
   const verification = record.verification;
   const href = record.source_url;
 
   if (verification && onOpen) {
     return (
-      <button type="button" className="dk-link cursor-pointer" onClick={() => onOpen(record)}>
-        Source
+      <button
+        type="button"
+        className={`dk-link cursor-pointer ${className}`}
+        onClick={() => onOpen(record)}
+        aria-label={ariaLabel}
+        aria-haspopup="dialog"
+      >
+        {children}
       </button>
     );
   }
@@ -208,10 +214,10 @@ export function EvidenceLink({ record, onOpen }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="dk-link"
-      aria-label="Open source"
+      className={`dk-link ${className}`}
+      aria-label={ariaLabel || "Source (opens in new tab)"}
     >
-      Source
+      {children}
     </a>
   );
 }
@@ -385,13 +391,13 @@ export function RowLinkNav({ to, children }) {
 
 // Quarterly series pivot table (quarters newest-first x commodities). The
 // SPA twin of the crawler-visible table the prerenderer emits.
-export function QuarterlySeriesTable({ pivot, labelFor, colorFor, actionFor }) {
+export function QuarterlySeriesTable({ pivot, labelFor, colorFor, renderValue }) {
   if (!pivot.quarters.length) return null;
   return (
     <div className="overflow-x-auto">
       <div
         className="min-w-[520px]"
-        style={actionFor ? { minWidth: 110 + pivot.commodities.length * 170 } : undefined}
+        style={renderValue ? { minWidth: 110 + pivot.commodities.length * 170 } : undefined}
       >
         <div
           className="grid gap-3 px-4 text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke"
@@ -415,10 +421,10 @@ export function QuarterlySeriesTable({ pivot, labelFor, colorFor, actionFor }) {
               <span className="tabular-nums">{q}</span>
               {pivot.commodities.map((c) => {
                 const value = pivot.get(c, q);
+                const formattedValue = value != null ? fmtValue(value) : "--";
                 return (
-                  <span key={c} className="flex items-center justify-end gap-2 text-right tabular-nums">
-                    <span>{value != null ? fmtValue(value) : "--"}</span>
-                    {value != null && actionFor ? actionFor(c, q) : null}
+                  <span key={c} className="flex items-center justify-end text-right tabular-nums">
+                    {value != null && renderValue ? renderValue(c, q, formattedValue) : formattedValue}
                   </span>
                 );
               })}

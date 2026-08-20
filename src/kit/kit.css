@@ -197,3 +197,26 @@
 .dk-link { color: var(--dk-link); text-decoration: underline; text-underline-offset: 2px; }
 .dk-link:hover { text-decoration-thickness: 2px; }
 .dk-link:focus-visible { outline: 3px solid var(--dk-focus); outline-offset: 0; }
+
+/* Numeric evidence controls open a dialog, so they remain semantic buttons
+   while using GOV.UK's link affordance and yellow/black link focus state. */
+.dk-value-link {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--dk-link);
+  font: inherit;
+  line-height: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.dk-value-link:hover { color: #003078; text-decoration-thickness: 2px; }
+.dk-value-link:focus-visible {
+  outline: 3px solid transparent;
+  background-color: var(--dk-focus);
+  color: var(--dk-ink);
+  box-shadow: 0 -2px var(--dk-focus), 0 4px var(--dk-ink);
+  text-decoration: none;
+}

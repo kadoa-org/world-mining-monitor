@@ -27,7 +27,7 @@ export default function AboutPage() {
         <h2 className="text-large font-semibold text-ink pt-4">Source details</h2>
         <p>
           Grounded rows include the source report, its page or table location, the exact excerpt, and the value, unit,
-          and period as reported by the company. Select Source in a production table to compare the value with the
+          and period as reported by the company. Select a linked value in a production table to compare it with the
           archived source file, or download the CSV to use the same source fields directly.
         </p>
 

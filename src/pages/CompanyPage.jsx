@@ -1,5 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { COMMODITY_COLORS, COMPANY_TICKERS, commodityLabel, quarterlyPivot } from "../constants";
+import {
+  COMMODITY_COLORS,
+  COMPANY_TICKERS,
+  commodityLabel,
+  productionSeriesKey,
+  quarterlyPivot,
+  selectComparableProductionRecords,
+  splitProductionSeriesKey,
+} from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMap";
 import {
@@ -39,6 +47,18 @@ const CSV_COLUMNS = [
   ["reported_period", "reported_period"],
 ];
 
+const seriesDetailLabel = (value) => value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+const companySeriesLabel = (series) => {
+  const [commodity, productForm, basis] = splitProductionSeriesKey(series);
+  return [
+    commodityLabel(commodity),
+    productForm ? seriesDetailLabel(productForm) : null,
+    basis && basis !== "unknown" ? seriesDetailLabel(basis) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+};
+
 export default function CompanyPage({ data, slug }) {
   const { production, mines, mineById, companyBySlug } = data;
   const company = companyBySlug.get(slug);
@@ -53,9 +73,13 @@ export default function CompanyPage({ data, slug }) {
     [companyProduction],
   );
 
-  const pivot = useMemo(
-    () => quarterlyPivot(companyProduction, { preferCompanyTotals: true }),
+  const chartProduction = useMemo(
+    () => selectComparableProductionRecords(companyProduction, { preferCompanyTotals: true }),
     [companyProduction],
+  );
+  const pivot = useMemo(
+    () => quarterlyPivot(chartProduction, { preferCompanyTotals: true, seriesKey: productionSeriesKey }),
+    [chartProduction],
   );
 
   const latestQuarter = useMemo(() => {
@@ -154,9 +178,16 @@ export default function CompanyPage({ data, slug }) {
 
       {pivot.quarters.length > 0 && (
         <div className="mt-8">
-          <SectionHeader title="Production by quarter" subtitle="Company-wide normalized volumes per commodity, newest first" />
+          <SectionHeader
+            title="Production by quarter"
+            subtitle="Comparable volumes by commodity, product form, and reporting basis"
+          />
           <Card className="overflow-hidden">
-            <QuarterlySeriesTable pivot={pivot} labelFor={commodityLabel} colorFor={(c) => COMMODITY_COLORS[c] || "#6b7280"} />
+            <QuarterlySeriesTable
+              pivot={pivot}
+              labelFor={companySeriesLabel}
+              colorFor={(series) => COMMODITY_COLORS[splitProductionSeriesKey(series)[0]] || "#6b7280"}
+            />
           </Card>
         </div>
       )}

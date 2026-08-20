@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { COMMODITY_COLORS, commodityLabel, quarterlyPivot } from "../constants";
+import {
+  COMMODITY_COLORS,
+  commodityLabel,
+  productionSeriesKey,
+  quarterlyPivot,
+  selectComparableProductionRecords,
+  splitProductionSeriesKey,
+} from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMap";
 import {
@@ -14,18 +21,18 @@ import {
   slugify,
 } from "../ui";
 
-const SERIES_SEPARATOR = "\u001f";
-const mineSeriesKey = (record) => `${record.commodity}${SERIES_SEPARATOR}${record.basis || "unknown"}`;
-const splitMineSeries = (series) => series.split(SERIES_SEPARATOR);
 const mineSeriesLabel = (series, mineId) => {
-  const [commodity, basis] = splitMineSeries(series);
+  const [commodity, productForm, basis] = splitProductionSeriesKey(series);
   const basisLabel =
     mineId === "bhp-waio" && basis === "equity"
       ? "BHP share"
       : mineId === "bhp-waio" && basis === "consolidated"
         ? "100% basis"
         : basis.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-  return `${commodityLabel(commodity)} · ${basisLabel}`;
+  const formLabel = productForm
+    ? productForm.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
+    : null;
+  return [commodityLabel(commodity), formLabel, basis === "unknown" ? null : basisLabel].filter(Boolean).join(" · ");
 };
 
 // Per-mine page: the structured answer to "<mine> production" queries —
@@ -36,7 +43,8 @@ export default function MinePage({ data, slug }) {
   const [evidenceRecord, setEvidenceRecord] = useState(null);
 
   const records = useMemo(() => production.filter((p) => p.mine_id === slug), [production, slug]);
-  const pivot = useMemo(() => quarterlyPivot(records, { seriesKey: mineSeriesKey }), [records]);
+  const chartRecords = useMemo(() => selectComparableProductionRecords(records), [records]);
+  const pivot = useMemo(() => quarterlyPivot(chartRecords, { seriesKey: productionSeriesKey }), [chartRecords]);
 
   const commodities = useMemo(() => [...new Set(records.map((p) => p.commodity))].filter(Boolean).sort(), [records]);
 
@@ -91,17 +99,29 @@ export default function MinePage({ data, slug }) {
       <div className="mt-8">
         <SectionHeader
           title="Quarterly production"
-          subtitle="Normalized volumes by commodity and reporting basis, newest first"
+          subtitle="Comparable volumes by commodity, product form, and reporting basis. Select a value to view its source."
           right={<Link to={`/company/${slugify(mine.company)}`}>All {mine.company} data →</Link>}
         />
         <Card className="overflow-hidden">
           <QuarterlySeriesTable
             pivot={pivot}
             labelFor={(series) => mineSeriesLabel(series, slug)}
-            colorFor={(series) => COMMODITY_COLORS[splitMineSeries(series)[0]] || "#6b7280"}
-            actionFor={(series, quarter) => {
+            colorFor={(series) => COMMODITY_COLORS[splitProductionSeriesKey(series)[0]] || "#6b7280"}
+            renderValue={(series, quarter, formattedValue) => {
               const [record] = pivot.getRecords(series, quarter);
-              return record?.source_url ? <EvidenceLink record={record} onOpen={setEvidenceRecord} /> : null;
+              if (!record?.source_url) return formattedValue;
+              const seriesLabel = mineSeriesLabel(series, slug);
+              const actionLabel = record.verification ? "view source details" : "open source in a new tab";
+              return (
+                <EvidenceLink
+                  record={record}
+                  onOpen={setEvidenceRecord}
+                  className="dk-value-link"
+                  ariaLabel={`${formattedValue} ${pivot.unit[series]}, ${seriesLabel}, ${quarter}; ${actionLabel}`}
+                >
+                  {formattedValue}
+                </EvidenceLink>
+              );
             }}
           />
           {!pivot.quarters.length && (

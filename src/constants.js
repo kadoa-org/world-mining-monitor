@@ -214,6 +214,61 @@ export const BUBBLE_MAX = 22;
 const productionSemanticKey = (record) =>
   `${record.unit_normalized || ""}|${record.product_form || ""}|${record.basis || "unknown"}`;
 
+export const PRODUCTION_SERIES_SEPARATOR = "\u001f";
+
+export const productionSeriesKey = (record) =>
+  [record.commodity, record.product_form || "", record.basis || "unknown"].join(PRODUCTION_SERIES_SEPARATOR);
+
+export const splitProductionSeriesKey = (series) => series.split(PRODUCTION_SERIES_SEPARATOR);
+
+const comparableGroupKey = (record) =>
+  `${record.commodity}|${record.basis || "unknown"}|${record.time_period}`;
+
+// Prefer an explicitly disclosed unqualified total for one period and basis.
+// Otherwise preserve every product form so callers can render them as separate
+// series. A null company total remains authoritative: components must not be
+// substituted merely because they happen to be normalizable.
+export function selectComparableProductionRecords(records, { preferCompanyTotals = false } = {}) {
+  const groups = new Map();
+  for (const record of records) {
+    const key = comparableGroupKey(record);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(record);
+  }
+
+  const selected = [];
+  for (const group of groups.values()) {
+    const unqualified = group.filter((record) => !record.product_form);
+    const explicitCompanyTotals = preferCompanyTotals
+      ? unqualified.filter((record) => !record.operation)
+      : [];
+    if (explicitCompanyTotals.length > 0) {
+      selected.push(...explicitCompanyTotals);
+      continue;
+    }
+
+    const finiteQualified = group.filter(
+      (record) => record.product_form && Number.isFinite(record.value_normalized),
+    );
+    const plausibleUnqualified = unqualified.filter(
+      (candidate) =>
+        Number.isFinite(candidate.value_normalized) &&
+        finiteQualified.every(
+          (component) =>
+            component.unit_normalized !== candidate.unit_normalized ||
+            component.value_normalized <= candidate.value_normalized,
+        ),
+    );
+    if (plausibleUnqualified.length > 0 && finiteQualified.length > 0) {
+      selected.push(...unqualified);
+      continue;
+    }
+
+    selected.push(...group);
+  }
+  return selected;
+}
+
 // Resolve one disclosed production fact without inventing comparability.
 // A company total is authoritative over its component operations. If that
 // total is unresolved, callers must display unknown rather than reconstructing

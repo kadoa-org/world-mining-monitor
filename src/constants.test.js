@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { aggregateProductionGroup, quarterlyPivot } from "./constants";
+import {
+  aggregateProductionGroup,
+  productionSeriesKey,
+  quarterlyPivot,
+  selectComparableProductionRecords,
+} from "./constants";
 
 describe("quarterlyPivot", () => {
   test("distinguishes missing normalization from a reported zero", () => {
@@ -137,6 +142,35 @@ describe("quarterlyPivot", () => {
     ]);
 
     expect(aggregate?.value).toBe(20);
+  });
+
+  test("selects a plausible disclosed mine total over its product-form breakdown", () => {
+    const total = production({ operation: "Escondida", value_normalized: 311.9 });
+    const cathode = production({ operation: "Escondida", product_form: "cathode", value_normalized: 66.3 });
+
+    expect(selectComparableProductionRecords([total, cathode])).toEqual([total]);
+  });
+
+  test("keeps different product forms separate when no total is disclosed", () => {
+    const concentrate = production({ operation: "Escondida", product_form: "concentrate", value_normalized: 76 });
+    const refined = production({ operation: "Escondida", product_form: "refined", value_normalized: 20 });
+    const selected = selectComparableProductionRecords([concentrate, refined]);
+    const pivot = quarterlyPivot(selected, { seriesKey: productionSeriesKey });
+
+    expect(selected).toEqual([concentrate, refined]);
+    expect(pivot.commodities).toEqual([
+      productionSeriesKey(concentrate),
+      productionSeriesKey(refined),
+    ]);
+    expect(pivot.get(productionSeriesKey(concentrate), "Q2 2026")).toBe(76);
+    expect(pivot.get(productionSeriesKey(refined), "Q2 2026")).toBe(20);
+  });
+
+  test("does not replace an unresolved disclosed company total with components", () => {
+    const total = production({ operation: "", value_normalized: null, unit_normalized: null });
+    const component = production({ operation: "Mine A", value_normalized: 50 });
+
+    expect(selectComparableProductionRecords([total, component], { preferCompanyTotals: true })).toEqual([total]);
   });
 });
 
