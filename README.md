@@ -1,62 +1,82 @@
 # World Mining Monitor
 
-An open dataset of global mine-level production, extracted from company reports and normalized for comparison.
+An open dataset and browser-based explorer for global mine-level production.
 
 **[Open the live app](https://mining.kadoa.com/)** · **[Browse the production data](https://mining.kadoa.com/production)**
 
 ![World Mining Monitor](assets/mining-demo.jpg)
 
-## Why I built this
+## Problem
 
-I follow commodities and could not find an open dataset covering global mining production. I wanted to test whether LLMs make it practical to build one from unstructured company filings and reports—and whether the result could be useful for systematic research.
+Global mining production data is public, but it is scattered across inconsistent company websites, filings, PDFs, and spreadsheets. Building a dataset that is correct, auditable, and reliably updated is a substantial data-engineering problem.
 
-The underlying information is public, but it is scattered across inconsistent websites, PDFs, and spreadsheets. In conversations with central data teams at hedge funds and with data providers, the same challenge kept coming up: extracting the data once is manageable; keeping it accurate, traceable, and up to date is much harder.
+For each reported production figure, the dataset needs to establish:
 
-For each company, the dataset aims to answer:
+- What was produced, and how much
+- Which mine or operation produced it
+- Which period the figure covers
+- Which unit and reporting basis were used
+- Where the figure appears in the source report
 
-- What was produced, and how much?
-- Which mine or operation produced it?
-- Which reporting period does the figure cover?
-- Which unit and reporting basis were used?
-- Where exactly did the figure appear in the source report?
+Normalization is the difficult part, particularly outside standardized filings such as SEC reports:
 
-## Why normalization is difficult
+- Units vary across reports: copper may be reported in kilotonnes, million pounds, or wet metric tonnes.
+- Fiscal calendars do not align: companies use calendar years, June year-ends, September year-ends, and other conventions.
+- Reporting bases differ: figures may represent payable metal, contained metal, consolidated production, or an equity-adjusted share.
+- Product naming is inconsistent: “copper concentrate,” “Cu conc,” and “SX-EW cathode” are related but not interchangeable.
+- Important context is often hidden in headings, footnotes, and surrounding text, including ownership percentages and reporting methods.
+- Websites and report layouts change over time.
 
-Mining companies do not report production in a common format, especially outside standardized regulatory filings.
+Converting units alone is not enough. Product form, fiscal period, ownership, and reporting basis must remain explicit so that unlike figures are not silently combined.
 
-- **Units vary.** Copper may be reported in kilotonnes, million pounds, or wet metric tonnes.
-- **Fiscal calendars differ.** Companies use calendar years, June year-ends, September year-ends, and other conventions.
-- **Reporting bases differ.** A figure may represent payable metal, contained metal, consolidated production, or an equity-adjusted share.
-- **Product names are inconsistent.** “Copper concentrate,” “Cu conc,” and “SX-EW cathode” describe related but non-equivalent products.
-- **Context is easy to miss.** Ownership percentages and reporting methods are often buried in headings, footnotes, or surrounding text.
-- **Sources change.** Investor-relations websites and report layouts evolve over time.
+## Solution and architecture
 
-Normalizing the unit alone is not enough. Product form and reporting basis must remain explicit so that unlike figures are not silently combined.
+The traditional approach is to write and maintain a bespoke ETL pipeline for each company. This project instead uses LLMs to help generate, monitor, and repair deterministic extraction and transformation code. The recurring pipeline runs code—not free-form model output—and escalates unresolved failures for manual review.
 
-## Pipeline approach
+```mermaid
+flowchart LR
+    A[Company websites] --> B[Report monitoring]
+    B --> C[PDF and spreadsheet archive]
+    C --> D[Fact extraction]
+    D --> E[Source-grounded raw records]
+    E --> F[Deterministic normalization]
+    F --> G[Validation and QA]
+    G --> H[SQLite dataset]
+    H --> I[React app and CSV export]
 
-The traditional approach would be to build and maintain a bespoke ETL pipeline for every company. This project tests a different model: LLMs generate, monitor, and repair deterministic extraction and transformation code.
+    J[Agent] -. generate, test, and repair code .-> B
+    J -.-> D
+    J -.-> F
+    J -->|unresolved cases| K[Manual review]
+```
 
-The deterministic code—not free-form model output—runs the recurring pipeline. When a website or report layout changes, an agent investigates the failure, updates the relevant code, and runs its tests. If it cannot resolve the problem safely, it escalates the case for manual review.
+### Report discovery
 
-The process is roughly:
+Scraping code monitors company investor-relations websites and captures new quarterly and annual reports.
 
-1. **Discover reports.** Scraping code monitors company websites and captures new quarterly and annual reports.
-2. **Extract reported facts.** Conventional PDF parsing is combined with Gemini 3.7 Flash for documents that require layout or semantic interpretation.
-3. **Preserve evidence.** Each extracted value retains its source document and, where available, its page, section, table, row, column, and exact excerpt.
-4. **Normalize conservatively.** Transformations use the least flexible method that works:
-   1. Parse the value as reported.
-   2. Apply deterministic code, such as a unit converter or regex-based mapper.
-   3. Use an LLM only when a deterministic mapping is not practical.
-5. **Validate before publishing.** Records must pass schema, unit, range, and consistency checks before they enter the dataset.
+### Extraction and source evidence
 
-The working rule is simple: treat every extracted value as wrong until it passes validation—guilty until proven innocent.
+Raw production figures are extracted using a combination of conventional PDF parsing and Gemini 3.7 Flash. Each extracted value retains its source document and, where available, its page, section, table, row, column, and exact excerpt. This evidence supports QA and lets users trace a normalized value back to the original disclosure.
 
-## What is in the data
+### Deterministic-first normalization
 
-Each production record can include:
+Transformations use the least flexible method that works:
 
-- Company and mine or operation
+1. Parse the value as reported.
+2. Apply deterministic transformation code, such as a unit converter or regex-based mapper.
+3. Use an LLM only when a deterministic mapping is not practical.
+
+### Validation and maintenance
+
+Records must pass schema, unit, range, and consistency checks before they enter the published dataset. The working rule is to treat every extracted value as wrong until it passes validation: guilty until proven innocent.
+
+When a website or document layout changes, an agent investigates the failure, updates the relevant extraction or transformation code, and runs its tests. Cases it cannot resolve safely are escalated for manual review.
+
+## Dataset
+
+A production record can include:
+
+- Company, mine, and operation
 - Commodity and product form
 - Reported value and unit
 - Normalized value and unit
@@ -73,27 +93,34 @@ The current dataset covers 60+ mining companies and 20+ commodities, including c
 | [`data/mines-coordinates.json`](data/mines-coordinates.json) | Mine metadata, including company, country, region, coordinates, and commodities |
 | [`data/sources.json`](data/sources.json) | Company investor-relations sources monitored for reports |
 
-The application loads the SQLite database in the browser through [sql.js](https://sql.js.org/), so it does not require a backend. Filtered data can also be downloaded as CSV from the [production table](https://mining.kadoa.com/production).
+The application loads SQLite directly in the browser through [sql.js](https://sql.js.org/); no backend is required. Filtered results can be downloaded as CSV from the [production table](https://mining.kadoa.com/production).
 
-## Open-source status
+## Run locally
 
-The dataset and application are open source. The extraction and pipeline-management code will follow.
-
-I would be particularly interested in feedback on where this approach is most likely to fail—especially around point-in-time correctness, restatements, and silent changes in reporting basis.
-
-## Development
+Requires [Bun](https://bun.sh/).
 
 ```bash
+git clone https://github.com/kadoa-org/world-mining-monitor.git
+cd world-mining-monitor
 bun install
-bun run dev     # http://localhost:5180
-bun run build   # stats + Vite + prerendered pages
+bun run dev
 ```
 
-## Sources and limitations
+The application is available at `http://localhost:5180/mining/`.
 
-The data comes from publicly available quarterly reports, annual reports, regulatory filings, and production reports published by the companies themselves. Coverage follows what each company discloses: some report mine-level figures, while others publish only consolidated totals; some report quarterly, while others report half-yearly.
+Create a production build with:
 
-Normalization improves comparability but does not make different product forms or reporting bases equivalent. Every material comparison should be checked against the linked source evidence.
+```bash
+bun run build
+```
+
+## Repository scope
+
+This repository contains the published dataset snapshot, database builder, and web application. The report-extraction and pipeline-management code will follow.
+
+## Limitations
+
+Coverage follows what each company discloses. Some companies publish mine-level figures, while others report only consolidated totals; some report quarterly, while others report half-yearly. Normalization improves comparability but does not make different product forms or reporting bases equivalent. Material comparisons should be checked against the linked source evidence.
 
 ## License
 
