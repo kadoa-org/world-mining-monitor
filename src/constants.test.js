@@ -119,6 +119,20 @@ describe("quarterlyPivot", () => {
     expect(aggregate).toBeNull();
   });
 
+  test("does not reconstruct an unresolved total from components on another basis", () => {
+    const aggregate = aggregateProductionGroup([
+      production({
+        operation: "",
+        basis: "consolidated",
+        value_normalized: null,
+        unit_normalized: null,
+      }),
+      production({ operation: "Mine A", basis: "attributable", value_normalized: 50 }),
+    ]);
+
+    expect(aggregate).toBeNull();
+  });
+
   test("refuses to sum different product forms or reporting bases", () => {
     expect(
       aggregateProductionGroup([
