@@ -99,14 +99,22 @@ export default function MiningMap({
         maxZoom={10}
         style={{ width: "100%", height: "100%" }}
         zoomControl={false}
-        attributionControl={false}
         worldCopyJump={false}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png" maxZoom={19} />
+        {/* Esri World Light Gray: free, keyless, light-grey basemap. Replaced
+            CARTO's basemaps.cartocdn.com, which began serving "API KEY REQUIRED"
+            watermarked tiles to keyless requests. ArcGIS tile order is z/y/x,
+            not Leaflet's default z/x/y. */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={16}
+          attribution="Tiles &copy; Esri"
+        />
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={16}
           minZoom={5}
+          attribution="Tiles &copy; Esri"
         />
 
         <MarkerClusterGroup
