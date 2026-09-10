@@ -41,6 +41,7 @@ export function useDatabase(enabled = true) {
         setLoading(false);
       })
       .catch((e) => {
+        console.error("Mining dataset load failed", e);
         setError(e);
         setLoading(false);
       });

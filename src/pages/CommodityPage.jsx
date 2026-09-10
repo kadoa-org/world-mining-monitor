@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel } from "../constants";
+import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // Company ranking for one commodity: latest-quarter production per company,
 // with the previous quarter alongside for a QoQ read.
 export default function CommodityPage({ data, slug }) {
-  const { production, commodityBySlug, latestPeriod } = data;
+  const { production, commodityBySlug } = data;
   const commodity = commodityBySlug.get(slug);
 
   const records = useMemo(
@@ -14,12 +14,7 @@ export default function CommodityPage({ data, slug }) {
   );
 
   // Latest quarter WITH data for this commodity (may lag the site-wide one).
-  const quarter = useMemo(() => {
-    const qs = [...new Set(records.map((p) => p.time_period))]
-      .filter((tp) => /^Q[1-4] \d{4}$/.test(tp))
-      .sort((a, b) => (b.slice(3) + b[1]).localeCompare(a.slice(3) + a[1]));
-    return qs[0] || latestPeriod;
-  }, [records, latestPeriod]);
+  const quarter = useMemo(() => latestProductionQuarter(records), [records]);
 
   const prevQuarter = useMemo(() => {
     if (!quarter) return null;

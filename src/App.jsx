@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useMiningData } from "./data";
 import { SiteFooter } from "./kit";
 import Masthead from "./Masthead";
@@ -9,6 +9,7 @@ import CompaniesPage from "./pages/CompaniesPage";
 import CompanyPage from "./pages/CompanyPage";
 import LargestMinesPage from "./pages/LargestMinesPage";
 import MinePage from "./pages/MinePage";
+import MinesPage from "./pages/MinesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ProductionPage from "./pages/ProductionPage";
 import PrerenderShell from "./PrerenderShell";
@@ -16,7 +17,7 @@ import { useRoute } from "./router";
 import { useDatabase } from "./useDatabase";
 
 // Every route except About renders from the SQLite dataset.
-const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commodities", "company", "commodity", "mine", "largestMines"]);
+const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commodities", "company", "commodity", "mine", "mines", "largestMines"]);
 
 function LoadingScreen() {
   return (
@@ -53,10 +54,18 @@ function ErrorScreen({ error }) {
 
 export default function App() {
   const [clientReady, setClientReady] = useState(false);
+  const [publishedAnswer] = useState(() => document.querySelector(".seo-shell"));
   const route = useRoute();
   const needsDb = ROUTES_NEEDING_DB.has(route.name);
-  const { db, loading, error } = useDatabase(needsDb);
+  const { db, error } = useDatabase(needsDb);
   const data = useMiningData(db);
+  const pageReady = !needsDb || Boolean(data);
+  const matchingAnswer = publishedAnswer?.isConnected &&
+    publishedAnswer.dataset.path === window.location.pathname.replace(/\/$/, "");
+
+  useLayoutEffect(() => {
+    if (clientReady && (pageReady || !matchingAnswer)) publishedAnswer?.remove();
+  }, [clientReady, pageReady, matchingAnswer, publishedAnswer]);
 
   useEffect(() => {
     setClientReady(true);
@@ -80,13 +89,17 @@ export default function App() {
   }, [route.name, route.slug]);
 
   if (!clientReady) return <PrerenderShell />;
-  if (needsDb && error) return <ErrorScreen error={error} />;
 
   return (
-    <div className="min-h-screen bg-canvas text-ink">
+    <div className={`${matchingAnswer && !pageReady ? "" : "min-h-screen"} bg-canvas text-ink`}>
       <Masthead />
-      {needsDb && (loading || !data) ? (
-        <LoadingScreen />
+      {needsDb && !pageReady ? (
+        matchingAnswer ? (
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" role={error ? "alert" : "status"}>
+            <p>{error ? "Interactive data could not load." : "Loading interactive data."} The published summary is available below.</p>
+            {error && <button className="dk-link mt-2" onClick={() => window.location.reload()}>Reload data</button>}
+          </div>
+        ) : error ? <ErrorScreen error={error} /> : <LoadingScreen />
       ) : (
         <>
           {route.name === "overview" && <OverviewPage data={data} />}
@@ -95,12 +108,13 @@ export default function App() {
           {route.name === "commodities" && <CommoditiesPage data={data} />}
           {route.name === "company" && <CompanyPage data={data} slug={route.slug} />}
           {route.name === "mine" && <MinePage data={data} slug={route.slug} />}
+          {route.name === "mines" && <MinesPage data={data} />}
           {route.name === "largestMines" && <LargestMinesPage data={data} slug={route.slug} />}
           {route.name === "commodity" && <CommodityPage data={data} slug={route.slug} />}
           {route.name === "about" && <AboutPage />}
         </>
       )}
-      <SiteFooter current="mining" />
+      {pageReady && <SiteFooter current="mining" />}
     </div>
   );
 }

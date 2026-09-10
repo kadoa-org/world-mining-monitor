@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, normalizeCommodity } from "../constants";
+import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter, normalizeCommodity } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // "Largest <commodity> mines" ranking: mines by latest-quarter disclosed
@@ -14,12 +14,7 @@ export default function LargestMinesPage({ data, slug }) {
     [production, commodity],
   );
 
-  const quarter = useMemo(() => {
-    const qs = [...new Set(records.map((p) => p.time_period))]
-      .filter((tp) => /^Q[1-4] \d{4}$/.test(tp))
-      .sort((a, b) => (b.slice(3) + b[1]).localeCompare(a.slice(3) + a[1]));
-    return qs[0] || null;
-  }, [records]);
+  const quarter = useMemo(() => latestProductionQuarter(records), [records]);
 
   const ranking = useMemo(() => {
     if (!quarter) return [];

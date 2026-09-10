@@ -8,5 +8,3 @@ const app = <App />;
 
 if (root.hasChildNodes()) hydrateRoot(root, app);
 else createRoot(root).render(app);
-
-for (const element of document.querySelectorAll(".seo-shell")) element.remove();

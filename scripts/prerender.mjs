@@ -26,6 +26,7 @@ import {
   commodityLabel,
   COMPANY_TICKERS,
   normalizeCommodity,
+  latestProductionQuarter,
   quarterlyPivot,
   slugify,
 } from "../src/constants.js";
@@ -88,17 +89,9 @@ function pivotTable(records, options) {
   return `<table><thead>${head}</thead><tbody>${body}</tbody></table>`;
 }
 
-const qKey = (tp) => `${tp.slice(3)}${tp[1]}`; // "Q3 2025" -> "20253", sortable
-const latestQuarterOf = (rows) => {
-  const qs = [...new Set(rows.map((p) => p.time_period))]
-    .filter((tp) => /^Q[1-4] \d{4}$/.test(tp))
-    .sort((a, b) => qKey(b).localeCompare(qKey(a)));
-  return qs[0] ?? null;
-};
-
 // ── route definitions ────────────────────────────────────────────────────────
 
-function buildRoutes(production, mines) {
+export function buildRoutes(production, mines) {
   const routes = [];
   const companies = [...new Set(production.map((p) => p.company))].sort();
   const commodities = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
@@ -145,7 +138,7 @@ function buildRoutes(production, mines) {
   for (const company of companies) {
     const rows = production.filter((p) => p.company === company);
     const comms = [...new Set(rows.map((p) => p.commodity))].filter(Boolean).sort();
-    const latest = latestQuarterOf(rows);
+    const latest = latestProductionQuarter(rows);
     const commLabels = comms.map(commodityLabel);
     const slug = slugify(company);
 
@@ -169,13 +162,13 @@ function buildRoutes(production, mines) {
       title: `${company}${tickerSuffix} Production Data - ${commLabels.slice(0, 3).join(", ")} Output by Quarter | World Mining Monitor`,
       description: `${company}${tickerSuffix} mine-level production volumes by quarter: ${commLabels.join(", ")}. ${rows.length} records extracted from ${company}'s own quarterly and annual reports${latest ? `, latest ${latest}` : ""}.`,
       h1: `${company}${tickerSuffix}: quarterly production data`,
-      body: `<p>${esc(company)}${esc(tickerSuffix)} discloses mine-level production for ${esc(commLabels.join(", "))}. This page tracks ${rows.length} extracted records${latest ? `, most recently ${esc(latest)}` : ""}.</p>${series ? `<h2>${esc(company)} production by quarter</h2>${series}` : ""}${table}<p><a href="${PREFIX}/companies">All mining companies</a></p>`,
+      body: `<p>${esc(company)}${esc(tickerSuffix)} discloses mine-level production for ${esc(commLabels.join(", "))}. This page tracks ${rows.length} extracted records.${latest ? ` Latest reported quarterly production is ${esc(latest)}.` : ""}</p>${series ? `<h2>${esc(company)} production by quarter</h2>${series}` : ""}${table}<p><a href="${PREFIX}/companies">All mining companies</a></p>`,
     });
   }
 
   for (const commodity of commodities) {
     const rows = production.filter((p) => p.commodity === commodity && p.metric === "production");
-    const latest = latestQuarterOf(rows);
+    const latest = latestProductionQuarter(rows);
     const label = commodityLabel(commodity);
     const slug = slugify(commodity);
     const unit = rows.find((p) => p.unit_normalized)?.unit_normalized || "kt";
@@ -225,7 +218,7 @@ function buildRoutes(production, mines) {
     if (!series) continue;
     minesWithPage.push(mine);
     const comms = [...new Set(rows.map((p) => p.commodity))].filter(Boolean).sort().map(commodityLabel);
-    const latest = latestQuarterOf(rows);
+    const latest = latestProductionQuarter(rows);
     routes.push({
       path: `/mine/${mineId}`,
       title: `${mine.name} Mine Production by Quarter - ${comms.slice(0, 3).join(", ")} | World Mining Monitor`,
@@ -256,7 +249,7 @@ function buildRoutes(production, mines) {
   // listicles. Only commodities with enough mine-level coverage to rank.
   for (const commodity of commodities) {
     const rows = production.filter((p) => p.commodity === commodity && p.metric === "production" && p.mine_id);
-    const latest = latestQuarterOf(rows);
+    const latest = latestProductionQuarter(rows);
     if (!latest) continue;
     const mineAggregates = aggregateProductionBy(
       rows.filter((record) => record.time_period === latest),
@@ -306,7 +299,7 @@ function buildRoutes(production, mines) {
 
 // ── templating ───────────────────────────────────────────────────────────────
 
-function renderRoute(template, route, shell) {
+export function renderRoute(template, route, shell) {
   const url = `${BASE}${route.path}`;
   // Function replacements throughout: replacement STRINGS treat `$` as
   // capture-group syntax, which corrupts output when titles/values contain it.
@@ -327,18 +320,16 @@ function renderRoute(template, route, shell) {
     );
 
   if (route.h1) {
-    html = injectRoot(html, shell, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
+    html = injectRoot(html, shell, route.path, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
   }
   return html;
 }
 
-// Ship the same loading shell React hydrates, followed by crawler-visible
-// content outside #root. The shell owns the first viewport; the client removes
-// the SEO block as soon as hydration starts.
-function injectRoot(html, shell, h1, body) {
+// Keep the published answer available until the matching interactive page renders.
+function injectRoot(html, shell, routePath, h1, body) {
   return html.replace(
     /(<div id="root">)(<\/div>)/,
-    (_m, open, close) => `${open}${shell}${close}<main class="seo-shell"><h1>${esc(h1)}</h1>${body}</main>`,
+    (_m, open, close) => `${open}${shell}${close}<main class="seo-shell" data-path="${esc(`${PREFIX}${routePath}`)}"><h1>${esc(h1)}</h1>${body}</main>`,
   );
 }
 
@@ -361,56 +352,72 @@ async function buildShell() {
 
 // ── main ─────────────────────────────────────────────────────────────────────
 
-const { production, mines } = await loadData();
-const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
-const shell = await buildShell();
-const routes = buildRoutes(production, mines);
+async function prerender() {
+  const { production, mines } = await loadData();
+  const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+  const shell = await buildShell();
+  const routes = buildRoutes(production, mines);
 
-let written = 0;
-for (const r of routes) {
-  const dir = path.join(DIST, r.path.slice(1));
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, "index.html"), renderRoute(template, r, shell));
-  written++;
+  const unescape = (value) => value.replace(/&(amp|lt|gt|quot);/g, (_, name) => ({ amp: "&", lt: "<", gt: ">", quot: '"' })[name]);
+  const pageMetadata = Object.fromEntries(routes.map(({ path: routePath, title, description }) => [
+    `${PREFIX}${routePath}`, { title, description, url: `${BASE}${routePath}` },
+  ]));
+  pageMetadata[PREFIX] = {
+    title: unescape(template.match(/<title>([^<]+)<\/title>/)[1]),
+    description: unescape(template.match(/<meta\s+name="description"\s+content="([^"]+)"/)[1]),
+    url: template.match(/<link rel="canonical" href="([^"]+)"/)[1],
+  };
+  fs.mkdirSync(path.join(DIST, "data"), { recursive: true });
+  fs.writeFileSync(path.join(DIST, "data/page-metadata.json"), JSON.stringify(pageMetadata));
+
+  let written = 0;
+  for (const r of routes) {
+    const dir = path.join(DIST, r.path.slice(1));
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "index.html"), renderRoute(template, r, shell));
+    written++;
+  }
+
+  // Homepage: the SPA shell shipped with no h1 and no links, so every company,
+  // commodity and mine page was reachable only from sitemap.xml.
+  const companyList = [...new Set(production.map((p) => p.company))].sort();
+  const commodityList = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
+  const homeBody = [
+    `<p>Mine-level production volumes for ${companyList.length} global mining companies, extracted from their own quarterly and annual reports and normalized so commodities and units are comparable across operators.</p>`,
+    `<p>Browse <a href="${PREFIX}/production">all production data</a>, <a href="${PREFIX}/companies">companies</a>, <a href="${PREFIX}/commodities">commodities</a>, <a href="${PREFIX}/mines">tracked mines</a>, or read <a href="${PREFIX}/about">about the data</a>.</p>`,
+    `<h2>Companies tracked</h2><ul>${companyList
+      .map((c) => `<li><a href="${PREFIX}/company/${esc(slugify(c))}">${esc(c)} production data</a></li>`)
+      .join("")}</ul>`,
+    `<h2>Commodities</h2><ul>${commodityList
+      .map(
+        (c) =>
+          `<li><a href="${PREFIX}/commodity/${esc(slugify(c))}">${esc(commodityLabel(c))} production by company</a></li>`,
+      )
+      .join("")}</ul>`,
+  ].join("");
+  fs.writeFileSync(
+    path.join(DIST, "index.html"),
+    injectRoot(template, shell, "", "World Mining Monitor", homeBody),
+  );
+
+  const today = new Date().toISOString().slice(0, 10);
+  // No trailing slash: `${BASE}/` 308s to `${BASE}`, which the audit flagged as a
+  // redirect in the sitemap.
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${BASE}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  ${routes
+    .map(
+      (r) =>
+        `<url><loc>${BASE}${r.path}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${r.path.split("/").length > 2 ? "0.7" : "0.9"}</priority></url>`,
+    )
+    .join("\n")}
+  </urlset>
+  `;
+  fs.writeFileSync(path.join(DIST, "sitemap.xml"), sitemap);
+  fs.writeFileSync(path.join(DIST, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
+
+  console.log(`prerendered ${written} routes + sitemap.xml (${routes.length + 1} urls) + robots.txt`);
 }
 
-// Homepage: the SPA shell shipped with no h1 and no links, so every company,
-// commodity and mine page was reachable only from sitemap.xml.
-const companyList = [...new Set(production.map((p) => p.company))].sort();
-const commodityList = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
-const homeBody = [
-  `<p>Mine-level production volumes for ${companyList.length} global mining companies, extracted from their own quarterly and annual reports and normalized so commodities and units are comparable across operators.</p>`,
-  `<p>Browse <a href="${PREFIX}/production">all production data</a>, <a href="${PREFIX}/companies">companies</a>, <a href="${PREFIX}/commodities">commodities</a>, <a href="${PREFIX}/mines">tracked mines</a>, or read <a href="${PREFIX}/about">about the data</a>.</p>`,
-  `<h2>Companies tracked</h2><ul>${companyList
-    .map((c) => `<li><a href="${PREFIX}/company/${esc(slugify(c))}">${esc(c)} production data</a></li>`)
-    .join("")}</ul>`,
-  `<h2>Commodities</h2><ul>${commodityList
-    .map(
-      (c) =>
-        `<li><a href="${PREFIX}/commodity/${esc(slugify(c))}">${esc(commodityLabel(c))} production by company</a></li>`,
-    )
-    .join("")}</ul>`,
-].join("");
-fs.writeFileSync(
-  path.join(DIST, "index.html"),
-  injectRoot(template, shell, "World Mining Monitor", homeBody),
-);
-
-const today = new Date().toISOString().slice(0, 10);
-// No trailing slash: `${BASE}/` 308s to `${BASE}`, which the audit flagged as a
-// redirect in the sitemap.
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>${BASE}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-${routes
-  .map(
-    (r) =>
-      `<url><loc>${BASE}${r.path}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${r.path.split("/").length > 2 ? "0.7" : "0.9"}</priority></url>`,
-  )
-  .join("\n")}
-</urlset>
-`;
-fs.writeFileSync(path.join(DIST, "sitemap.xml"), sitemap);
-fs.writeFileSync(path.join(DIST, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
-
-console.log(`prerendered ${written} routes + sitemap.xml (${routes.length + 1} urls) + robots.txt`);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await prerender();

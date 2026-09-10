@@ -2,7 +2,7 @@
 // the lookups every page needs. The dataset is small (~4k production rows,
 // ~200 mines), so in-memory JS aggregation beats scattering SQL across pages.
 import { useMemo } from "react";
-import { normalizeCommodity } from "./constants";
+import { latestProductionQuarter, normalizeCommodity } from "./constants";
 import { slugify } from "./ui";
 import { query } from "./useDatabase";
 
@@ -68,7 +68,7 @@ export function useMiningData(db) {
 
     // Latest quarter with meaningful coverage (>= 5 production records), so a
     // single early reporter doesn't flip the whole site to a sparse quarter.
-    let latestPeriod = quarters[0] ?? "";
+    let latestPeriod = latestProductionQuarter(production) ?? "";
     for (const p of quarters) {
       const count = production.filter((r) => r.time_period === p && r.metric === "production").length;
       if (count >= 5) {

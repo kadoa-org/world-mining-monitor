@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
   COMMODITY_COLORS,
   commodityLabel,
+  latestProductionQuarter,
   productionSeriesKey,
   quarterlyPivot,
   selectComparableProductionRecords,
@@ -92,7 +93,7 @@ export default function MinePage({ data, slug }) {
           { label: "Operator", value: mine.company },
           { label: "Country", value: mine.country || "--" },
           { label: "Commodities", value: fmtInt(commodities.length), sub: commodities.map(commodityLabel).join(", ") },
-          { label: "Latest quarter", value: pivot.quarters[0] || "--" },
+          { label: "Latest quarter", value: latestProductionQuarter(records) || "--" },
         ]}
       />
 

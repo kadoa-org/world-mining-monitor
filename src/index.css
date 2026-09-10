@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+.seo-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 24px 64px;
+}
+
+.seo-shell h1 { font-size: 2rem; margin-bottom: 1rem; }
+.seo-shell h2 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+.seo-shell p, .seo-shell ul { margin-bottom: 1rem; }
+.seo-shell a { color: #1d70b8; text-decoration: underline; }
+.seo-shell table { display: block; overflow-x: auto; margin: 1rem 0; }
+.seo-shell th, .seo-shell td { border: 1px solid #b1b4b6; padding: 8px 12px; text-align: left; }
+
 /* Linear.app parity */
 :root {
   color-scheme: light;

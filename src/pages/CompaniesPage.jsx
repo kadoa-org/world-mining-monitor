@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { COMPANY_TICKERS, commodityLabel } from "../constants";
-import { Card, fmtInt, Pill, RowLinkNav, SectionHeader, SortHeader, slugify } from "../ui";
+import { COMPANY_TICKERS, commodityLabel, latestProductionQuarter } from "../constants";
+import { Card, fmtInt, Link, Pill, RowLinkNav, SectionHeader, SortHeader, slugify } from "../ui";
 
 const COLS = "grid gap-3 px-4 grid-cols-[30px_1fr_70px_80px] sm:grid-cols-[40px_1.4fr_1fr_90px_90px_110px]";
 
@@ -14,19 +14,17 @@ export default function CompaniesPage({ data }) {
     for (const p of production) {
       let c = byCompany.get(p.company);
       if (!c) {
-        c = { company: p.company, records: 0, commodities: new Set(), mines: new Set(), latest: "" };
+        c = { company: p.company, records: 0, commodities: new Set(), mines: new Set(), observations: [] };
         byCompany.set(p.company, c);
       }
       c.records++;
+      c.observations.push(p);
       if (p.commodity) c.commodities.add(p.commodity);
       if (p.mine_id && mineById.has(p.mine_id)) c.mines.add(p.mine_id);
-      if (/^Q[1-4] \d{4}$/.test(p.time_period)) {
-        const cmp = (tp) => tp.slice(3) + tp[1]; // "2025"+"3" — sortable year+quarter key
-        if (!c.latest || cmp(p.time_period) > cmp(c.latest)) c.latest = p.time_period;
-      }
     }
     return [...byCompany.values()].map((c) => ({
       ...c,
+      latest: latestProductionQuarter(c.observations) || "",
       ticker: COMPANY_TICKERS[c.company] || "",
       commodityList: [...c.commodities].sort(),
       commodityCount: c.commodities.size,
@@ -50,7 +48,7 @@ export default function CompaniesPage({ data }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
-      <SectionHeader title="Companies" subtitle={`${fmtInt(rows.length)} companies with extracted production data`} />
+      <SectionHeader title="Companies" subtitle={`${fmtInt(rows.length)} companies with extracted production data`} right={<Link to="/mines">Browse mines</Link>} />
       <input
         type="text"
         value={search}

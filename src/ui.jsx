@@ -77,18 +77,21 @@ export function Pill({ tone = "neutral", children }) {
   return <DkTag tone={map[tone] || "grey"}>{children}</DkTag>;
 }
 
-export function Link({ to, className = "", children, onClick, ...rest }) {
+export function Link({ to, href, className = "", children, onClick, ...rest }) {
+  const destination = withBase(to ?? href);
   return (
     <a
-      href={withBase(to)}
+      {...rest}
+      href={destination}
       className={`dk-link ${className}`}
       onClick={(e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-        e.preventDefault();
         onClick?.(e);
-        navigate(to);
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (rest.target && rest.target !== "_self" || rest.download != null) return;
+        if (!destination.startsWith("/") || destination.startsWith("//")) return;
+        e.preventDefault();
+        navigate(destination);
       }}
-      {...rest}
     >
       {children}
     </a>

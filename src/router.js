@@ -4,11 +4,12 @@
 // the subfolder cutover) is stripped on parse and added on navigation/href
 // via withBase().
 import { useCallback, useEffect, useState } from "react";
+import { applyRouteMetadata, loadRouteMetadata, readDocumentMetadata } from "./navigationMetadata";
 
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export function withBase(path) {
-  if (!BASE_PATH || !path.startsWith("/")) return path;
+  if (!BASE_PATH || !path.startsWith("/") || path.startsWith("//")) return path;
   if (path === BASE_PATH || path.startsWith(`${BASE_PATH}/`)) return path;
   return `${BASE_PATH}${path}`;
 }
@@ -30,6 +31,7 @@ export function parseRoute(pathname = window.location.pathname, search = window.
   if (segments[0] === "commodity" && segments[1])
     return { name: "commodity", slug: decodeURIComponent(segments[1]), query };
   if (segments[0] === "companies") return { name: "companies", query };
+  if (segments[0] === "mines") return { name: "mines", query };
   if (segments[0] === "commodities") return { name: "commodities", query };
   if (segments[0] === "production") return { name: "production", query };
   if (segments[0] === "about") return { name: "about", query };
@@ -41,21 +43,45 @@ export function parseRoute(pathname = window.location.pathname, search = window.
 export function useRoute() {
   const [route, setRoute] = useState(() => parseRoute());
   useEffect(() => {
-    const onPop = () => setRoute(parseRoute());
+    // A document reload can publish newer metadata than its saved history entry.
+    window.history.replaceState({ ...window.history.state, miningPageMetadata: readDocumentMetadata() }, "");
+    const onPop = (event) => {
+      if (event.state?.miningPageMetadata) applyRouteMetadata(event.state.miningPageMetadata);
+      setRoute(parseRoute());
+    };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
   return route;
 }
 
-export function navigate(pathOrUrl, { replace = false } = {}) {
+let navigationId = 0;
+
+export async function navigate(pathOrUrl, { replace = false } = {}) {
   const target = withBase(pathOrUrl);
   const current = window.location.pathname + window.location.search;
   if (target === current) return;
+  const id = ++navigationId;
+  const pathname = new URL(target, window.location.origin).pathname;
+  let metadata = window.history.state?.miningPageMetadata;
+  if (pathname !== window.location.pathname) {
+    try {
+      metadata = await loadRouteMetadata(pathname);
+      if (id !== navigationId || current !== window.location.pathname + window.location.search) return;
+      applyRouteMetadata(metadata);
+    } catch (error) {
+      if (id !== navigationId || current !== window.location.pathname + window.location.search) return;
+      console.error("Mining page metadata unavailable; opening the published page", error);
+      if (replace) window.location.replace(target);
+      else window.location.assign(target);
+      return;
+    }
+  }
+  const state = { ...window.history.state, miningPageMetadata: metadata };
   if (replace) {
-    window.history.replaceState({}, "", target);
+    window.history.replaceState(state, "", target);
   } else {
-    window.history.pushState({}, "", target);
+    window.history.pushState(state, "", target);
   }
   window.dispatchEvent(new PopStateEvent("popstate"));
 }

@@ -24,7 +24,7 @@ export default function Masthead() {
   }, []);
 
   const activeTab = (() => {
-    if (route.name === "company") return "companies";
+    if (route.name === "company" || route.name === "mine" || route.name === "mines") return "companies";
     if (route.name === "commodity") return "commodities";
     return route.name;
   })();

@@ -1,10 +1,31 @@
 import { describe, expect, test } from "bun:test";
 import {
   aggregateProductionGroup,
+  latestProductionQuarter,
   productionSeriesKey,
   quarterlyPivot,
   selectComparableProductionRecords,
 } from "./constants";
+
+describe("production freshness", () => {
+  test("uses actual quarterly production and retains future guidance separately", () => {
+    const guidance = production({ metric: "production_guidance", time_period: "Q2 2028", reported_period: "from Q4 FY28" });
+    const records = [production({ time_period: "Q4 2025" }), guidance, production({ time_period: "Q2 2026" })];
+    expect(latestProductionQuarter(records)).toBe("Q2 2026");
+    expect(quarterlyPivot(records).quarters).toEqual(["Q2 2026", "Q4 2025"]);
+    expect(records[1]).toBe(guidance);
+    expect(guidance.reported_period).toBe("from Q4 FY28");
+  });
+
+  test("does not claim a production quarter for guidance, sales, or annual records", () => {
+    expect(latestProductionQuarter([
+      production({ metric: "production_guidance", time_period: "Q2 2028" }),
+      production({ metric: "sales", time_period: "Q3 2026" }),
+      production({ time_period: "FY2026" }),
+    ])).toBeNull();
+    expect(latestProductionQuarter([])).toBeNull();
+  });
+});
 
 describe("quarterlyPivot", () => {
   test("distinguishes missing normalization from a reported zero", () => {

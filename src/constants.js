@@ -360,6 +360,16 @@ export function slugify(name) {
     .slice(0, 60);
 }
 
+export function latestProductionQuarter(records) {
+  let latest = null;
+  const quarterKey = (period) => period.slice(3) + period[1];
+  for (const record of records) {
+    if (record.metric !== "production" || !/^Q[1-4] \d{4}$/.test(record.time_period)) continue;
+    if (!latest || quarterKey(record.time_period) > quarterKey(latest)) latest = record.time_period;
+  }
+  return latest;
+}
+
 // Quarterly production pivot for a set of records: quarters (newest first,
 // capped) x top commodities by volume. Shared by the app pages and
 // scripts/prerender.mjs (plain JS, importable from node) — this table is the
