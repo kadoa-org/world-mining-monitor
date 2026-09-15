@@ -102,11 +102,11 @@ export function Card({ children, className = "" }) {
   return <div className={`border border-[#b1b4b6] bg-white ${className}`}>{children}</div>;
 }
 
-export function SectionHeader({ title, subtitle, right, className = "" }) {
+export function SectionHeader({ title, subtitle, right, className = "", as: Heading = "h2" }) {
   return (
     <div className={`dk-section-head ${className}`}>
       <div style={{ minWidth: 0 }}>
-        <h2>{title}</h2>
+        <Heading className={Heading === "h1" ? "dk-h1" : undefined}>{title}</Heading>
         {subtitle && <p className="dk-hint">{subtitle}</p>}
       </div>
       {right && <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>{right}</div>}

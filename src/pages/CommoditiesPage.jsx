@@ -41,7 +41,7 @@ export default function CommoditiesPage({ data }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
-      <SectionHeader
+      <SectionHeader as="h1"
         title="Commodities"
         subtitle={`${fmtInt(rows.length)} commodities tracked across quarterly disclosures`}
       />

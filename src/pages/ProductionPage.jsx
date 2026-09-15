@@ -154,7 +154,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
-      <SectionHeader
+      <SectionHeader as="h1"
         title="Production data"
         subtitle={`${fmtInt(sorted.length)} records · quarterly and annual disclosures, normalized`}
         right={
