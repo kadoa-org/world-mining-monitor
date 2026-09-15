@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { COMMODITY_COLORS, commodityLabel } from "../constants";
 import { latestPerMineCommodity } from "../data";
-import MiningMap from "../MiningMap";
+import MiningMap from "../MiningMapLoader";
 import {
   Card,
   EvidenceDialog,
@@ -35,7 +35,7 @@ function reportPeriod(records) {
   return records.map((record) => record.time_period).find(Boolean) || "--";
 }
 
-const reportDateFormatter = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" });
+const reportDateFormatter = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 export default function OverviewPage({ data }) {
   const { mines, production, mineById, companies, commodities, periods, latestPeriod } = data;

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { GitHubButton, LiveBadge, NavBar, SiteHeader } from "./kit";
-import { useRoute } from "./router";
 import { Link } from "./ui";
 
 const TABS = [
@@ -12,17 +11,7 @@ const TABS = [
 ];
 
 // data-kit chrome: brand bar + tab navigation + data-freshness badge.
-export default function Masthead() {
-  const route = useRoute();
-  const [latestQuarter, setLatestQuarter] = useState(null);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/stats.json`)
-      .then((r) => r.json())
-      .then((s) => setLatestQuarter(s?.latestQuarter ?? null))
-      .catch(() => {});
-  }, []);
-
+export default function Masthead({ route, latestQuarter }) {
   const activeTab = (() => {
     if (route.name === "company" || route.name === "mine" || route.name === "mines") return "companies";
     if (route.name === "commodity") return "commodities";

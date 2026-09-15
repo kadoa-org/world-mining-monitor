@@ -23,16 +23,16 @@ function verificationFromRow(row) {
   };
 }
 
-export function useMiningData(db) {
+export function useMiningData(db, initialData = null) {
   return useMemo(() => {
-    if (!db) return null;
+    if (!db && !initialData) return null;
 
-    const mines = query(db, "SELECT * FROM mines").map((r) => ({
+    const mines = (initialData?.mines ?? query(db, "SELECT * FROM mines")).map((r) => ({
       ...r,
       commodities: r.commodities ? JSON.parse(r.commodities) : [],
     }));
 
-    const production = query(db, "SELECT * FROM production")
+    const production = (initialData?.production ?? query(db, "SELECT * FROM production"))
       .map((r) => {
         const verification = verificationFromRow(r);
         return {
@@ -88,7 +88,7 @@ export function useMiningData(db) {
       periods,
       latestPeriod,
     };
-  }, [db]);
+  }, [db, initialData]);
 }
 
 // Latest quarterly value per mine+commodity, avoiding double counting of

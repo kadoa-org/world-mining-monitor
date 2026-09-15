@@ -1,20 +1,5 @@
-/**
- * Build-time prerender for SEO.
- *
- * The app is a client-rendered SPA, so without this every route serves the
- * identical homepage HTML and deep pages (companies, commodities) are
- * invisible to search engines. Runs after `vite build` and writes a static
- * `dist/<route>/index.html` per route with:
- *   - unique <title>, meta description, canonical, og/twitter tags
- *   - a crawler-visible content block after #root
- * plus dist/sitemap.xml and dist/robots.txt.
- *
- * Routes are enumerated from public/data/mining.db (read via sql.js) using
- * the same commodity normalization + slugs as the client app, so every
- * prerendered URL matches a working SPA route.
- *
- * Usage: node scripts/prerender.mjs   (wired into `npm run build`)
- */
+// Render the actual React pages with embedded route data, metadata and sitemap.
+// Runs after Vite through bun run build.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -299,7 +284,7 @@ export function buildRoutes(production, mines) {
 
 // ── templating ───────────────────────────────────────────────────────────────
 
-export function renderRoute(template, route, shell) {
+export function renderRoute(template, route) {
   const url = `${BASE}${route.path}`;
   // Function replacements throughout: replacement STRINGS treat `$` as
   // capture-group syntax, which corrupts output when titles/values contain it.
@@ -319,23 +304,19 @@ export function renderRoute(template, route, shell) {
       (_m, a, b) => `${a}${esc(route.description)}${b}`,
     );
 
-  if (route.h1) {
-    html = injectRoot(html, shell, route.path, route.h1, `${route.body ?? ""}<p><a href="${PREFIX}">World Mining Monitor home</a></p>`);
-  }
   return html;
 }
 
-// Keep the published answer available until the matching interactive page renders.
-function injectRoot(html, shell, routePath, h1, body) {
-  return html.replace(
-    /(<div id="root">)(<\/div>)/,
-    (_m, open, close) => `${open}${shell}${close}<main class="seo-shell" data-path="${esc(`${PREFIX}${routePath}`)}"><h1>${esc(h1)}</h1>${body}</main>`,
-  );
+function injectPage(html, initialPage, renderPage) {
+  const payload = JSON.stringify(initialPage).replace(/</g, "\\u003c");
+  return html.replace('<div id="root"></div>', () => `<div id="root">${renderPage(initialPage)}</div><script id="page-data" type="application/json">${payload}</script>`);
 }
 
 async function buildShell() {
   const server = await createServer({
     configFile: false,
+    base: "/mining/",
+    esbuild: { jsx: "automatic" },
     root: ROOT,
     server: { middlewareMode: true, hmr: false },
     appType: "custom",
@@ -343,8 +324,8 @@ async function buildShell() {
     optimizeDeps: { noDiscovery: true },
   });
   try {
-    const mod = await server.ssrLoadModule("/src/renderPrerenderShell.jsx");
-    return mod.renderPrerenderShell();
+    const mod = await server.ssrLoadModule("/src/renderPage.jsx");
+    return mod;
   } finally {
     await server.close();
   }
@@ -355,8 +336,16 @@ async function buildShell() {
 async function prerender() {
   const { production, mines } = await loadData();
   const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
-  const shell = await buildShell();
+  const { renderPage, parseRoute } = await buildShell();
   const routes = buildRoutes(production, mines);
+  function initialPage(route) {
+    let rows = production;
+    if (route.name === "company") rows = production.filter((r) => slugify(r.company) === route.slug);
+    if (route.name === "mine") rows = production.filter((r) => r.mine_id === route.slug);
+    if (route.name === "commodity" || route.name === "largestMines") rows = production.filter((r) => slugify(r.commodity) === route.slug);
+    return { route, data: { production: rows, mines }, complete: rows === production, latestQuarter: latestProductionQuarter(production) };
+  }
+
 
   const unescape = (value) => value.replace(/&(amp|lt|gt|quot);/g, (_, name) => ({ amp: "&", lt: "<", gt: ">", quot: '"' })[name]);
   const pageMetadata = Object.fromEntries(routes.map(({ path: routePath, title, description }) => [
@@ -374,31 +363,11 @@ async function prerender() {
   for (const r of routes) {
     const dir = path.join(DIST, r.path.slice(1));
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, "index.html"), renderRoute(template, r, shell));
+    fs.writeFileSync(path.join(dir, "index.html"), injectPage(renderRoute(template, r), initialPage(parseRoute(PREFIX + r.path, "")), renderPage));
     written++;
   }
 
-  // Homepage: the SPA shell shipped with no h1 and no links, so every company,
-  // commodity and mine page was reachable only from sitemap.xml.
-  const companyList = [...new Set(production.map((p) => p.company))].sort();
-  const commodityList = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
-  const homeBody = [
-    `<p>Mine-level production volumes for ${companyList.length} global mining companies, extracted from their own quarterly and annual reports and normalized so commodities and units are comparable across operators.</p>`,
-    `<p>Browse <a href="${PREFIX}/production">all production data</a>, <a href="${PREFIX}/companies">companies</a>, <a href="${PREFIX}/commodities">commodities</a>, <a href="${PREFIX}/mines">tracked mines</a>, or read <a href="${PREFIX}/about">about the data</a>.</p>`,
-    `<h2>Companies tracked</h2><ul>${companyList
-      .map((c) => `<li><a href="${PREFIX}/company/${esc(slugify(c))}">${esc(c)} production data</a></li>`)
-      .join("")}</ul>`,
-    `<h2>Commodities</h2><ul>${commodityList
-      .map(
-        (c) =>
-          `<li><a href="${PREFIX}/commodity/${esc(slugify(c))}">${esc(commodityLabel(c))} production by company</a></li>`,
-      )
-      .join("")}</ul>`,
-  ].join("");
-  fs.writeFileSync(
-    path.join(DIST, "index.html"),
-    injectRoot(template, shell, "", "World Mining Monitor", homeBody),
-  );
+  fs.writeFileSync(path.join(DIST, "index.html"), injectPage(template, initialPage(parseRoute(PREFIX, "")), renderPage));
 
   const today = new Date().toISOString().slice(0, 10);
   // No trailing slash: `${BASE}/` 308s to `${BASE}`, which the audit flagged as a

@@ -7,6 +7,7 @@ let server;
 let Link;
 let NavBar;
 let parseRoute;
+let renderPage;
 
 beforeAll(async () => {
   server = await createServer({
@@ -17,6 +18,7 @@ beforeAll(async () => {
   ({ Link } = await server.ssrLoadModule("/src/ui.jsx"));
   ({ NavBar } = await server.ssrLoadModule("/src/kit/index.jsx"));
   ({ parseRoute } = await server.ssrLoadModule("/src/router.js"));
+  ({ renderPage } = await server.ssrLoadModule("/src/renderPage.jsx"));
 });
 afterAll(async () => server?.close());
 
@@ -37,4 +39,25 @@ test("kit navigation emits real links under the deployed mining prefix", () => {
 
 test("the existing mines directory resolves to its own page", () => {
   expect(parseRoute("/mining/mines", "")).toEqual({ name: "mines", query: {} });
+});
+
+test("company HTML contains the real production UI and source controls before JavaScript loads", () => {
+  const html = renderPage({
+    route: { name: "company", slug: "bhp", query: {} },
+    latestQuarter: "Q2 2026",
+    data: {
+      mines: [],
+      production: [{
+        id: 1, company: "BHP", commodity: "copper", metric: "production",
+        time_period: "Q2 2026", value: 123, value_normalized: 123,
+        unit: "kt", unit_normalized: "kt", basis: "consolidated",
+        source_url: "https://example.com/report.pdf", source_excerpt: "Copper production was 123 kt.",
+      }],
+    },
+  });
+  expect(html).toContain("Production by quarter");
+  expect(html).toContain("123");
+  expect(html).toContain('aria-haspopup="dialog"');
+  expect(html).not.toContain("Loading mining data");
+  expect(html).not.toContain("seo-shell");
 });

@@ -10,7 +10,7 @@ import {
   splitProductionSeriesKey,
 } from "../constants";
 import { latestPerMineCommodity } from "../data";
-import MiningMap from "../MiningMap";
+import MiningMap from "../MiningMapLoader";
 import {
   Card,
   DownloadCsvButton,

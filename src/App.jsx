@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useMiningData } from "./data";
 import { SiteFooter } from "./kit";
 import Masthead from "./Masthead";
@@ -12,7 +12,6 @@ import MinePage from "./pages/MinePage";
 import MinesPage from "./pages/MinesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ProductionPage from "./pages/ProductionPage";
-import PrerenderShell from "./PrerenderShell";
 import { useRoute } from "./router";
 import { useDatabase } from "./useDatabase";
 
@@ -21,22 +20,25 @@ const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commo
 
 function LoadingScreen() {
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-16">
-      <div className="h-4 w-40 bg-muted rounded animate-pulse mb-4" />
-      <div className="h-10 w-3/4 bg-muted rounded animate-pulse mb-3" />
-      <div className="h-4 w-2/3 bg-muted rounded animate-pulse mb-8" />
-      <div className="border border-[#b1b4b6] bg-white overflow-hidden">
-        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-stroke">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="px-4 py-4 sm:px-5">
-              <div className="h-3 w-16 max-w-full bg-muted rounded animate-pulse mb-3" />
-              <div className="h-6 w-20 max-w-full bg-muted rounded animate-pulse" />
-            </div>
-          ))}
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-16" aria-busy="true">
+      <p role="status">Loading mining data…</p>
+      <div aria-hidden="true">
+        <div className="h-4 w-40 bg-muted rounded mb-4" />
+        <div className="h-10 w-3/4 bg-muted rounded mb-3" />
+        <div className="h-4 w-2/3 bg-muted rounded mb-8" />
+        <div className="border border-[#b1b4b6] bg-white overflow-hidden">
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-stroke">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="px-4 py-4 sm:px-5">
+                <div className="h-3 w-16 max-w-full bg-muted rounded mb-3" />
+                <div className="h-6 w-20 max-w-full bg-muted rounded" />
+              </div>
+            ))}
+          </div>
         </div>
+        <div className="mt-8 h-6 w-64 bg-muted rounded" />
+        <div className="mt-4 border border-[#b1b4b6] bg-white p-4 h-[520px]" />
       </div>
-      <div className="mt-8 h-6 w-64 bg-muted rounded animate-pulse" />
-      <div className="mt-4 border border-[#b1b4b6] bg-white p-4 animate-pulse h-[520px]" />
     </div>
   );
 }
@@ -52,24 +54,14 @@ function ErrorScreen({ error }) {
   );
 }
 
-export default function App() {
-  const [clientReady, setClientReady] = useState(false);
-  const [publishedAnswer] = useState(() => document.querySelector(".seo-shell"));
-  const route = useRoute();
+export default function App({ initialPage = null }) {
+  const route = useRoute(initialPage?.route);
   const needsDb = ROUTES_NEEDING_DB.has(route.name);
-  const { db, error } = useDatabase(needsDb);
-  const data = useMiningData(db);
+  const matchesInitialRoute = initialPage?.route.name === route.name && initialPage?.route.slug === route.slug;
+  const initialData = initialPage?.complete || matchesInitialRoute ? initialPage?.data : null;
+  const { db, error } = useDatabase(needsDb && !initialData);
+  const data = useMiningData(db, initialData);
   const pageReady = !needsDb || Boolean(data);
-  const matchingAnswer = publishedAnswer?.isConnected &&
-    publishedAnswer.dataset.path === window.location.pathname.replace(/\/$/, "");
-
-  useLayoutEffect(() => {
-    if (clientReady && (pageReady || !matchingAnswer)) publishedAnswer?.remove();
-  }, [clientReady, pageReady, matchingAnswer, publishedAnswer]);
-
-  useEffect(() => {
-    setClientReady(true);
-  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -88,18 +80,11 @@ export default function App() {
     link.href = `${window.location.origin}${window.location.pathname}`;
   }, [route.name, route.slug]);
 
-  if (!clientReady) return <PrerenderShell />;
-
   return (
-    <div className={`${matchingAnswer && !pageReady ? "" : "min-h-screen"} bg-canvas text-ink`}>
-      <Masthead />
+    <div className="min-h-screen bg-canvas text-ink">
+      <Masthead route={route} latestQuarter={initialPage?.latestQuarter ?? data?.latestPeriod} />
       {needsDb && !pageReady ? (
-        matchingAnswer ? (
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6" role={error ? "alert" : "status"}>
-            <p>{error ? "Interactive data could not load." : "Loading interactive data."} The published summary is available below.</p>
-            {error && <button className="dk-link mt-2" onClick={() => window.location.reload()}>Reload data</button>}
-          </div>
-        ) : error ? <ErrorScreen error={error} /> : <LoadingScreen />
+        error ? <ErrorScreen error={error} /> : <LoadingScreen />
       ) : (
         <>
           {route.name === "overview" && <OverviewPage data={data} />}

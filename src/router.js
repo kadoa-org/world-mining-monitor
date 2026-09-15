@@ -40,8 +40,8 @@ export function parseRoute(pathname = window.location.pathname, search = window.
   return { name: "overview", query };
 }
 
-export function useRoute() {
-  const [route, setRoute] = useState(() => parseRoute());
+export function useRoute(initialRoute) {
+  const [route, setRoute] = useState(() => initialRoute ?? parseRoute());
   useEffect(() => {
     // A document reload can publish newer metadata than its saved history entry.
     window.history.replaceState({ ...window.history.state, miningPageMetadata: readDocumentMetadata() }, "");
@@ -49,6 +49,7 @@ export function useRoute() {
       if (event.state?.miningPageMetadata) applyRouteMetadata(event.state.miningPageMetadata);
       setRoute(parseRoute());
     };
+    setRoute(parseRoute());
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);

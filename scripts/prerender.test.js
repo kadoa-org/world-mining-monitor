@@ -23,7 +23,7 @@ describe("generated production answers", () => {
       expect(html).toContain("Q2 2026");
       expect(html).not.toContain("Q2 2028");
       expect(html).toContain(`href="https://www.kadoa.com/mining${path}"`);
-      expect(html).toContain(`data-path="/mining${path}"`);
+      expect(html).not.toContain("seo-shell");
     }
     expect(records).toHaveLength(3);
     expect(guidance.metric).toBe("production_guidance");

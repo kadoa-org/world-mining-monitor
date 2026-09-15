@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { COMMODITY_COLORS, commodityLabel } from "../constants";
 import { getPrevPeriod } from "../data";
 import {
@@ -69,6 +69,14 @@ export default function ProductionPage({ data, initialQuery = {} }) {
   const [metric, setMetric] = useState(initialQuery.metric || "production");
   const [sort, setSort] = useState("-time_period");
   const [evidenceRecord, setEvidenceRecord] = useState(null);
+
+  useEffect(() => {
+    setSearch(initialQuery.search || "");
+    setCommodity(initialQuery.commodity || "all");
+    setCompany(initialQuery.company || "all");
+    setPeriod(initialQuery.period || "all");
+    setMetric(initialQuery.metric || "production");
+  }, [initialQuery.search, initialQuery.commodity, initialQuery.company, initialQuery.period, initialQuery.metric]);
 
   // Previous-period lookup for QoQ deltas (operation included to avoid collisions).
   const prevLookup = useMemo(() => {
