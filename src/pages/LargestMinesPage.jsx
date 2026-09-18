@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter, normalizeCommodity } from "../constants";
+import { COMMODITY_COLORS, commodityLabel, rankMinesForLatestQuarter } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // "Largest <commodity> mines" ranking: mines by latest-quarter disclosed
@@ -14,29 +14,10 @@ export default function LargestMinesPage({ data, slug }) {
     [production, commodity],
   );
 
-  const quarter = useMemo(() => latestProductionQuarter(records), [records]);
-
-  const ranking = useMemo(() => {
-    if (!quarter) return [];
-    const aggregates = aggregateProductionBy(
-      records.filter((record) => record.time_period === quarter),
-      (record) => record.mine_id,
-      { preferCompanyTotals: false },
-    );
-    const byMine = new Map([...aggregates].map(([mineId, aggregate]) => [mineId, aggregate.value]));
-    // Same guard as the prerenderer: a mine only ranks for commodities it
-    // declares, so company-wide totals mis-attributed to a flagship mine
-    // don't top the list. Mines with no declared list pass.
-    const declares = (mine) => {
-      const list = (mine.commodities || []).map(normalizeCommodity).filter(Boolean);
-      return list.length === 0 || list.includes(commodity);
-    };
-    return [...byMine.entries()]
-      .map(([id, value]) => ({ mine: mineById.get(id), value }))
-      .filter((r) => r.mine && r.value > 0 && declares(r.mine))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 25);
-  }, [records, quarter, mineById]);
+  const { quarter, ranked: ranking } = useMemo(
+    () => rankMinesForLatestQuarter(records, mineById, commodity),
+    [records, mineById, commodity],
+  );
 
   const unit = records.find((p) => p.unit_normalized)?.unit_normalized || "kt";
 

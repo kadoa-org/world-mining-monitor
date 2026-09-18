@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { quarterlyPivot } from "../constants";
+import { comparableQuarterlyPivot } from "../constants";
 import { Link } from "../ui";
 
 export default function MinesPage({ data }) {
@@ -10,7 +10,7 @@ export default function MinesPage({ data }) {
       recordsByMine.get(record.mine_id).push(record);
     }
     return data.mines
-      .filter((mine) => quarterlyPivot(recordsByMine.get(mine.id) || []).quarters.length > 0)
+      .filter((mine) => comparableQuarterlyPivot(recordsByMine.get(mine.id) || []).quarters.length > 0)
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [data]);
 

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   aggregateProductionGroup,
+  comparableQuarterlyPivot,
   latestProductionQuarter,
   productionSeriesKey,
   quarterlyPivot,
@@ -185,6 +186,18 @@ describe("quarterlyPivot", () => {
     ]);
     expect(pivot.get(productionSeriesKey(concentrate), "Q2 2026")).toBe(76);
     expect(pivot.get(productionSeriesKey(refined), "Q2 2026")).toBe(20);
+  });
+
+  test("uses the same comparable quarterly rule for mine links and mine pages", () => {
+    const annualOnly = production({ time_period: "FY2025" });
+    const concentrate = production({ product_form: "concentrate", value_normalized: 76 });
+    const refined = production({ product_form: "refined", value_normalized: 20 });
+
+    expect(comparableQuarterlyPivot([annualOnly]).quarters).toEqual([]);
+    expect(comparableQuarterlyPivot([concentrate, refined]).commodities).toEqual([
+      productionSeriesKey(concentrate),
+      productionSeriesKey(refined),
+    ]);
   });
 
   test("does not replace an unresolved disclosed company total with components", () => {

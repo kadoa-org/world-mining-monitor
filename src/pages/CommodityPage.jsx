@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter } from "../constants";
+import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter, rankMinesForLatestQuarter } from "../constants";
 import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
 
 // Company ranking for one commodity: latest-quarter production per company,
 // with the previous quarter alongside for a QoQ read.
 export default function CommodityPage({ data, slug }) {
-  const { production, commodityBySlug } = data;
+  const { production, commodityBySlug, mineById } = data;
   const commodity = commodityBySlug.get(slug);
 
   const records = useMemo(
@@ -41,6 +41,11 @@ export default function CommodityPage({ data, slug }) {
       })
       .sort((a, b) => b.value - a.value);
   }, [records, quarter, prevQuarter]);
+
+  const mineRanking = useMemo(
+    () => rankMinesForLatestQuarter(records.filter((record) => record.mine_id), mineById, commodity).ranked,
+    [records, mineById, commodity],
+  );
 
   const stats = useMemo(() => {
     const companies = new Set(records.map((p) => p.company));
@@ -92,7 +97,9 @@ export default function CommodityPage({ data, slug }) {
           subtitle={`Sum of disclosed mine-level production, ${stats.unit}. QoQ vs ${prevQuarter}.`}
           right={
             <span className="flex items-center gap-3">
-              <Link to={`/largest-${slug}-mines`}>Largest {label.toLowerCase()} mines →</Link>
+              {mineRanking.length >= 5 ? (
+                <Link to={`/largest-${slug}-mines`}>Largest {label.toLowerCase()} mines →</Link>
+              ) : null}
               <Link to={`/production?commodity=${encodeURIComponent(commodity)}`}>All {label} records →</Link>
             </span>
           }

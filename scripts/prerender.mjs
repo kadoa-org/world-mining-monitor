@@ -8,11 +8,12 @@ import initSqlJs from "sql.js";
 import { createServer } from "vite";
 import {
   aggregateProductionBy,
+  comparableQuarterlyPivot,
   commodityLabel,
   COMPANY_TICKERS,
   normalizeCommodity,
   latestProductionQuarter,
-  quarterlyPivot,
+  rankMinesForLatestQuarter,
   slugify,
 } from "../src/constants.js";
 
@@ -58,7 +59,7 @@ async function loadData() {
 // Crawler-visible quarterly series table (quarters x commodities) — the
 // direct answer to "<company|mine> production by quarter" queries.
 function pivotTable(records, options) {
-  const pivot = quarterlyPivot(records, options);
+  const pivot = comparableQuarterlyPivot(records, options);
   if (!pivot.quarters.length) return "";
   const head = `<tr><th>Quarter</th>${pivot.commodities
     .map((c) => `<th>${esc(commodityLabel(c))} (${esc(pivot.unit[c])})</th>`)
@@ -80,6 +81,7 @@ export function buildRoutes(production, mines) {
   const routes = [];
   const companies = [...new Set(production.map((p) => p.company))].sort();
   const commodities = [...new Set(production.map((p) => p.commodity))].filter(Boolean).sort();
+  const mineById = new Map(mines.map((mine) => [mine.id, mine]));
 
   routes.push(
     {
@@ -119,6 +121,13 @@ export function buildRoutes(production, mines) {
       body: `<p>Kadoa discovers each new quarterly or annual report as it is published, extracts mine-level production from PDF and spreadsheet reports, then normalizes commodity names and units so volumes are comparable across companies that report in different measures. Newly extracted facts retain the original source value, report location, and transformation history.</p><p>Coverage is ${production.length.toLocaleString("en-US")} records across ${companies.length} companies and ${commodities.length} commodities. Open data under CC BY 4.0. Start with <a href="${PREFIX}/production">the production data</a>, <a href="${PREFIX}/companies">companies</a>, or <a href="${PREFIX}/commodities">commodities</a>.</p>`,
     },
   );
+
+  const largestMineRankings = new Map();
+  for (const commodity of commodities) {
+    const rows = production.filter((record) => record.commodity === commodity && record.metric === "production" && record.mine_id);
+    const { quarter: latest, ranked } = rankMinesForLatestQuarter(rows, mineById, commodity);
+    if (ranked.length >= 5) largestMineRankings.set(commodity, { latest, ranked, rows });
+  }
 
   for (const company of companies) {
     const rows = production.filter((p) => p.company === company);
@@ -182,7 +191,7 @@ export function buildRoutes(production, mines) {
       title: `${label} Production by Company${latest ? ` - ${latest}` : ""} | World Mining Monitor`,
       description: `Who produces the most ${label.toLowerCase()}? ${ranking.length ? `${ranking[0][0]} leads` : "Company rankings"} among ${new Set(rows.map((p) => p.company)).size} tracked producers, from mine-level disclosures${latest ? `, latest ${latest}` : ""}.`,
       h1: `${label} production by company`,
-      body: `<p>Mine-level ${esc(label.toLowerCase())} production extracted from company quarterly reports, normalized to ${esc(unit)}.</p>${rankingHtml}<p><a href="${PREFIX}/largest-${slug}-mines">Largest ${esc(label.toLowerCase())} mines in the world</a> · <a href="${PREFIX}/commodities">All commodities</a></p>`,
+      body: `<p>Mine-level ${esc(label.toLowerCase())} production extracted from company quarterly reports, normalized to ${esc(unit)}.</p>${rankingHtml}<p>${largestMineRankings.has(commodity) ? `<a href="${PREFIX}/largest-${slug}-mines">Largest ${esc(label.toLowerCase())} mines in the world</a> · ` : ""}<a href="${PREFIX}/commodities">All commodities</a></p>`,
     });
   }
 
@@ -194,7 +203,6 @@ export function buildRoutes(production, mines) {
     if (!byMine.has(p.mine_id)) byMine.set(p.mine_id, []);
     byMine.get(p.mine_id).push(p);
   }
-  const mineById = new Map(mines.map((m) => [m.id, m]));
   const minesWithPage = [];
   for (const [mineId, rows] of byMine) {
     const mine = mineById.get(mineId);
@@ -232,33 +240,7 @@ export function buildRoutes(production, mines) {
 
   // "Largest <commodity> mines" rankings: live counterpart to the annual
   // listicles. Only commodities with enough mine-level coverage to rank.
-  for (const commodity of commodities) {
-    const rows = production.filter((p) => p.commodity === commodity && p.metric === "production" && p.mine_id);
-    const latest = latestProductionQuarter(rows);
-    if (!latest) continue;
-    const mineAggregates = aggregateProductionBy(
-      rows.filter((record) => record.time_period === latest),
-      (record) => record.mine_id,
-      { preferCompanyTotals: false },
-    );
-    const byM = new Map([...mineAggregates].map(([mineId, aggregate]) => [mineId, aggregate.value]));
-    // Guard against company-wide totals mis-attributed to a flagship mine
-    // (e.g. BHP group copper attached to the WAIO iron-ore id): a mine only
-    // ranks for commodities it declares. Mines with no declared list pass.
-    const declares = (mine) => {
-      try {
-        const list = JSON.parse(mine.commodities || "[]").map(normalizeCommodity).filter(Boolean);
-        return list.length === 0 || list.includes(commodity);
-      } catch {
-        return true;
-      }
-    };
-    const ranked = [...byM.entries()]
-      .map(([id, v]) => ({ mine: mineById.get(id), v }))
-      .filter((r) => r.mine && r.v > 0 && declares(r.mine))
-      .sort((a, b) => b.v - a.v)
-      .slice(0, 25);
-    if (ranked.length < 5) continue;
+  for (const [commodity, { latest, ranked, rows }] of largestMineRankings) {
     const label = commodityLabel(commodity);
     const slug = slugify(commodity);
     const unit = rows.find((p) => p.unit_normalized)?.unit_normalized || "kt";
@@ -273,7 +255,7 @@ export function buildRoutes(production, mines) {
       body: `<p>The biggest ${esc(label.toLowerCase())} mines ranked by disclosed production in ${esc(latest)}, normalized to ${esc(unit)}.</p><ol>${ranked
         .map(
           (r) =>
-            `<li><a href="${PREFIX}/mine/${esc(r.mine.id)}">${esc(r.mine.name)}</a> (${esc(r.mine.company)}${r.mine.country ? `, ${esc(r.mine.country)}` : ""}) — ${esc(fmtValue(r.v))} ${esc(unit)}</li>`,
+            `<li><a href="${PREFIX}/mine/${esc(r.mine.id)}">${esc(r.mine.name)}</a> (${esc(r.mine.company)}${r.mine.country ? `, ${esc(r.mine.country)}` : ""}) — ${esc(fmtValue(r.value))} ${esc(unit)}</li>`,
         )
         .join("")}</ol><p><a href="${PREFIX}/commodity/${slug}">${esc(label)} production by company</a></p>`,
     });

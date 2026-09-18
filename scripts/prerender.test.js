@@ -28,6 +28,10 @@ describe("generated production answers", () => {
     expect(records).toHaveLength(3);
     expect(guidance.metric).toBe("production_guidance");
     expect(guidance.reported_period).toBe("from Q4 FY28");
+    expect(routes.find((route) => route.path === "/commodity/iron-ore")?.body).toContain(
+      'href="/mining/largest-iron-ore-mines"',
+    );
+    expect(routes.some((route) => route.path === "/largest-iron-ore-mines")).toBe(true);
   });
 
   test("a company with guidance only has no invented latest production quarter", () => {
@@ -35,5 +39,7 @@ describe("generated production answers", () => {
     expect(route.description).not.toContain("latest");
     expect(route.body).not.toContain("Latest reported quarterly production");
     expect(route.body).not.toContain("<table>");
+    const commodity = buildRoutes([actual], mines).find((candidate) => candidate.path === "/commodity/iron-ore");
+    expect(commodity.body).not.toContain("largest-iron-ore-mines");
   });
 });

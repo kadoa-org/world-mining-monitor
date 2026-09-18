@@ -422,3 +422,36 @@ export function quarterlyPivot(
     getRecords: (c, q) => cellRecords.get(`${c}|${q}`) ?? [],
   };
 }
+
+export function comparableQuarterlyPivot(records, options = {}) {
+  const selected = selectComparableProductionRecords(records, {
+    preferCompanyTotals: options.preferCompanyTotals ?? false,
+  });
+  return quarterlyPivot(selected, { seriesKey: productionSeriesKey, ...options });
+}
+
+export function rankMinesForLatestQuarter(records, mines, commodity) {
+  const quarter = latestProductionQuarter(records);
+  if (!quarter) return { quarter: null, ranked: [] };
+  const mineById = mines instanceof Map ? mines : new Map(mines.map((mine) => [mine.id, mine]));
+  const aggregates = aggregateProductionBy(
+    records.filter((record) => record.time_period === quarter),
+    (record) => record.mine_id,
+    { preferCompanyTotals: false },
+  );
+  const declares = (mine) => {
+    try {
+      const raw = Array.isArray(mine.commodities) ? mine.commodities : JSON.parse(mine.commodities || "[]");
+      const list = raw.map(normalizeCommodity).filter(Boolean);
+      return list.length === 0 || list.includes(commodity);
+    } catch {
+      return true;
+    }
+  };
+  const ranked = [...aggregates]
+    .map(([id, aggregate]) => ({ mine: mineById.get(id), value: aggregate.value }))
+    .filter((record) => record.mine && record.value > 0 && declares(record.mine))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 25);
+  return { quarter, ranked };
+}

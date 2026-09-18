@@ -3,10 +3,8 @@ import {
   COMMODITY_COLORS,
   COMPANY_TICKERS,
   commodityLabel,
+  comparableQuarterlyPivot,
   latestProductionQuarter,
-  productionSeriesKey,
-  quarterlyPivot,
-  selectComparableProductionRecords,
   splitProductionSeriesKey,
 } from "../constants";
 import { latestPerMineCommodity } from "../data";
@@ -74,14 +72,24 @@ export default function CompanyPage({ data, slug }) {
     [companyProduction],
   );
 
-  const chartProduction = useMemo(
-    () => selectComparableProductionRecords(companyProduction, { preferCompanyTotals: true }),
+  const pivot = useMemo(
+    () => comparableQuarterlyPivot(companyProduction, { preferCompanyTotals: true }),
     [companyProduction],
   );
-  const pivot = useMemo(
-    () => quarterlyPivot(chartProduction, { preferCompanyTotals: true, seriesKey: productionSeriesKey }),
-    [chartProduction],
-  );
+
+  const linkedMineIds = useMemo(() => {
+    const recordsByMine = new Map();
+    for (const record of companyProduction) {
+      if (!record.mine_id) continue;
+      if (!recordsByMine.has(record.mine_id)) recordsByMine.set(record.mine_id, []);
+      recordsByMine.get(record.mine_id).push(record);
+    }
+    return new Set(
+      [...recordsByMine]
+        .filter(([, records]) => comparableQuarterlyPivot(records).quarters.length > 0)
+        .map(([mineId]) => mineId),
+    );
+  }, [companyProduction]);
 
   const latestQuarter = useMemo(() => latestProductionQuarter(companyProduction) || "--", [companyProduction]);
 
@@ -232,7 +240,7 @@ export default function CompanyPage({ data, slug }) {
                     className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_180px_110px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="truncate">
-                      {r.mine_id && mineById.has(r.mine_id) ? (
+                      {r.mine_id && mineById.has(r.mine_id) && linkedMineIds.has(r.mine_id) ? (
                         <Link to={`/mine/${r.mine_id}`}>{r.operation || mineById.get(r.mine_id).name}</Link>
                       ) : (
                         r.operation || "--"

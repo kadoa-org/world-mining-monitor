@@ -2,10 +2,8 @@ import React, { useMemo, useState } from "react";
 import {
   COMMODITY_COLORS,
   commodityLabel,
+  comparableQuarterlyPivot,
   latestProductionQuarter,
-  productionSeriesKey,
-  quarterlyPivot,
-  selectComparableProductionRecords,
   splitProductionSeriesKey,
 } from "../constants";
 import { latestPerMineCommodity } from "../data";
@@ -44,8 +42,7 @@ export default function MinePage({ data, slug }) {
   const [evidenceRecord, setEvidenceRecord] = useState(null);
 
   const records = useMemo(() => production.filter((p) => p.mine_id === slug), [production, slug]);
-  const chartRecords = useMemo(() => selectComparableProductionRecords(records), [records]);
-  const pivot = useMemo(() => quarterlyPivot(chartRecords, { seriesKey: productionSeriesKey }), [chartRecords]);
+  const pivot = useMemo(() => comparableQuarterlyPivot(records), [records]);
 
   const commodities = useMemo(() => [...new Set(records.map((p) => p.commodity))].filter(Boolean).sort(), [records]);
 
