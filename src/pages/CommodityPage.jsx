@@ -1,6 +1,18 @@
 import React, { useMemo } from "react";
-import { aggregateProductionBy, COMMODITY_COLORS, commodityLabel, latestProductionQuarter, rankMinesForLatestQuarter } from "../constants";
-import { Card, fmtInt, fmtValue, Link, SectionHeader, StatGrid, slugify } from "../ui";
+import {
+  aggregateProductionBy,
+  COMMODITY_COLORS,
+  commodityLabel,
+  compareMineProduction,
+  latestProductionQuarter,
+  productionBreadth,
+  quarterByPhysicalMine,
+  rankMinesForLatestQuarter,
+  topProducingCountry,
+  yearAgoQuarter,
+} from "../constants";
+import { ChangeTag, KeyFigures } from "../kit";
+import { Card, fmtInt, fmtValue, Link, SectionHeader, slugify } from "../ui";
 
 // Company ranking for one commodity: latest-quarter production per company,
 // with the previous quarter alongside for a QoQ read.
@@ -48,11 +60,20 @@ export default function CommodityPage({ data, slug }) {
   );
 
   const stats = useMemo(() => {
-    const companies = new Set(records.map((p) => p.company));
-    const mines = new Set(records.map((p) => p.mine_id).filter(Boolean));
     const unit = records.find((p) => p.unit_normalized)?.unit_normalized || "kt";
-    return { companies: companies.size, mines: mines.size, records: records.length, unit };
+    return { unit };
   }, [records]);
+
+  // Headline figures: who leads, which way comparable mines moved on a year earlier, and where output comes from.
+  const headline = useMemo(() => {
+    if (!quarter) return null;
+    const previousYear = yearAgoQuarter(quarter);
+    const breadth = previousYear ? productionBreadth(compareMineProduction(records, mineById, quarter, previousYear), commodity) : null;
+    const country = topProducingCountry(quarterByPhysicalMine(records, mineById, quarter));
+    const total = ranking.reduce((sum, r) => sum + r.value, 0);
+    const leader = ranking[0] ? { ...ranking[0], share: total > 0 ? (ranking[0].value / total) * 100 : null } : null;
+    return { previousYear, breadth, country, leader };
+  }, [records, mineById, quarter, commodity, ranking]);
 
   if (!commodity) {
     return (
@@ -78,23 +99,40 @@ export default function CommodityPage({ data, slug }) {
         {label} production by company
       </h1>
       <p className="text-regular text-ink_muted max-w-3xl mb-6">
-        Who produces the most {label.toLowerCase()}? Mine-level output extracted from company quarterly reports,
-        normalized for comparison.
+        Who produces the most {label.toLowerCase()}, taken from company quarterly reports.
       </p>
 
-      <StatGrid
-        items={[
-          { label: "Producers tracked", value: fmtInt(stats.companies) },
-          { label: "Mines & operations", value: fmtInt(stats.mines) },
-          { label: "Records", value: fmtInt(stats.records) },
-          { label: "Latest quarter", value: quarter || "--" },
-        ]}
-      />
+      {headline && (
+        <KeyFigures
+          title="Headlines"
+          description={`Disclosed production in ${quarter}. Changes compare mines reporting on the same basis a year earlier.`}
+          date={`Up to and including ${quarter}`}
+          items={[
+            headline.leader && {
+              label: "Largest producer",
+              value: <Link to={`/company/${slugify(headline.leader.company)}`}>{headline.leader.company}</Link>,
+              note: `${fmtValue(headline.leader.value)} ${stats.unit}${headline.leader.share != null && ranking.length > 1 ? `, ${Math.round(headline.leader.share)}% of covered output` : ""}`,
+            },
+            headline.breadth && {
+              label: `Against ${headline.previousYear}`,
+              value: `${headline.breadth.lower} of ${headline.breadth.mines} mines lower`,
+              title: `${headline.breadth.higher} higher, ${headline.breadth.mines - headline.breadth.lower - headline.breadth.higher} unchanged, among mines reporting on the same basis in both quarters`,
+              note: <><ChangeTag value={headline.breadth.median} good="up" size="small" /> median mine</>,
+            },
+            // A country share from one or two mines says more about coverage than about where output comes from.
+            headline.country && headline.country.mines >= 3 && {
+              label: "Top producing country",
+              value: headline.country.country,
+              note: `${Math.round(headline.country.share)}% of output at ${fmtInt(headline.country.mines)} covered ${headline.country.mines === 1 ? "mine" : "mines"}`,
+            },
+          ]}
+        />
+      )}
 
       <div className="mt-8">
         <SectionHeader
-          title={`Largest ${label.toLowerCase()} producers — ${quarter}`}
-          subtitle={`Sum of disclosed mine-level production, ${stats.unit}. QoQ vs ${prevQuarter}.`}
+          title={`Largest ${label.toLowerCase()} producers, ${quarter}`}
+          subtitle={`Disclosed mine-level production, ${stats.unit}. Change on ${prevQuarter}.`}
           right={
             <span className="flex items-center gap-3">
               {mineRanking.length >= 5 ? (
@@ -109,7 +147,7 @@ export default function CommodityPage({ data, slug }) {
             <span className="text-right">#</span>
             <span>Company</span>
             <span className="text-right">Production ({stats.unit})</span>
-            <span className="text-right">QoQ</span>
+            <span className="text-right">Change</span>
           </div>
           <div className="text-small [&>*:nth-child(even)]:bg-muted/30">
             {ranking.map((r, i) => (
@@ -135,8 +173,8 @@ export default function CommodityPage({ data, slug }) {
           </div>
         </Card>
         <p className="text-mini text-ink_muted mt-3">
-          Only companies that disclose mine-level {label.toLowerCase()} volumes in the covered set are ranked — this is
-          disclosed production, not a complete global census.
+          Only companies that disclose mine-level {label.toLowerCase()} volumes are ranked. This is disclosed production,
+          not a complete global census.
         </p>
       </div>
     </div>

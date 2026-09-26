@@ -515,3 +515,39 @@ export function productionBreadth(rows, commodity) {
     median,
   };
 }
+
+// Output in one quarter by physical mine, resolved and deduplicated the same way as compareMineProduction: one
+// figure per mine id, then one id per physical mine (name, country), keeping the largest, which is the operator's
+// 100% figure rather than a partner's share. Only the commodity's most common unit is kept, so a country share
+// never adds kilotonnes to thousand ounces.
+export function quarterByPhysicalMine(records, mines, period) {
+  const mineById = mines instanceof Map ? mines : new Map(mines.map((mine) => [mine.id, mine]));
+  const aggregates = aggregateProductionBy(
+    records.filter((record) => record.metric === "production" && record.time_period === period && record.mine_id),
+    (record) => record.mine_id,
+    { preferCompanyTotals: true },
+  );
+  const byPhysicalMine = new Map();
+  for (const [mineId, aggregate] of aggregates) {
+    const mine = mineById.get(mineId);
+    if (!mine || PROCESSING_PLANT.test(mine.name) || PROCESSING_OPERATORS.has(mine.company) || !(aggregate.value > 0)) continue;
+    const physical = `${mine.name.trim().toLowerCase()}|${mine.country}`;
+    const held = byPhysicalMine.get(physical);
+    if (!held || aggregate.value > held.value) byPhysicalMine.set(physical, { mine, value: aggregate.value, unit: aggregate.unit });
+  }
+  const rows = [...byPhysicalMine.values()];
+  const unitCounts = new Map();
+  for (const row of rows) unitCounts.set(row.unit, (unitCounts.get(row.unit) ?? 0) + 1);
+  const unit = [...unitCounts].sort((a, b) => b[1] - a[1])[0]?.[0];
+  return rows.filter((row) => row.unit === unit);
+}
+
+// The country with the most output among covered mines, and its share of that output.
+export function topProducingCountry(rows) {
+  const total = rows.reduce((sum, row) => sum + row.value, 0);
+  if (!(total > 0)) return null;
+  const byCountry = new Map();
+  for (const row of rows) byCountry.set(row.mine.country, (byCountry.get(row.mine.country) ?? 0) + row.value);
+  const [country, value] = [...byCountry].sort((a, b) => b[1] - a[1])[0];
+  return { country, value, share: (value / total) * 100, unit: rows[0].unit, mines: rows.length };
+}

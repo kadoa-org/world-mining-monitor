@@ -3,6 +3,8 @@ import {
   aggregateProductionGroup,
   comparableQuarterlyPivot,
   compareMineProduction,
+  quarterByPhysicalMine,
+  topProducingCountry,
   productionBreadth,
   yearAgoQuarter,
   latestProductionQuarter,
@@ -288,5 +290,32 @@ describe("year-on-year production at comparable mines", () => {
   test("finds the same quarter a year earlier", () => {
     expect(yearAgoQuarter("Q2 2026")).toBe("Q2 2025");
     expect(yearAgoQuarter("H1 2026")).toBeNull();
+  });
+});
+
+describe("output by physical mine in one quarter", () => {
+  const record = (mine_id, value, extra = {}) => ({
+    mine_id, time_period: "Q2 2026", commodity: "copper", metric: "production", value_normalized: value, unit_normalized: "kt",
+    product_form: null, basis: "consolidated", operation: null, ...extra,
+  });
+  const mines = [
+    { id: "bhp-escondida", name: "Escondida", country: "Chile", company: "BHP" },
+    { id: "escondida", name: "Escondida", country: "Chile", company: "Rio Tinto" },
+    { id: "grasberg", name: "Grasberg", country: "Indonesia", company: "Freeport-McMoRan" },
+    { id: "olen", name: "Olen", country: "Belgium", company: "Aurubis" },
+  ];
+
+  test("counts a shared mine once and leaves processing plants out", () => {
+    const rows = quarterByPhysicalMine(
+      [record("bhp-escondida", 312), record("escondida", 96, { basis: "equity" }), record("grasberg", 93), record("olen", 83)],
+      mines, "Q2 2026",
+    );
+    expect(rows.map((row) => row.mine.id).sort()).toEqual(["bhp-escondida", "grasberg"]);
+  });
+
+  test("names the top country and its share of covered output", () => {
+    const rows = quarterByPhysicalMine([record("bhp-escondida", 300), record("grasberg", 100)], mines, "Q2 2026");
+    expect(topProducingCountry(rows)).toMatchObject({ country: "Chile", share: 75, mines: 2 });
+    expect(topProducingCountry([])).toBeNull();
   });
 });
