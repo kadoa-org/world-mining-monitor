@@ -113,7 +113,7 @@ async function build() {
   const expectedVerifiableRows = production.filter((record) => record.provenance?.kind === "extracted").length;
   const storedVerifiableRows = db.exec(
     `SELECT count(*) AS count FROM production
-     WHERE source_url LIKE 'https://kadoa.b-cdn.net/mining-sources/%'
+     WHERE source_url LIKE 'https://kadoa-datasets.b-cdn.net/mining/sources/%'
        AND coalesce(source_document_name, '') <> ''
        AND coalesce(source_excerpt, '') <> ''
        AND reported_value IS NOT NULL
