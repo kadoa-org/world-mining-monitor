@@ -104,9 +104,7 @@ export default function CommodityPage({ data, slug }) {
 
       {headline && (
         <KeyFigures
-          title="Headlines"
-          description={`Disclosed production in ${quarter}. Changes compare mines reporting on the same basis a year earlier.`}
-          date={`Up to and including ${quarter}`}
+          context={`Disclosed production in ${quarter}. Changes compare mines reporting on the same basis a year earlier.`}
           items={[
             headline.leader && {
               label: "Largest producer",

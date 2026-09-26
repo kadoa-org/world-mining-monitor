@@ -216,9 +216,7 @@ export default function OverviewPage({ data }) {
       {/* Headline figures: supply direction by commodity, the same quarter a year apart, at mines comparable in
           both quarters. Counts and medians, not totals; see productionBreadth for why. */}
       <KeyFigures
-        title="Headlines"
-        description={`Output at mines reporting on the same basis in both quarters, ${latestPeriod} against ${previousYearPeriod}.`}
-        date={`Up to and including ${latestPeriod}`}
+        context={`Output at mines reporting on the same basis in ${latestPeriod} and ${previousYearPeriod}.`}
         items={HEADLINE_COMMODITIES.map((c) => {
           const b = productionBreadth(yearOnYear, c);
           if (!b || b.mines < 5) return null;
