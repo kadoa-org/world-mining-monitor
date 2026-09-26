@@ -455,3 +455,63 @@ export function rankMinesForLatestQuarter(records, mines, commodity) {
     .slice(0, 25);
   return { quarter, ranked };
 }
+
+// Year-on-year production at comparable mines, for the overview headline.
+//
+// One physical mine can appear under several ids (the operator's and each partner's, e.g. BHP's and Rio Tinto's
+// Escondida), and one quarter can be reported several times over (a total, its product forms, payable and equity
+// shares). So each mine id's quarter is first resolved to one figure with aggregateProductionGroup, which returns
+// nothing when the records are ambiguous; a mine counts only when both quarters resolve with the same unit, the
+// same basis and the same product forms, so a switch from consolidated to attributable never reads as a collapse;
+// and each physical mine (name, country, commodity) keeps the id with the largest figure, the operator's 100%
+// rather than a partner's share. Smelters and refineries process other mines' output and are left out.
+const PROCESSING_PLANT = /smelter|refiner/i;
+const PROCESSING_OPERATORS = new Set(["Aurubis"]);
+const SEMANTICS_SEP = "\u001f";
+
+export function yearAgoQuarter(period) {
+  const match = /^Q([1-4]) (\d{4})$/.exec(period || "");
+  return match ? `Q${match[1]} ${Number(match[2]) - 1}` : null;
+}
+
+export function compareMineProduction(records, mines, current, previous) {
+  const mineById = mines instanceof Map ? mines : new Map(mines.map((mine) => [mine.id, mine]));
+  const resolve = (period) =>
+    aggregateProductionBy(
+      records.filter((record) => record.metric === "production" && record.time_period === period),
+      (record) => `${record.mine_id}${SEMANTICS_SEP}${record.commodity}`,
+      { preferCompanyTotals: true },
+    );
+  const semantics = (aggregate) =>
+    [...new Set(aggregate.records.map((record) => `${record.product_form || ""}|${record.basis || "unknown"}`))].sort().join(",");
+  const now = resolve(current);
+  const before = resolve(previous);
+  const byPhysicalMine = new Map();
+  for (const [key, a] of now) {
+    const [mineId, commodity] = key.split(SEMANTICS_SEP);
+    const mine = mineById.get(mineId);
+    const b = before.get(key);
+    if (!mine || !b || PROCESSING_PLANT.test(mine.name) || PROCESSING_OPERATORS.has(mine.company)) continue;
+    if (a.unit !== b.unit || !(b.value > 0) || !(a.value >= 0) || semantics(a) !== semantics(b)) continue;
+    const physical = `${mine.name.trim().toLowerCase()}|${mine.country}|${commodity}`;
+    const held = byPhysicalMine.get(physical);
+    if (!held || a.value > held.now) byPhysicalMine.set(physical, { mine, commodity, unit: a.unit, now: a.value, before: b.value });
+  }
+  return [...byPhysicalMine.values()].map((row) => ({ ...row, change: (row.now / row.before - 1) * 100 }));
+}
+
+// How many comparable mines produced less than a year earlier, and the median change. A count and a median are
+// used rather than a total because a single mis-extracted figure (a half-year read as a quarter) can swing a total
+// by tens of per cent, but moves one mine in a count and barely shifts a median.
+export function productionBreadth(rows, commodity) {
+  const changes = rows.filter((row) => row.commodity === commodity).map((row) => row.change).sort((a, b) => a - b);
+  if (!changes.length) return null;
+  const mid = changes.length / 2;
+  const median = changes.length % 2 ? changes[Math.floor(mid)] : (changes[mid - 1] + changes[mid]) / 2;
+  return {
+    mines: changes.length,
+    lower: changes.filter((change) => change < 0).length,
+    higher: changes.filter((change) => change > 0).length,
+    median,
+  };
+}

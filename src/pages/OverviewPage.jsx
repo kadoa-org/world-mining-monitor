@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { ChartCard, FilterSelect, SectionHeading } from "../kit";
-import { COMMODITY_COLORS, commodityLabel } from "../constants";
+import { ChangeTag, ChartCard, FilterSelect, KeyFigures } from "../kit";
+import { COMMODITY_COLORS, commodityLabel, compareMineProduction, productionBreadth, yearAgoQuarter } from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMapLoader";
 import {
@@ -11,7 +11,6 @@ import {
   fmtValue,
   Link,
   SectionHeader,
-  StatGrid,
   slugify,
 } from "../ui";
 
@@ -38,8 +37,16 @@ function reportPeriod(records) {
 
 const reportDateFormatter = new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
+// Commodities with enough comparable mines to say which way supply is moving.
+const HEADLINE_COMMODITIES = ["copper", "gold", "silver", "zinc"];
+
 export default function OverviewPage({ data }) {
   const { mines, production, mineById, companies, commodities, periods, latestPeriod } = data;
+  const previousYearPeriod = yearAgoQuarter(latestPeriod);
+  const yearOnYear = useMemo(
+    () => (previousYearPeriod ? compareMineProduction(production, mineById ?? mines, latestPeriod, previousYearPeriod) : []),
+    [production, mineById, mines, latestPeriod, previousYearPeriod],
+  );
   const [commodity, setCommodity] = useState("all");
   const [period, setPeriod] = useState("latest");
   const [evidenceRecord, setEvidenceRecord] = useState(null);
@@ -206,20 +213,22 @@ export default function OverviewPage({ data }) {
         Quarterly production from the world's largest mining companies, taken from their own reports.
       </p>
 
-      <SectionHeading
-        title={`Coverage, ${activePeriod || "latest available"}`}
-        description="Operations, companies and countries with production reported for the quarter."
-      />
-      <StatGrid
-        items={[
-          { label: "Mines & operations", value: fmtInt(filteredMines.length) },
-          {
-            label: "Companies tracked",
-            value: fmtInt(companies.length),
-          },
-          { label: "Countries", value: fmtInt(countries) },
-          { label: "Commodities", value: fmtInt(mapCommodities.length) },
-        ]}
+      {/* Headline figures: supply direction by commodity, the same quarter a year apart, at mines comparable in
+          both quarters. Counts and medians, not totals; see productionBreadth for why. */}
+      <KeyFigures
+        title="Headlines"
+        description={`Output at mines reporting on the same basis in both quarters, ${latestPeriod} against ${previousYearPeriod}.`}
+        date={`Up to and including ${latestPeriod}`}
+        items={HEADLINE_COMMODITIES.map((c) => {
+          const b = productionBreadth(yearOnYear, c);
+          if (!b || b.mines < 5) return null;
+          return {
+            label: `${commodityLabel(c)} output`,
+            value: `${b.lower} of ${b.mines} mines lower`,
+            title: `${b.higher} higher, ${b.mines - b.lower - b.higher} unchanged`,
+            note: <><ChangeTag value={b.median} good="up" size="small" /> median mine</>,
+          };
+        })}
       />
 
       <div className="mt-10">

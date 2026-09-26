@@ -2,6 +2,9 @@ import { describe, expect, test } from "bun:test";
 import {
   aggregateProductionGroup,
   comparableQuarterlyPivot,
+  compareMineProduction,
+  productionBreadth,
+  yearAgoQuarter,
   latestProductionQuarter,
   productionSeriesKey,
   quarterlyPivot,
@@ -240,3 +243,50 @@ function production(overrides = {}) {
     ...overrides,
   };
 }
+
+describe("year-on-year production at comparable mines", () => {
+  const record = (mine_id, time_period, value, extra = {}) => ({
+    mine_id, time_period, commodity: "copper", metric: "production", value_normalized: value, unit_normalized: "kt",
+    product_form: null, basis: "consolidated", operation: null, ...extra,
+  });
+  const mines = [
+    { id: "bhp-escondida", name: "Escondida", country: "Chile", company: "BHP" },
+    { id: "escondida", name: "Escondida", country: "Chile", company: "Rio Tinto" },
+    { id: "morenci", name: "Morenci", country: "United States", company: "Freeport-McMoRan" },
+    { id: "hamburg", name: "Hamburg Smelter", country: "Germany", company: "Aurubis" },
+  ];
+
+  test("keeps one figure per physical mine, the operator's rather than a partner's share", () => {
+    const rows = compareMineProduction(
+      [record("bhp-escondida", "Q2 2026", 311.9), record("bhp-escondida", "Q2 2025", 327.3), record("escondida", "Q2 2026", 96, { basis: "equity" }), record("escondida", "Q2 2025", 100, { basis: "equity" })],
+      mines, "Q2 2026", "Q2 2025",
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].mine.company).toBe("BHP");
+    expect(rows[0].change).toBeCloseTo(-4.7, 1);
+  });
+
+  test("skips a mine whose basis changed between the quarters instead of reporting a collapse", () => {
+    const rows = compareMineProduction(
+      [record("morenci", "Q2 2026", 53, { basis: "attributable" }), record("morenci", "Q2 2025", 152)],
+      mines, "Q2 2026", "Q2 2025",
+    );
+    expect(rows).toHaveLength(0);
+  });
+
+  test("leaves smelters out, since they process other mines' output", () => {
+    const rows = compareMineProduction([record("hamburg", "Q2 2026", 92), record("hamburg", "Q2 2025", 80)], mines, "Q2 2026", "Q2 2025");
+    expect(rows).toHaveLength(0);
+  });
+
+  test("counts lower mines and takes the median change", () => {
+    const rows = [-50, -10, -2, 5].map((change) => ({ commodity: "copper", change }));
+    expect(productionBreadth(rows, "copper")).toEqual({ mines: 4, lower: 3, higher: 1, median: -6 });
+    expect(productionBreadth(rows, "gold")).toBeNull();
+  });
+
+  test("finds the same quarter a year earlier", () => {
+    expect(yearAgoQuarter("Q2 2026")).toBe("Q2 2025");
+    expect(yearAgoQuarter("H1 2026")).toBeNull();
+  });
+});
