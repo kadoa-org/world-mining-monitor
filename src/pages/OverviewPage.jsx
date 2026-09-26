@@ -206,8 +206,8 @@ export default function OverviewPage({ data }) {
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
-      <h1 className="text-title sm:text-display font-semibold text-ink mb-2">
-        Global mining production
+      <h1 className="dk-h1">
+        World Mining Monitor
       </h1>
       <p className="text-regular text-ink_muted max-w-3xl mb-8">
         Quarterly production from the world's largest mining companies, taken from their own reports.
