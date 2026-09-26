@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { ChartCard, FilterSelect, SectionHeading } from "../kit";
 import { COMMODITY_COLORS, commodityLabel } from "../constants";
 import { latestPerMineCommodity } from "../data";
 import MiningMap from "../MiningMapLoader";
@@ -201,11 +202,14 @@ export default function OverviewPage({ data }) {
       <h1 className="text-title sm:text-display font-semibold text-ink mb-2">
         Global mining production
       </h1>
-      <p className="text-regular text-ink_muted max-w-3xl mb-6">
-        Quarterly production volumes of the world's largest mining companies, extracted
-        from their own quarterly and annual reports. Newly extracted facts include source evidence and lineage.
+      <p className="text-regular text-ink_muted max-w-3xl mb-8">
+        Quarterly production from the world's largest mining companies, taken from their own reports.
       </p>
 
+      <SectionHeading
+        title={`Coverage, ${activePeriod || "latest available"}`}
+        description="Operations, companies and countries with production reported for the quarter."
+      />
       <StatGrid
         items={[
           { label: "Mines & operations", value: fmtInt(filteredMines.length) },
@@ -214,79 +218,62 @@ export default function OverviewPage({ data }) {
             value: fmtInt(companies.length),
           },
           { label: "Countries", value: fmtInt(countries) },
-          { label: "Reporting period", value: activePeriod || "Latest available" },
+          { label: "Commodities", value: fmtInt(mapCommodities.length) },
         ]}
       />
 
-      <div className="mt-8">
-        <SectionHeader
-          className="overview-map-head"
-          title="Production map"
-          subtitle={
+      <div className="mt-10">
+        <ChartCard
+          id="map-title"
+          title={`Production map, ${activePeriod || "latest available"}`}
+          description={
             commodity === "all"
-              ? `Each marker is an operation reporting production ${activePeriod ? `in ${activePeriod}` : "in its latest available period"}. Select a commodity to compare output.`
+              ? "Each marker is an operation reporting production. Choose a commodity to compare output."
               : selectedUnit
-                ? `Bubble size compares ${commodityLabel(commodity).toLowerCase()} production in ${activePeriod || "the latest available period"} (${selectedUnit}).`
-                : "No comparable normalized production unit is available for this selection."
+                ? `Circle size compares ${commodityLabel(commodity).toLowerCase()} production (${selectedUnit}).`
+                : "No comparable production unit is available for this selection."
           }
-          right={
-            <span className="overview-map-controls flex items-center gap-2">
-              <select
-                value={commodity}
-                onChange={(e) => setCommodity(e.target.value)}
-                className="h-8 px-2 text-small border border-stroke rounded-md bg-white focus:outline-none focus:border-accent"
-                aria-label="Commodity"
-              >
-                <option value="all">All commodities</option>
-                {mapCommodities.map((c) => (
-                  <option key={c} value={c}>
-                    {commodityLabel(c)}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={period}
-                onChange={(e) => setPeriod(e.target.value)}
-                className="h-8 px-2 text-small border border-stroke rounded-md bg-white focus:outline-none focus:border-accent"
-                aria-label="Period"
-              >
-                <option value="latest">{latestPeriod} · latest</option>
-                {availableQuarters.filter((p) => p !== latestPeriod).map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-                <option value="all">Latest available per operation</option>
-              </select>
-            </span>
-          }
-        />
-        <Card className="overflow-hidden">
+        >
+          <div className="overview-map-controls flex flex-wrap gap-x-6">
+            <FilterSelect
+              label="Commodity"
+              value={commodity}
+              onChange={setCommodity}
+              options={[["all", "All commodities"], ...mapCommodities.map((c) => [c, commodityLabel(c)])]}
+            />
+            <FilterSelect
+              label="Period"
+              value={period}
+              onChange={setPeriod}
+              options={[
+                ["latest", `${latestPeriod} (latest)`],
+                ...availableQuarters.filter((p) => p !== latestPeriod).map((p) => [p, p]),
+                ["all", "Latest available per operation"],
+              ]}
+            />
+          </div>
           <MiningMap
             mines={filteredMines}
             mineProduction={mineProduction}
             height={560}
             scaleByOutput={commodity !== "all" && Boolean(selectedUnit)}
           />
-        </Card>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-          {(commodity === "all" ? mapCommodities : [commodity]).map((c) => {
-            const active = commodity === "all" || commodity === c;
-            return (
-              <button
-                key={c}
-                onClick={() => setCommodity(commodity === c ? "all" : c)}
-                className={`flex items-center gap-1.5 text-mini ${active ? "text-ink_muted hover:text-ink" : "text-ink_faint"}`}
-              >
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: COMMODITY_COLORS[c], opacity: active ? 1 : 0.3 }}
-                />
-                {commodityLabel(c)}
-              </button>
-            );
-          })}
-        </div>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+            {(commodity === "all" ? mapCommodities : [commodity]).map((c) => {
+              const active = commodity === "all" || commodity === c;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setCommodity(commodity === c ? "all" : c)}
+                  className={`flex items-center gap-1.5 text-mini ${active ? "text-ink_muted hover:text-ink" : "text-ink_faint"}`}
+                >
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COMMODITY_COLORS[c], opacity: active ? 1 : 0.3 }} />
+                  {commodityLabel(c)}
+                </button>
+              );
+            })}
+          </div>
+        </ChartCard>
       </div>
 
       <div className="mt-10">
@@ -294,8 +281,8 @@ export default function OverviewPage({ data }) {
           <>
             <SectionHeader
               className="overview-results-head"
-              title={`Coverage by commodity — ${activePeriod || "latest available"}`}
-              subtitle="Commodities with the broadest mine-level production coverage in this view"
+              title={`Coverage by commodity, ${activePeriod || "latest available"}`}
+              subtitle="Commodities with the most operations reporting production."
               right={<Link to="/commodities">All commodities →</Link>}
             />
             <Card className="overflow-hidden">

@@ -62,7 +62,7 @@ export default function LargestMinesPage({ data, slug }) {
 
       <div className="mt-8">
         <SectionHeader
-          title={`Ranking — ${quarter || "latest quarter"}`}
+          title={`Ranking, ${quarter || "latest quarter"}`}
           subtitle={`Disclosed ${label.toLowerCase()} production per mine, ${unit}`}
           right={<Link to={`/commodity/${slug}`}>{label} by company →</Link>}
         />
@@ -97,7 +97,7 @@ export default function LargestMinesPage({ data, slug }) {
           </div>
         </Card>
         <p className="text-mini text-ink_muted mt-3">
-          Ranked by mine-level disclosures from the covered companies — operators that report only consolidated totals
+          Ranked by mine-level disclosures from the covered companies; operators that report only consolidated totals
           are not shown here.
         </p>
       </div>

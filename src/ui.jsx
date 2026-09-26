@@ -1,6 +1,7 @@
 // Reusable primitives shared by all pages. Linear.app sizing: 18px root,
 // 0.9375rem body — same conventions as the sibling dataset sites.
 import React, { useEffect, useId, useRef } from "react";
+import { SectionHeading, Stat, StatGrid as KitStatGrid } from "./kit";
 import { Tag as DkTag } from "./kit";
 import { navigate, withBase } from "./router";
 
@@ -102,46 +103,30 @@ export function Card({ children, className = "" }) {
   return <div className={`border border-[#b1b4b6] bg-white ${className}`}>{children}</div>;
 }
 
-export function SectionHeader({ title, subtitle, right, className = "", as: Heading = "h2" }) {
-  return (
-    <div className={`dk-section-head ${className}`}>
-      <div style={{ minWidth: 0 }}>
-        <Heading className={Heading === "h1" ? "dk-h1" : undefined}>{title}</Heading>
-        {subtitle && <p className="dk-hint">{subtitle}</p>}
+// Section headings follow the shared kit pattern: bold title, italic description, date. A page title (h1) keeps
+// the page heading style.
+export function SectionHeader({ title, subtitle, date, right, className = "", as: Heading = "h2" }) {
+  if (Heading === "h1") {
+    return (
+      <div className={`dk-section-head ${className}`}>
+        <div style={{ minWidth: 0 }}>
+          <h1 className="dk-h1">{title}</h1>
+          {subtitle && <p className="dk-hint">{subtitle}</p>}
+        </div>
+        {right && <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>{right}</div>}
       </div>
-      {right && <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>{right}</div>}
-    </div>
-  );
+    );
+  }
+  return <div className={className || undefined}><SectionHeading title={title} description={subtitle} date={date} right={right} as={Heading} /></div>;
 }
 
 export function PropertyLabel({ children, className = "" }) {
   return <div className={`text-mini text-ink_muted ${className}`}>{children}</div>;
 }
 
-// Responsive stat grid: 2-up on mobile, 4-up on desktop, with clean dividers
-// on both axes and non-wrapping values.
-export function StatGrid({ items, cols = 4 }) {
-  const desktopCols = cols === 5 ? "sm:grid-cols-5" : "sm:grid-cols-4";
-  return (
-    <div className={`grid grid-cols-2 ${desktopCols} bg-white border border-[#b1b4b6] overflow-hidden`}>
-      {items.map((it, i) => {
-        const cls = [
-          "px-4 sm:px-5 py-4 min-w-0 border-stroke",
-          i % 2 !== 0 ? "border-l" : "",
-          i >= 2 ? "border-t" : "",
-          "sm:border-t-0",
-          i % cols === 0 ? "sm:border-l-0" : "sm:border-l",
-        ].join(" ");
-        return (
-          <div key={it.label} className={cls}>
-            <PropertyLabel className="mb-1.5">{it.label}</PropertyLabel>
-            <div className="text-regular sm:text-large font-semibold text-ink tabular-nums truncate">{it.value}</div>
-            {it.sub && <div className="text-mini text-ink_muted mt-0.5 truncate">{it.sub}</div>}
-          </div>
-        );
-      })}
-    </div>
-  );
+// Headline figures in the shared kit's grey row.
+export function StatGrid({ items }) {
+  return <KitStatGrid>{items.map((it) => <Stat key={it.label} label={it.label} value={it.value} sub={it.sub} />)}</KitStatGrid>;
 }
 
 // slugify lives in constants.js (plain JS) so scripts/prerender.mjs can share it.

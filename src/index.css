@@ -173,21 +173,17 @@ html, body {
 /* Overview filters and drill-down links stack instead of squeezing section
    copy into a narrow column on phone-width screens. */
 @media (max-width: 639px) {
-  .overview-map-head,
   .overview-results-head {
     align-items: stretch;
     flex-direction: column;
   }
-  .overview-map-head > :last-child,
   .overview-results-head > :last-child {
     white-space: normal !important;
   }
-  .overview-map-controls {
-    width: 100%;
+  .overview-map-controls .dk-filter {
+    flex: 1 1 100%;
   }
-  .overview-map-controls select {
-    flex: 1 1 0;
-    min-width: 0;
-    width: 0;
+  .overview-map-controls .dk-filter__select {
+    width: 100%;
   }
 }
