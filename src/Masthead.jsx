@@ -35,7 +35,7 @@ export default function Masthead({ route, latestQuarter }) {
           </span>
         }
       />
-      <NavBar
+      <NavBar collapse
         LinkComponent={Link}
         items={TABS.map((t) => ({ href: t.to, label: t.label, active: activeTab === t.match }))}
       />
