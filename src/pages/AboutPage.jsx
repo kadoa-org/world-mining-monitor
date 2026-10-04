@@ -8,7 +8,7 @@ export default function AboutPage() {
   return (
     <div className="dk-container">
       <KitAboutPage
-        lede="Quarterly mine production from the world's largest listed mining companies, taken from their own reports. Free to search, download and reuse."
+        lede="Quarterly mine production from the world's largest listed mining companies, taken from their own reports."
         sources={[
           { name: "BHP", href: "https://www.bhp.com/investors/financial-results-operational-reviews", what: "Operational reviews" },
           { name: "Rio Tinto", href: "https://www.riotinto.com/en/invest/financial-news-performance/production", what: "Quarterly production reports" },
