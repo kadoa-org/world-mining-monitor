@@ -3,10 +3,10 @@ import { Card, Link } from "../ui";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-[820px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       <h1 className="text-title sm:text-display font-semibold text-ink mb-4">About the data</h1>
 
-      <div className="space-y-4 text-regular text-ink_secondary leading-relaxed">
+      <div className="max-w-[820px] space-y-4 text-regular text-ink_secondary leading-relaxed">
         <p>
           The World Mining Monitor tracks mine-level production volumes for the world's largest publicly listed
           mining companies. The data is extracted from each company's quarterly and annual reports. Newly extracted

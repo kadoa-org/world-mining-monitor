@@ -19,9 +19,9 @@
 .dk-change--small .dk-change__arrow { font-size: 14px; }
 
 .dk-heading { margin: 0 0 15px; min-width: 0; }
-.dk-heading__top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.dk-heading__top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; }
 .dk-heading__title { font-size: 24px; font-weight: 700; line-height: 1.25; margin: 0 0 8px; color: var(--dk-gov-text); }
-.dk-heading__right { flex-shrink: 0; white-space: nowrap; }
+.dk-heading__right { flex-shrink: 0; white-space: nowrap; max-width: 100%; }
 .dk-heading__desc { font-size: 16px; font-style: italic; color: var(--dk-gov-secondary); margin: 0 0 10px; max-width: 70ch; }
 .dk-heading__date { font-size: 16px; color: var(--dk-gov-secondary); margin: 0; }
 .dk-heading > :last-child { margin-bottom: 0; }

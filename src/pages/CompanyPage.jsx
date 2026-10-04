@@ -129,7 +129,7 @@ export default function CompanyPage({ data, slug }) {
 
   if (!company) {
     return (
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      <div className="dk-container pt-8 pb-16">
         <h1 className="text-title font-semibold text-ink mb-2">Company not found</h1>
         <p className="text-regular text-ink_muted">
           No production data for this company. <Link to="/companies">Browse all companies</Link>.
@@ -141,7 +141,7 @@ export default function CompanyPage({ data, slug }) {
   const ticker = COMPANY_TICKERS[company];
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}

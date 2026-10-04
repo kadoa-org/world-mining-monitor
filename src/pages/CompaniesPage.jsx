@@ -47,7 +47,7 @@ export default function CompaniesPage({ data }) {
   }, [rows, search, sort]);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       <SectionHeader as="h1" title="Companies" subtitle={`${fmtInt(rows.length)} companies with extracted production data`} right={<Link to="/mines">Browse mines</Link>} />
       <input
         type="text"

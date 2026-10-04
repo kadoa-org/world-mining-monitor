@@ -77,7 +77,7 @@ export default function CommodityPage({ data, slug }) {
 
   if (!commodity) {
     return (
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      <div className="dk-container pt-8 pb-16">
         <h1 className="text-title font-semibold text-ink mb-2">Commodity not found</h1>
         <p className="text-regular text-ink_muted">
           No production data for this commodity. <Link to="/commodities">Browse all commodities</Link>.
@@ -90,7 +90,7 @@ export default function CommodityPage({ data, slug }) {
   const color = COMMODITY_COLORS[commodity] || "#6b7280";
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       <p className="text-mini text-ink_muted mb-1">
         <Link to="/commodities">Commodities</Link> / {label}
       </p>
@@ -132,7 +132,7 @@ export default function CommodityPage({ data, slug }) {
           title={`Largest ${label.toLowerCase()} producers, ${quarter}`}
           subtitle={`Disclosed mine-level production, ${stats.unit}. Change on ${prevQuarter}.`}
           right={
-            <span className="flex items-center gap-3">
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {mineRanking.length >= 5 ? (
                 <Link to={`/largest-${slug}-mines`}>Largest {label.toLowerCase()} mines →</Link>
               ) : null}

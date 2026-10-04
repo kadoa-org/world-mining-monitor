@@ -15,7 +15,7 @@ export default function MinesPage({ data }) {
   }, [data]);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       <h1 className="text-title font-semibold mb-4">Mines tracked</h1>
       <p className="mb-6">Quarterly production for {mines.length} individual operations, extracted from their operators' own reports.</p>
       <ul className="space-y-3">

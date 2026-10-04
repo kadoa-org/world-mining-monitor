@@ -23,7 +23,7 @@ export default function LargestMinesPage({ data, slug }) {
 
   if (!commodity) {
     return (
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+      <div className="dk-container pt-8 pb-16">
         <h1 className="text-title font-semibold text-ink mb-2">Commodity not found</h1>
         <p className="text-regular text-ink_muted">
           <Link to="/commodities">Browse all commodities</Link>.
@@ -35,7 +35,7 @@ export default function LargestMinesPage({ data, slug }) {
   const label = commodityLabel(commodity);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       <p className="text-mini text-ink_muted mb-1">
         <Link to="/commodities">Commodities</Link> / <Link to={`/commodity/${slug}`}>{label}</Link> / Largest mines
       </p>

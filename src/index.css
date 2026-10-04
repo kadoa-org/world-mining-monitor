@@ -3,10 +3,12 @@
 @tailwind utilities;
 
 .seo-shell {
-  max-width: 1440px;
+  max-width: calc(1200px + 60px);
   margin: 0 auto;
-  padding: 24px 24px 64px;
+  padding: 24px 15px 64px;
+  box-sizing: border-box;
 }
+@media (min-width: 40.0625em) { .seo-shell { padding-left: 30px; padding-right: 30px; } }
 
 .seo-shell h1 { font-size: 2rem; margin-bottom: 1rem; }
 .seo-shell h2 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
@@ -62,24 +64,6 @@ html, body {
 *:focus-visible {
   outline: 2px solid rgba(94, 106, 210, 0.35);
   outline-offset: 1px;
-}
-
-/* Align the kit header + nav container with the page content container
-   (max-w-[1440px] mx-auto px-4 sm:px-6) so their left/right edges line up. */
-.dk-header .dk-container,
-.dk-nav .dk-container,
-.dk-footer .dk-container {
-  max-width: 1440px;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-@media (min-width: 640px) {
-  .dk-header .dk-container,
-  .dk-nav .dk-container,
-  .dk-footer .dk-container {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
 }
 
 /* ── Leaflet light theme ─────────────────────────────────────────────────── */

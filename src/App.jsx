@@ -20,7 +20,7 @@ const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commo
 
 function LoadingScreen() {
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-16" aria-busy="true">
+    <div className="dk-container pt-16" aria-busy="true">
       <p role="status">Loading mining data…</p>
       <div aria-hidden="true">
         <div className="h-4 w-40 bg-muted rounded mb-4" />

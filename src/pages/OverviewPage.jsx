@@ -202,7 +202,7 @@ export default function OverviewPage({ data }) {
   }, [production]);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 pb-16">
+    <div className="dk-container pt-8 pb-16">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
