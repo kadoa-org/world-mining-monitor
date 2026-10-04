@@ -1,51 +1,35 @@
 import React from "react";
-import { Card, Link } from "../ui";
+import { AboutPage as KitAboutPage } from "../kit";
+import { METHODS } from "../methodology";
+
+const REPO = "https://github.com/kadoa-org/world-mining-monitor";
 
 export default function AboutPage() {
   return (
-    <div className="dk-container pt-8 pb-16">
-      <h1 className="text-title sm:text-display font-semibold text-ink mb-4">About the data</h1>
-
-      <div className="max-w-[820px] space-y-4 text-regular text-ink_secondary leading-relaxed">
-        <p>
-          The World Mining Monitor tracks mine-level production volumes for the world's largest publicly listed
-          mining companies. The data is extracted from each company's quarterly and annual reports. Newly extracted
-          facts include the original source value and its location in the report.
-        </p>
-
-        <h2 className="text-large font-semibold text-ink pt-4">How it works</h2>
-        <p>
-          Company investor-relations pages are monitored for new quarterly and annual reports using{" "}
-          <a href="https://www.kadoa.com" target="_blank" rel="noreferrer" className="dk-link">
-            Kadoa
-          </a>
-          . New PDF and spreadsheet reports are parsed with an extraction pipeline, then normalized: commodity names are
-          mapped to a canonical list, units converted for comparison (kt for base metals, koz for precious metals), fiscal
-          quarters mapped to calendar quarters, and values validated against range and consistency checks.
-        </p>
-
-        <h2 className="text-large font-semibold text-ink pt-4">Source details</h2>
-        <p>
-          Grounded rows include the source report, its page or table location, the exact excerpt, and the value, unit,
-          and period as reported by the company. Select a linked value in a production table to compare it with the
-          archived source file, or download the CSV to use the same source fields directly.
-        </p>
-
-        <h2 className="text-large font-semibold text-ink pt-4">What's covered</h2>
-        <p>
-          Production and sales volumes by mine or operation, commodity, and period. Coverage follows what companies
-          disclose: some report mine-by-mine, others only consolidated totals; some quarterly, others half-yearly.
-          Reporting bases differ too (consolidated vs. attributable share of joint ventures).
-        </p>
-
-        <h2 className="text-large font-semibold text-ink pt-4">Use the data</h2>
-        <p>
-          <a href="https://www.kadoa.com/contact/sales" target="_blank" rel="noreferrer" className="dk-link">
-            Get in touch
-          </a>{" "}
-          for the full historical dataset with continuous updates.
-        </p>
-      </div>
+    <div className="dk-container">
+      <KitAboutPage
+        lede="Quarterly mine production from the world's largest listed mining companies, taken from their own reports. Free to search, download and reuse."
+        sources={[
+          { name: "BHP", href: "https://www.bhp.com/investors/financial-results-operational-reviews", what: "Operational reviews" },
+          { name: "Rio Tinto", href: "https://www.riotinto.com/en/invest/financial-news-performance/production", what: "Quarterly production reports" },
+          { name: "Vale", href: "https://vale.com/announcements-results-presentations-and-reports", what: "Production and sales reports" },
+          { name: "Glencore", href: "https://www.glencore.com/publications", what: "Production reports" },
+          { name: "Freeport-McMoRan", href: "https://investors.fcx.com/investors/financial-information/sec-filings/default.aspx", what: "Quarterly results and SEC filings" },
+          { name: "All companies", href: "/mining/companies", what: "Every company covered, each from its own reports" },
+        ]}
+        steps={[
+          { title: "Monitor", text: "Kadoa checks each company's investor pages for new reports every day." },
+          { title: "Extract", text: "It reads each PDF or spreadsheet and pulls out production by mine and commodity." },
+          { title: "Normalize", text: "Names, units and fiscal quarters are mapped to one standard and checked." },
+          { title: "Link", text: "Each value links back to the page of the report it came from." },
+        ]}
+        methods={METHODS}
+        corrections={
+          <>
+            Found an error? <a href={`${REPO}/issues`}>Open an issue on GitHub</a>.
+          </>
+        }
+      />
     </div>
   );
 }
