@@ -8,6 +8,7 @@ export default function AboutPage() {
   return (
     <div className="dk-container">
       <KitAboutPage
+        dataset="mining"
         lede="Quarterly mine production from the world's largest listed mining companies, taken from their own reports."
         sources={[
           { name: "BHP", href: "https://www.bhp.com/investors/financial-results-operational-reviews", what: "Operational reviews" },
