@@ -66,11 +66,12 @@ export function useMiningData(db, initialData = null) {
       .sort((a, b) => Number(b.slice(2)) - Number(a.slice(2)));
     const periods = { quarters, halves, fullYears };
 
-    // Latest quarter with meaningful coverage (>= 5 production records), so a
-    // single early reporter doesn't flip the whole site to a sparse quarter.
+    // Latest quarter reported by at least 5 companies, so a single early reporter
+    // doesn't flip the whole site to a sparse quarter. One report alone can carry
+    // 5 production records, so the threshold counts companies, not records.
     let latestPeriod = latestProductionQuarter(production) ?? "";
     for (const p of quarters) {
-      const count = production.filter((r) => r.time_period === p && r.metric === "production").length;
+      const count = new Set(production.filter((r) => r.time_period === p && r.metric === "production").map((r) => r.company)).size;
       if (count >= 5) {
         latestPeriod = p;
         break;

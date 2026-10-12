@@ -18,12 +18,12 @@ const db = new SQL.Database(readFileSync(dbPath));
 
 const rows = [];
 const stmt = db.prepare(
-  "SELECT time_period, count(*) AS n FROM production WHERE metric = 'production' GROUP BY time_period",
+  "SELECT time_period, count(DISTINCT company) AS n FROM production WHERE metric = 'production' GROUP BY time_period",
 );
 while (stmt.step()) rows.push(stmt.getAsObject());
 stmt.free();
 
-// Latest quarter with meaningful coverage (>= 5 records), same heuristic as
+// Latest quarter reported by at least 5 companies, same heuristic as
 // the app, so the badge and the overview agree.
 const qKey = (tp) => `${tp.slice(3)}${tp[1]}`;
 const latestQuarter =

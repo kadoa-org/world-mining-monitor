@@ -10,8 +10,9 @@ const TABS = [
   { to: "/about", label: "About", match: "about" },
 ];
 
-// data-kit chrome: brand bar + tab navigation + data-freshness badge.
-export default function Masthead({ route, latestQuarter }) {
+// data-kit chrome: brand bar + tab navigation + update-cadence badge. Companies report on their own schedules, so
+// the badge names how often new reports are ingested rather than one quarter the data runs through.
+export default function Masthead({ route }) {
   const activeTab = (() => {
     if (route.name === "company" || route.name === "mine" || route.name === "mines") return "companies";
     if (route.name === "commodity") return "commodities";
@@ -30,7 +31,7 @@ export default function Masthead({ route, latestQuarter }) {
         }
         right={
           <span style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {latestQuarter && <LiveBadge>Data through {latestQuarter}</LiveBadge>}
+            <LiveBadge>Updated weekly</LiveBadge>
             <GitHubButton repo="kadoa-org/world-mining-monitor" />
           </span>
         }

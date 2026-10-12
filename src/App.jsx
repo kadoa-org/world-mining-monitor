@@ -82,7 +82,7 @@ export default function App({ initialPage = null }) {
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
-      <Masthead route={route} latestQuarter={initialPage?.latestQuarter ?? data?.latestPeriod} />
+      <Masthead route={route} />
       {needsDb && !pageReady ? (
         error ? <ErrorScreen error={error} /> : <LoadingScreen />
       ) : (
