@@ -18,6 +18,14 @@ import {
 
 const MAX_RENDERED = 1000;
 
+function comparisonKey(record, period = record.time_period) {
+  return JSON.stringify([
+    record.company, record.mine_id, record.operation || "", record.commodity,
+    record.product_form || "", record.metric, record.basis || "unknown",
+    record.unit_normalized || "", period,
+  ]);
+}
+
 // Chronologically sortable key for a period label. Clean periods (Q/H/9M/FY)
 // order by year then specificity; free-text labels sink to the bottom.
 function periodKey(tp) {
@@ -78,12 +86,12 @@ export default function ProductionPage({ data, initialQuery = {} }) {
     setMetric(initialQuery.metric || "production");
   }, [initialQuery.search, initialQuery.commodity, initialQuery.company, initialQuery.period, initialQuery.metric]);
 
-  // Previous-period lookup for QoQ deltas (operation included to avoid collisions).
+  // Compare only records from the same company, reporting basis, and unit.
   const prevLookup = useMemo(() => {
     const map = new Map();
     for (const p of production) {
       map.set(
-        `${p.mine_id}|${p.operation || ""}|${p.commodity}|${p.product_form || ""}|${p.metric}|${p.time_period}`,
+        comparisonKey(p),
         p.value_normalized,
       );
     }
@@ -104,7 +112,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
         const mine = mineById.get(p.mine_id);
         const pq = getPrevPeriod(p.time_period);
         const prevVal = pq
-          ? prevLookup.get(`${p.mine_id}|${p.operation || ""}|${p.commodity}|${p.product_form || ""}|${p.metric}|${pq}`)
+          ? prevLookup.get(comparisonKey(p, pq))
           : null;
         const qoq =
           prevVal != null && prevVal > 0 && p.value_normalized != null
