@@ -153,9 +153,9 @@ export default function MiningMap({
                 <LeafletTooltip direction="top" offset={[0, -radius]} className="mine-leaflet-tooltip">
                   <span style={{ fontWeight: 600 }}>{mine.name}</span>
                   <br />
-                  <span style={{ opacity: 0.6, fontSize: 10 }}>{mine.company}</span>
+                  <span style={{ color: "#505a5f" }}>{mine.company}</span>
                 </LeafletTooltip>
-                <Popup className="mine-popup" maxWidth={300} minWidth={228}>
+                <Popup className="mine-popup" maxWidth={340} minWidth={260}>
                   <section className="mine-popup-card" aria-labelledby={`mine-popup-${mine.id}`}>
                     <header className="mine-popup-header">
                       <h3 id={`mine-popup-${mine.id}`}>{mine.name}</h3>

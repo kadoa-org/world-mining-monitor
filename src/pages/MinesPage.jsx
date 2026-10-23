@@ -15,9 +15,9 @@ export default function MinesPage({ data }) {
   }, [data]);
 
   return (
-    <div className="dk-container pt-8 pb-16">
-      <h1 className="text-title font-semibold mb-4">Mines tracked</h1>
-      <p className="mb-6">Quarterly production for {mines.length} individual operations, extracted from their operators' own reports.</p>
+    <div className="dk-container page-main">
+      <h1 className="dk-h1">Mines tracked</h1>
+      <p className="page-lede">Quarterly production for {mines.length} individual operations, extracted from their operators' own reports.</p>
       <ul className="space-y-3">
         {mines.map((mine) => (
           <li key={mine.id}>

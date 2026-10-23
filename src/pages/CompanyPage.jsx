@@ -129,8 +129,8 @@ export default function CompanyPage({ data, slug }) {
 
   if (!company) {
     return (
-      <div className="dk-container pt-8 pb-16">
-        <h1 className="text-title font-semibold text-ink mb-2">Company not found</h1>
+      <div className="dk-container page-main">
+        <h1 className="dk-h1">Company not found</h1>
         <p className="text-regular text-ink_muted">
           No production data for this company. <Link to="/companies">Browse all companies</Link>.
         </p>
@@ -141,18 +141,18 @@ export default function CompanyPage({ data, slug }) {
   const ticker = COMPANY_TICKERS[company];
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
-      <p className="text-mini text-ink_muted mb-1">
+      <p className="page-breadcrumb">
         <Link to="/companies">Companies</Link> / {company}
       </p>
-      <h1 className="text-title sm:text-display font-semibold text-ink mb-2">
+      <h1 className="dk-h1">
         {company}
         {ticker && <span className="ml-3 text-large text-ink_faint font-normal align-middle">{ticker}</span>}
       </h1>
-      <p className="text-regular text-ink_muted max-w-3xl mb-6">
+      <p className="page-lede">
         Mine-level production volumes extracted from {company}'s quarterly and annual reports.
       </p>
 
@@ -166,7 +166,7 @@ export default function CompanyPage({ data, slug }) {
       />
 
       {companyMines.length > 0 && (
-        <div className="mt-8">
+        <div className="page-section">
           <SectionHeader title="Operations map" />
           <Card className="overflow-hidden">
             <MiningMap
@@ -180,7 +180,7 @@ export default function CompanyPage({ data, slug }) {
       )}
 
       {pivot.quarters.length > 0 && (
-        <div className="mt-8">
+        <div className="page-section">
           <SectionHeader
             title="Production by quarter"
             subtitle="Comparable volumes by commodity, product form, and reporting basis"
@@ -195,7 +195,7 @@ export default function CompanyPage({ data, slug }) {
         </div>
       )}
 
-      <div className="mt-8">
+      <div className="page-section">
         <SectionHeader
           title="Production by period"
           subtitle={`${fmtInt(rows.length)} most recent records`}
@@ -223,7 +223,7 @@ export default function CompanyPage({ data, slug }) {
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <div className="min-w-[1120px]">
-              <div className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_180px_110px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+              <div className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_120px_140px_90px_120px_80px_110px_70px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
                 <span>Operation</span>
                 <span>Commodity</span>
                 <span>Metric</span>
@@ -237,7 +237,7 @@ export default function CompanyPage({ data, slug }) {
                 {rows.map((r, i) => (
                   <div
                     key={`${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                    className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_110px_140px_90px_180px_110px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
+                    className="grid gap-3 px-4 grid-cols-[minmax(180px,1fr)_120px_140px_90px_120px_80px_110px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="truncate">
                       {r.mine_id && mineById.has(r.mine_id) && linkedMineIds.has(r.mine_id) ? (

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { COMMODITY_COLORS, commodityLabel } from "../constants";
 import { Card, fmtInt, RowLinkNav, SectionHeader, SortHeader, slugify } from "../ui";
 
-const COLS = "grid gap-3 px-4 grid-cols-[30px_1fr_80px_80px] sm:grid-cols-[40px_1fr_110px_110px_110px]";
+const COLS = "grid gap-3 px-4 grid-cols-[24px_minmax(0,1fr)_96px] sm:grid-cols-[40px_1fr_110px_110px_110px]";
 
 export default function CommoditiesPage({ data }) {
   const { production } = data;
@@ -40,16 +40,18 @@ export default function CommoditiesPage({ data }) {
   }, [rows, sort]);
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       <SectionHeader as="h1"
         title="Commodities"
         subtitle={`${fmtInt(rows.length)} commodities tracked across quarterly disclosures`}
       />
       <Card className="overflow-hidden">
-        <div className={`${COLS} text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke`}>
+        <div className={`${COLS} text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke`}>
           <span className="text-right">#</span>
           <SortHeader label="Commodity" sortKey="commodity" sort={sort} setSort={setSort} />
-          <SortHeader label="Companies" sortKey="companyCount" sort={sort} setSort={setSort} align="right" />
+          <span className="hidden sm:block text-right">
+            <SortHeader label="Companies" sortKey="companyCount" sort={sort} setSort={setSort} align="right" />
+          </span>
           <span className="hidden sm:block text-right">
             <SortHeader label="Mines" sortKey="mineCount" sort={sort} setSort={setSort} align="right" />
           </span>
@@ -67,7 +69,7 @@ export default function CommoditiesPage({ data }) {
                   />
                   {commodityLabel(c.commodity)}
                 </span>
-                <span className="text-right tabular-nums">{fmtInt(c.companyCount)}</span>
+                <span className="hidden sm:block text-right tabular-nums">{fmtInt(c.companyCount)}</span>
                 <span className="hidden sm:block text-right tabular-nums">{fmtInt(c.mineCount)}</span>
                 <span className="text-right tabular-nums">{fmtInt(c.records)}</span>
               </div>

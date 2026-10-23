@@ -1,5 +1,4 @@
-// Reusable primitives shared by all pages. Linear.app sizing: 18px root,
-// 0.9375rem body — same conventions as the sibling dataset sites.
+// Reusable primitives shared by all pages. Type follows the GOV.UK scale in tailwind.config.js.
 import React, { useEffect, useId, useRef } from "react";
 import { SectionHeading, Stat, StatGrid as KitStatGrid } from "./kit";
 import { Tag as DkTag } from "./kit";
@@ -108,7 +107,7 @@ export function Card({ children, className = "" }) {
 export function SectionHeader({ title, subtitle, date, right, className = "", as: Heading = "h2" }) {
   if (Heading === "h1") {
     return (
-      <div className={`dk-section-head ${className}`}>
+      <div className={`dk-section-head page-title-block ${className}`}>
         <div style={{ minWidth: 0 }}>
           <h1 className="dk-h1">{title}</h1>
           {subtitle && <p className="dk-hint">{subtitle}</p>}
@@ -312,7 +311,7 @@ export function EvidenceDialog({ record, onClose }) {
       <div className="max-h-[calc(100vh-34px)] overflow-y-auto">
         <div className="sticky top-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-stroke bg-white">
           <div>
-            <h2 id={titleId} className="text-large font-semibold">Source details</h2>
+            <h2 id={titleId} className="text-large font-semibold mb-0">Source details</h2>
             <p id={descriptionId} className="text-mini text-ink_muted mt-0.5">
               {record.company} · {record.operation || "Company total"} · {record.time_period}
             </p>
@@ -335,14 +334,14 @@ export function EvidenceDialog({ record, onClose }) {
 
           {location.length ? (
             <section aria-labelledby={`${titleId}-location`}>
-              <h3 id={`${titleId}-location`} className="text-small font-semibold text-ink">Location in source</h3>
+              <h3 id={`${titleId}-location`} className="text-regular font-semibold text-ink mb-0">Location in source</h3>
               <p className="mt-0.5 text-mini text-ink_muted">Follow these references to find the reported value.</p>
               <EvidenceLocation items={location} />
             </section>
           ) : null}
 
           <section aria-labelledby={`${titleId}-excerpt`}>
-            <h3 id={`${titleId}-excerpt`} className="text-small font-semibold text-ink">Source excerpt</h3>
+            <h3 id={`${titleId}-excerpt`} className="text-regular font-semibold text-ink mb-0">Source excerpt</h3>
             <p className="mt-0.5 text-mini text-ink_muted">Exact text or cells used to verify the reported value.</p>
             <EvidenceExcerpt excerpt={verification.excerpt} />
           </section>
@@ -388,13 +387,13 @@ export function QuarterlySeriesTable({ pivot, labelFor, colorFor, renderValue })
         style={renderValue ? { minWidth: 110 + pivot.commodities.length * 170 } : undefined}
       >
         <div
-          className="grid gap-3 px-4 text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke"
+          className="grid gap-3 px-4 text-mini font-medium text-ink_muted min-h-9 py-2 items-end border-b border-stroke"
           style={{ gridTemplateColumns: `110px repeat(${pivot.commodities.length}, 1fr)` }}
         >
           <span>Quarter</span>
           {pivot.commodities.map((c) => (
-            <span key={c} className="flex items-center gap-1.5 justify-end text-right truncate">
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: colorFor(c) }} />
+            <span key={c} className="text-right leading-tight">
+              <span className="inline-block w-1.5 h-1.5 mr-1.5 align-middle rounded-full" style={{ backgroundColor: colorFor(c) }} />
               {labelFor(c)} ({pivot.unit[c]})
             </span>
           ))}

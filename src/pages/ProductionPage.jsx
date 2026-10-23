@@ -150,7 +150,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
     "h-8 px-2 text-small border border-stroke rounded-md bg-white focus:outline-none focus:border-accent";
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
@@ -238,7 +238,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <div className="min-w-[1240px]">
-            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_120px_90px_190px_120px_80px_100px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+            <div className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_120px_120px_90px_120px_80px_80px_100px_70px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
               <SortHeader label="Company" sortKey="company" sort={sort} setSort={setSort} />
               <SortHeader label="Operation" sortKey="operation" sort={sort} setSort={setSort} />
               <SortHeader label="Commodity" sortKey="commodity" sort={sort} setSort={setSort} />
@@ -254,7 +254,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
               {rendered.map((r, i) => (
                 <div
                   key={`${r.mine_id}-${r.operation}-${r.commodity}-${r.metric}-${r.time_period}-${i}`}
-                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_100px_120px_90px_190px_120px_80px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
+                  className="grid gap-3 px-4 grid-cols-[1.3fr_1.2fr_120px_120px_90px_120px_80px_80px_100px_70px] min-h-10 py-2 items-center border-b border-stroke_soft last:border-b-0"
                 >
                   <span className="truncate">
                     <Link to={`/company/${slugify(r.company)}`}>{r.company}</Link>
@@ -291,7 +291,7 @@ export default function ProductionPage({ data, initialQuery = {} }) {
         </div>
       </Card>
       {sorted.length > MAX_RENDERED && (
-        <p className="text-mini text-ink_muted mt-3">
+        <p className="page-note">
           Showing the first {fmtInt(MAX_RENDERED)} of {fmtInt(sorted.length)} rows — narrow with search or filters, or
           download the full CSV.
         </p>

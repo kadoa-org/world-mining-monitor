@@ -3,18 +3,19 @@
 @tailwind utilities;
 
 .seo-shell {
-  max-width: calc(1200px + 60px);
+  max-width: calc(960px + 60px);
   margin: 0 auto;
-  padding: 24px 15px 64px;
+  padding: 25px 15px 40px;
   box-sizing: border-box;
 }
-@media (min-width: 40.0625em) { .seo-shell { padding-left: 30px; padding-right: 30px; } }
+@media (min-width: 40.0625em) { .seo-shell { padding: 40px 30px 60px; } }
 
-.seo-shell h1 { font-size: 2rem; margin-bottom: 1rem; }
-.seo-shell h2 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
-.seo-shell p, .seo-shell ul { margin-bottom: 1rem; }
+.seo-shell h1 { font-size: 36px; line-height: 1.12; margin-bottom: 20px; }
+@media (max-width: 640px) { .seo-shell h1 { font-size: 27px; } }
+.seo-shell h2 { font-size: 24px; line-height: 1.25; margin: 40px 0 20px; }
+.seo-shell p, .seo-shell ul { margin-bottom: 20px; max-width: 640px; }
 .seo-shell a { color: #1d70b8; text-decoration: underline; }
-.seo-shell table { display: block; overflow-x: auto; margin: 1rem 0; }
+.seo-shell table { display: block; overflow-x: auto; margin: 20px 0; font-size: 16px; }
 .seo-shell th, .seo-shell td { border: 1px solid #b1b4b6; padding: 8px 12px; text-align: left; }
 
 /* Linear.app parity */
@@ -24,7 +25,7 @@
   --lg-color-text: #23252a;
   --lg-color-text-secondary: lch(19.788% 1.25 282);
   --lg-color-text-tertiary: lch(39.576% 1.25 282);
-  --lg-color-bg: lch(98.94% 0.5 282);
+  --lg-color-bg: #fff;
   --lg-color-bg-secondary: lch(93.44% 0.5 282);
   --lg-color-bg-tertiary: lch(91.94% 0.5 282);
   --lg-color-border: lch(89.49% 0 282);
@@ -35,10 +36,31 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--lg-color-bg);
   color: var(--lg-color-text);
-  font-size: 0.9375rem;               /* 16.875px body base, Linear's --font-size-regular */
+  font-size: 19px;
   font-weight: 450;                   /* Linear body weight */
   font-feature-settings: "cv11", "ss01";
-  line-height: 1.5;
+  line-height: 1.4;
+}
+
+/* GOV.UK headings. Utility classes still win where a page sets its own size or margin. */
+@layer base {
+  h1 { font-size: 36px; line-height: 1.12; margin-bottom: 20px; }
+  h2 { font-size: 24px; line-height: 1.25; margin-bottom: 20px; }
+  h3 { font-size: 19px; line-height: 1.3; margin-bottom: 15px; }
+  @media (max-width: 640px) { h1 { font-size: 27px; } }
+}
+
+/* Page shell: GOV.UK main padding, a 40px gap under the title block, 60px between sections. */
+.page-main { padding-top: 40px; padding-bottom: 60px; }
+.page-breadcrumb { font-size: 16px; color: var(--lg-color-text-tertiary); margin: 0 0 15px; }
+.page-lede { font-size: 19px; line-height: 1.4; color: var(--lg-color-text-tertiary); max-width: 640px; margin: 0 0 40px; }
+.page-section { margin-top: 60px; }
+.dk-section-head.page-title-block { margin-bottom: 40px; }
+.page-note { font-size: 16px; color: var(--lg-color-text-tertiary); max-width: 640px; margin: 15px 0 0; }
+@media (max-width: 640px) {
+  .page-main { padding-top: 25px; padding-bottom: 40px; }
+  .page-section { margin-top: 40px; }
+  .dk-section-head.page-title-block { flex-direction: column; align-items: flex-start; gap: 15px; }
 }
 
 .tabular-nums { font-variant-numeric: tabular-nums; }
@@ -77,8 +99,9 @@ html, body {
   border-radius: 4px !important;
   box-shadow: 0 2px 6px rgba(17, 17, 17, 0.08) !important;
   color: #23252a !important;
-  font-size: 11px !important;
-  padding: 4px 8px !important;
+  font-size: 14px !important;
+  line-height: 1.35;
+  padding: 5px 10px !important;
 }
 .mine-leaflet-tooltip::before { border-top-color: #b1b4b6 !important; }
 .mine-popup .leaflet-popup-content-wrapper {
@@ -110,13 +133,13 @@ html, body {
   outline: none;
 }
 .mine-popup .leaflet-popup-content { margin: 0 !important; width: auto !important; }
-.mine-popup-card { font-family: "Atkinson Hyperlegible", arial, sans-serif; min-width: 228px; }
+.mine-popup-card { font-family: "Atkinson Hyperlegible", arial, sans-serif; min-width: 260px; }
 .mine-popup-header {
   background: #f3f2f1;
   border-bottom: 1px solid #b1b4b6;
   padding: 12px 48px 11px 16px;
 }
-.mine-popup-header h3 { color: #0b0c0c; font-size: 17px; font-weight: 700; line-height: 1.25; margin: 0; }
+.mine-popup-header h3 { color: #0b0c0c; font-size: 19px; font-weight: 700; line-height: 1.25; margin: 0; }
 .mine-popup-body { padding: 0 16px; }
 .mine-popup-summary { margin: 0; }
 .mine-popup-summary > div,
@@ -124,25 +147,25 @@ html, body {
   border-bottom: 1px solid #e5e6e7;
   display: grid;
   gap: 12px;
-  grid-template-columns: 78px minmax(0, 1fr);
+  grid-template-columns: 82px minmax(0, 1fr);
   padding: 8px 0;
 }
 .mine-popup-summary dt,
-.mine-popup-production dt { color: #0b0c0c; font-size: 12px; font-weight: 700; line-height: 1.35; }
+.mine-popup-production dt { color: #0b0c0c; font-size: 16px; font-weight: 700; line-height: 1.35; }
 .mine-popup-summary dd,
-.mine-popup-production dd { color: #0b0c0c; font-size: 12px; line-height: 1.35; margin: 0; overflow-wrap: anywhere; }
+.mine-popup-production dd { color: #0b0c0c; font-size: 16px; line-height: 1.35; margin: 0; overflow-wrap: anywhere; }
 .mine-popup-production { padding-top: 12px; }
-.mine-popup-production h4 { color: #0b0c0c; font-size: 12px; font-weight: 700; line-height: 1.35; margin: 0 0 6px; }
+.mine-popup-production h4 { color: #0b0c0c; font-size: 16px; font-weight: 700; line-height: 1.35; margin: 0 0 6px; }
 .mine-popup-production dl { margin: 0; }
 .mine-popup-production dl > div { grid-template-columns: minmax(0, 1fr) auto; }
 .mine-popup-production dt,
 .mine-popup-production ul li { align-items: center; display: flex; gap: 7px; }
 .mine-popup-production ul { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; margin: 0; padding: 0; }
-.mine-popup-production ul li { color: #0b0c0c; font-size: 12px; line-height: 1.35; }
-.mine-popup-dot { border-radius: 50%; flex: 0 0 auto; height: 7px; width: 7px; }
-.mine-popup-observations { color: #505a5f; font-size: 11px; line-height: 1.4; margin: 11px 0 12px; }
+.mine-popup-production ul li { color: #0b0c0c; font-size: 16px; line-height: 1.35; }
+.mine-popup-dot { border-radius: 50%; flex: 0 0 auto; height: 8px; width: 8px; }
+.mine-popup-observations { color: #505a5f; font-size: 16px; line-height: 1.4; margin: 11px 0 12px; }
 .mine-popup-footer { border-top: 1px solid #b1b4b6; padding: 11px 16px 12px; }
-.mine-popup-footer a { color: #1d70b8; font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.mine-popup-footer a { color: #1d70b8; font-size: 16px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .mine-popup-footer a:visited { color: #4c2c92; }
 .mine-popup-footer a:hover { color: #003078; text-decoration-thickness: 3px; }
 .mine-popup-footer a:focus-visible {
@@ -153,6 +176,7 @@ html, body {
   text-decoration: none;
 }
 .custom-cluster-icon { background: transparent; border: none; }
+.leaflet-container .leaflet-control-attribution { font-size: 14px; }
 
 /* Overview filters and drill-down links stack instead of squeezing section
    copy into a narrow column on phone-width screens. */

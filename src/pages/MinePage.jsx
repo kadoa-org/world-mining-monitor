@@ -63,8 +63,8 @@ export default function MinePage({ data, slug }) {
 
   if (!mine) {
     return (
-      <div className="dk-container pt-8 pb-16">
-        <h1 className="text-title font-semibold text-ink mb-2">Mine not found</h1>
+      <div className="dk-container page-main">
+        <h1 className="dk-h1">Mine not found</h1>
         <p className="text-regular text-ink_muted">
           No production data for this mine. <Link to="/production">Browse all production data</Link>.
         </p>
@@ -73,15 +73,15 @@ export default function MinePage({ data, slug }) {
   }
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
-      <p className="text-mini text-ink_muted mb-1">
+      <p className="page-breadcrumb">
         <Link to={`/company/${slugify(mine.company)}`}>{mine.company}</Link> / {mine.name}
       </p>
-      <h1 className="text-title sm:text-display font-semibold text-ink mb-2">{mine.name}: production by quarter</h1>
-      <p className="text-regular text-ink_muted max-w-3xl mb-6">
+      <h1 className="dk-h1">{mine.name}: production by quarter</h1>
+      <p className="page-lede">
         Quarterly production volumes for {mine.name}, extracted from {mine.company}'s own quarterly and annual reports.
       </p>
 
@@ -94,7 +94,7 @@ export default function MinePage({ data, slug }) {
         ]}
       />
 
-      <div className="mt-8">
+      <div className="page-section">
         <SectionHeader
           title="Quarterly production"
           subtitle="Comparable volumes by commodity, product form, and reporting basis. Select a value to view its source."
@@ -129,13 +129,13 @@ export default function MinePage({ data, slug }) {
       </div>
 
       {mine.lat != null && mine.lng != null && (
-        <div className="mt-8">
+        <div className="page-section">
           <SectionHeader title="Location" />
           <Card className="overflow-hidden">
             <MiningMap
               mines={[mine]}
               mineProduction={mineProduction}
-              height={320}
+              height={420}
               center={[mine.lat, mine.lng]}
               zoom={5}
               scaleByOutput={false}

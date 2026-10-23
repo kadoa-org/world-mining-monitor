@@ -20,7 +20,7 @@ const ROUTES_NEEDING_DB = new Set(["overview", "production", "companies", "commo
 
 function LoadingScreen() {
   return (
-    <div className="dk-container pt-16" aria-busy="true">
+    <div className="dk-container page-main" aria-busy="true">
       <p role="status">Loading mining data…</p>
       <div aria-hidden="true">
         <div className="h-4 w-40 bg-muted rounded mb-4" />
@@ -47,7 +47,7 @@ function ErrorScreen({ error }) {
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-large font-semibold text-ink mb-2">Could not load the dataset</h1>
+        <h1 className="text-large font-semibold text-ink mb-[15px]">Could not load the dataset</h1>
         <p className="text-small text-ink_muted">{String(error?.message ?? error)}</p>
       </div>
     </div>

@@ -202,14 +202,14 @@ export default function OverviewPage({ data }) {
   }, [production]);
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       {evidenceRecord ? (
         <EvidenceDialog record={evidenceRecord} onClose={() => setEvidenceRecord(null)} />
       ) : null}
       <h1 className="dk-h1">
         World Mining Monitor
       </h1>
-      <p className="text-regular text-ink_muted max-w-3xl mb-8">
+      <p className="page-lede">
         Quarterly production from the world's largest mining companies, taken from their own reports.
       </p>
 
@@ -229,7 +229,7 @@ export default function OverviewPage({ data }) {
         })}
       />
 
-      <div className="mt-10">
+      <div className="page-section">
         <ChartCard
           id="map-title"
           title={`Production map, ${activePeriod || "latest available"}`}
@@ -267,7 +267,7 @@ export default function OverviewPage({ data }) {
                 <button
                   key={c}
                   onClick={() => setCommodity(commodity === c ? "all" : c)}
-                  className={`flex items-center gap-1.5 text-mini ${active ? "text-ink_muted hover:text-ink" : "text-ink_faint"}`}
+                  className={`flex items-center gap-1.5 text-chart ${active ? "text-ink_muted hover:text-ink" : "text-ink_faint"}`}
                 >
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COMMODITY_COLORS[c], opacity: active ? 1 : 0.3 }} />
                   {commodityLabel(c)}
@@ -284,7 +284,7 @@ export default function OverviewPage({ data }) {
         </ChartCard>
       </div>
 
-      <div className="mt-10">
+      <div className="page-section">
         {commodity === "all" ? (
           <>
             <SectionHeader
@@ -294,7 +294,7 @@ export default function OverviewPage({ data }) {
               right={<Link to="/commodities">All commodities →</Link>}
             />
             <Card className="overflow-hidden">
-              <div className="grid gap-3 px-4 grid-cols-[1fr_76px_82px] sm:grid-cols-[1fr_110px_110px_110px_110px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+              <div className="grid gap-3 px-4 grid-cols-[1fr_84px_88px] sm:grid-cols-[1fr_110px_110px_110px_110px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
                 <span>Commodity</span>
                 <span className="text-right">Companies</span>
                 <span className="text-right">Operations</span>
@@ -305,7 +305,7 @@ export default function OverviewPage({ data }) {
                 {coverageRows.map((row) => (
                   <div
                     key={row.commodity}
-                    className="grid gap-3 px-4 grid-cols-[1fr_76px_82px] sm:grid-cols-[1fr_110px_110px_110px_110px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                    className="grid gap-3 px-4 grid-cols-[1fr_84px_88px] sm:grid-cols-[1fr_110px_110px_110px_110px] h-10 items-center border-b border-stroke_soft last:border-b-0"
                   >
                     <span className="min-w-0 flex items-center gap-2">
                       <span
@@ -344,7 +344,7 @@ export default function OverviewPage({ data }) {
               }
             />
             <Card className="overflow-hidden">
-              <div className="grid gap-3 px-4 grid-cols-[30px_1fr_90px] sm:grid-cols-[40px_minmax(180px,1.4fr)_minmax(140px,1fr)_110px_minmax(150px,1fr)_110px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+              <div className="grid gap-3 px-4 grid-cols-[30px_1fr_90px] sm:grid-cols-[40px_minmax(180px,1.4fr)_minmax(140px,1fr)_110px_minmax(150px,1fr)_110px_70px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
                 <span className="text-right">#</span>
                 <span>Mine / operation</span>
                 <span className="hidden sm:block">Company</span>
@@ -391,13 +391,13 @@ export default function OverviewPage({ data }) {
       </div>
 
       {recentReports.length > 0 && (
-        <div className="mt-10">
+        <div className="page-section">
           <SectionHeader
             title="Recently processed source reports"
             subtitle="Company reports most recently processed by the extraction pipeline"
           />
           <Card className="overflow-hidden">
-            <div className="grid gap-3 px-4 grid-cols-[1fr_90px] sm:grid-cols-[minmax(180px,1fr)_120px_130px_70px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+            <div className="grid gap-3 px-4 grid-cols-[1fr_90px] sm:grid-cols-[minmax(180px,1fr)_120px_130px_70px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
               <span>Company</span>
               <span className="hidden sm:block">Period</span>
               <span className="hidden sm:block">Processed</span>

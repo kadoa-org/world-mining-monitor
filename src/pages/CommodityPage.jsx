@@ -77,8 +77,8 @@ export default function CommodityPage({ data, slug }) {
 
   if (!commodity) {
     return (
-      <div className="dk-container pt-8 pb-16">
-        <h1 className="text-title font-semibold text-ink mb-2">Commodity not found</h1>
+      <div className="dk-container page-main">
+        <h1 className="dk-h1">Commodity not found</h1>
         <p className="text-regular text-ink_muted">
           No production data for this commodity. <Link to="/commodities">Browse all commodities</Link>.
         </p>
@@ -90,15 +90,15 @@ export default function CommodityPage({ data, slug }) {
   const color = COMMODITY_COLORS[commodity] || "#6b7280";
 
   return (
-    <div className="dk-container pt-8 pb-16">
-      <p className="text-mini text-ink_muted mb-1">
+    <div className="dk-container page-main">
+      <p className="page-breadcrumb">
         <Link to="/commodities">Commodities</Link> / {label}
       </p>
-      <h1 className="text-title sm:text-display font-semibold text-ink mb-2 flex items-center gap-3">
+      <h1 className="dk-h1 flex items-center gap-3">
         <span className="w-4 h-4 rounded-full inline-block shrink-0" style={{ backgroundColor: color }} />
         {label} production by company
       </h1>
-      <p className="text-regular text-ink_muted max-w-3xl mb-6">
+      <p className="page-lede">
         Who produces the most {label.toLowerCase()}, taken from company quarterly reports.
       </p>
 
@@ -127,7 +127,7 @@ export default function CommodityPage({ data, slug }) {
         />
       )}
 
-      <div className="mt-8">
+      <div className="page-section">
         <SectionHeader
           title={`Largest ${label.toLowerCase()} producers, ${quarter}`}
           subtitle={`Disclosed mine-level production, ${stats.unit}. Change on ${prevQuarter}.`}
@@ -141,17 +141,17 @@ export default function CommodityPage({ data, slug }) {
           }
         />
         <Card className="overflow-hidden">
-          <div className="grid gap-3 px-4 grid-cols-[30px_1fr_110px_90px] sm:grid-cols-[40px_1fr_140px_110px] text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke">
+          <div className="grid gap-3 px-4 grid-cols-[24px_minmax(0,1fr)_72px_64px] sm:grid-cols-[40px_1fr_140px_110px] text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke">
             <span className="text-right">#</span>
             <span>Company</span>
-            <span className="text-right">Production ({stats.unit})</span>
+            <span className="text-right"><span className="sm:hidden">{stats.unit}</span><span className="hidden sm:inline">Production ({stats.unit})</span></span>
             <span className="text-right">Change</span>
           </div>
           <div className="text-small [&>*:nth-child(even)]:bg-muted/30">
             {ranking.map((r, i) => (
               <div
                 key={r.company}
-                className="grid gap-3 px-4 grid-cols-[30px_1fr_110px_90px] sm:grid-cols-[40px_1fr_140px_110px] h-10 items-center border-b border-stroke_soft last:border-b-0"
+                className="grid gap-3 px-4 grid-cols-[24px_minmax(0,1fr)_72px_64px] sm:grid-cols-[40px_1fr_140px_110px] h-10 items-center border-b border-stroke_soft last:border-b-0"
               >
                 <span className="text-right text-mini text-ink_faint tabular-nums">{i + 1}</span>
                 <span className="truncate">
@@ -170,7 +170,7 @@ export default function CommodityPage({ data, slug }) {
             )}
           </div>
         </Card>
-        <p className="text-mini text-ink_muted mt-3">
+        <p className="page-note">
           Only companies that disclose mine-level {label.toLowerCase()} volumes are ranked. This is disclosed production,
           not a complete global census.
         </p>

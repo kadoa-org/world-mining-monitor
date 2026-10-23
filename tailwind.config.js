@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         // Tokens lifted 1:1 from linear.app (LCH values read off its CSS custom properties).
-        canvas: "lch(98.94% 0.5 282)", // --bg-base-color
+        canvas: "#ffffff",
         panel: "#ffffff",
         muted: "lch(93.44% 0.5 282)", // --color-bg-secondary
         hover: "lch(91.94% 0.5 282)", // --color-bg-tertiary
@@ -34,13 +34,14 @@ export default {
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       fontSize: {
-        // Linear's scale, based on 18px html root
-        mini: ["0.75rem", { lineHeight: "1.4" }], // 13.5px
-        small: ["0.8125rem", { lineHeight: "1.4" }], // 14.625px
-        regular: ["0.9375rem", { lineHeight: "1.5" }], // 16.875px
-        large: ["1.125rem", { lineHeight: "1.5" }], // 20.25px
-        title: ["1.5rem", { lineHeight: "1.15", letterSpacing: "-0.012em" }], // 27px
-        display: ["2.125rem", { lineHeight: "1.1", letterSpacing: "-0.016em" }], // 38.25px
+        // GOV.UK type scale (design-system.service.gov.uk/styles/type-scale). Nothing outside a chart is below 16px.
+        chart: ["14px", { lineHeight: "1.4" }], // chart and map labels only
+        mini: ["16px", { lineHeight: "1.4" }],
+        small: ["16px", { lineHeight: "1.4" }],
+        regular: ["19px", { lineHeight: "1.4" }],
+        large: ["24px", { lineHeight: "1.25" }],
+        title: ["27px", { lineHeight: "1.12" }],
+        display: ["36px", { lineHeight: "1.12" }],
       },
       fontWeight: {
         body: "450",

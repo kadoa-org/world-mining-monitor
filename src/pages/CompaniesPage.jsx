@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { COMPANY_TICKERS, commodityLabel, latestProductionQuarter } from "../constants";
 import { Card, fmtInt, Link, Pill, RowLinkNav, SectionHeader, SortHeader, slugify } from "../ui";
 
-const COLS = "grid gap-3 px-4 grid-cols-[30px_1fr_70px_80px] sm:grid-cols-[40px_1.4fr_1fr_90px_90px_110px]";
+const COLS = "grid gap-3 px-4 grid-cols-[24px_minmax(0,1fr)_96px] sm:grid-cols-[40px_1.4fr_1fr_90px_90px_110px]";
 
 export default function CompaniesPage({ data }) {
   const { production, mineById } = data;
@@ -47,7 +47,7 @@ export default function CompaniesPage({ data }) {
   }, [rows, search, sort]);
 
   return (
-    <div className="dk-container pt-8 pb-16">
+    <div className="dk-container page-main">
       <SectionHeader as="h1" title="Companies" subtitle={`${fmtInt(rows.length)} companies with extracted production data`} right={<Link to="/mines">Browse mines</Link>} />
       <input
         type="text"
@@ -57,7 +57,7 @@ export default function CompaniesPage({ data }) {
         className="h-8 px-3 mb-4 text-small border border-stroke rounded-md bg-white min-w-[260px] focus:outline-none focus:border-accent placeholder:text-ink_faint"
       />
       <Card className="overflow-hidden">
-        <div className={`${COLS} text-mini font-medium text-ink_muted h-9 items-center border-b border-stroke`}>
+        <div className={`${COLS} text-mini font-medium text-ink_muted min-h-9 py-2 items-center border-b border-stroke`}>
           <span className="text-right">#</span>
           <SortHeader label="Company" sortKey="company" sort={sort} setSort={setSort} />
           <span className="hidden sm:block">Commodities</span>
@@ -65,7 +65,9 @@ export default function CompaniesPage({ data }) {
             <SortHeader label="Mines" sortKey="mineCount" sort={sort} setSort={setSort} align="right" />
           </span>
           <SortHeader label="Records" sortKey="records" sort={sort} setSort={setSort} align="right" />
-          <SortHeader label="Latest" sortKey="latest" sort={sort} setSort={setSort} align="right" />
+          <span className="hidden sm:block text-right">
+            <SortHeader label="Latest" sortKey="latest" sort={sort} setSort={setSort} align="right" />
+          </span>
         </div>
         <div className="text-small [&>*:nth-child(even)]:bg-muted/30">
           {filtered.map((c, i) => (
@@ -74,7 +76,7 @@ export default function CompaniesPage({ data }) {
                 <span className="text-right text-mini text-ink_faint tabular-nums">{i + 1}</span>
                 <span className="truncate">
                   {c.company}
-                  {c.ticker && <span className="ml-1.5 text-mini text-ink_faint">{c.ticker}</span>}
+                  {c.ticker && <span className="hidden sm:inline ml-1.5 text-mini text-ink_faint">{c.ticker}</span>}
                 </span>
                 <span className="hidden sm:flex items-center gap-1 overflow-hidden">
                   {c.commodityList.slice(0, 3).map((cm) => (
@@ -86,7 +88,7 @@ export default function CompaniesPage({ data }) {
                 </span>
                 <span className="hidden sm:block text-right tabular-nums">{fmtInt(c.mineCount)}</span>
                 <span className="text-right tabular-nums">{fmtInt(c.records)}</span>
-                <span className="text-right tabular-nums text-ink_muted">{c.latest || "--"}</span>
+                <span className="hidden sm:block text-right tabular-nums text-ink_muted">{c.latest || "--"}</span>
               </div>
             </RowLinkNav>
           ))}
