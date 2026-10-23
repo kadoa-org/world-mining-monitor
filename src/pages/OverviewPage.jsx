@@ -240,6 +240,7 @@ export default function OverviewPage({ data }) {
                 ? `Circle size compares ${commodityLabel(commodity).toLowerCase()} production (${selectedUnit}).`
                 : "No comparable production unit is available for this selection."
           }
+          footer={<>Source: <Link to="/companies">each company's quarterly and annual reports</Link>.</>}
         >
           <div className="overview-map-controls flex flex-wrap gap-x-6">
             <FilterSelect
@@ -259,13 +260,7 @@ export default function OverviewPage({ data }) {
               ]}
             />
           </div>
-          <MiningMap
-            mines={filteredMines}
-            mineProduction={mineProduction}
-            height={560}
-            scaleByOutput={commodity !== "all" && Boolean(selectedUnit)}
-          />
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+          <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5">
             {(commodity === "all" ? mapCommodities : [commodity]).map((c) => {
               const active = commodity === "all" || commodity === c;
               return (
@@ -280,6 +275,12 @@ export default function OverviewPage({ data }) {
               );
             })}
           </div>
+          <MiningMap
+            mines={filteredMines}
+            mineProduction={mineProduction}
+            height={560}
+            scaleByOutput={commodity !== "all" && Boolean(selectedUnit)}
+          />
         </ChartCard>
       </div>
 
