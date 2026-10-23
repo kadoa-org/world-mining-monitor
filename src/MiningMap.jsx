@@ -55,7 +55,7 @@ function createClusterIcon(cluster) {
       color: #23252a;
       font-size: 11px;
       font-weight: 700;
-      font-family: Inter, sans-serif;
+      font-family: "Atkinson Hyperlegible", arial, sans-serif;
       box-shadow: 0 1px 3px rgba(17,17,17,0.12);
     ">${count}</div>`,
     className: "custom-cluster-icon",

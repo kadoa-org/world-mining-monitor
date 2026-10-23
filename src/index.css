@@ -69,7 +69,7 @@ html, body {
 /* ── Leaflet light theme ─────────────────────────────────────────────────── */
 .leaflet-container {
   background: lch(96% 0.5 282) !important;
-  font-family: Inter, sans-serif;
+  font-family: "Atkinson Hyperlegible", arial, sans-serif;
 }
 .mine-leaflet-tooltip {
   background: #fff !important;
@@ -110,7 +110,7 @@ html, body {
   outline: none;
 }
 .mine-popup .leaflet-popup-content { margin: 0 !important; width: auto !important; }
-.mine-popup-card { font-family: Inter, Arial, sans-serif; min-width: 228px; }
+.mine-popup-card { font-family: "Atkinson Hyperlegible", arial, sans-serif; min-width: 228px; }
 .mine-popup-header {
   background: #f3f2f1;
   border-bottom: 1px solid #b1b4b6;
