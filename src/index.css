@@ -54,13 +54,16 @@ html, body {
 /* Page shell: 40px top padding (25px on phones), a 40px gap under the title block, 60px between sections. */
 .page-main { padding-top: 40px; padding-bottom: 60px; }
 .page-breadcrumb { font-size: 16px; color: var(--lg-color-text-tertiary); margin: 0 0 15px; }
-.page-lede { font-size: 19px; line-height: 1.4; color: var(--lg-color-text-tertiary); max-width: 640px; margin: 0 0 40px; }
+/* The page lede is the kit's lead paragraph (.dk-lede): 24px, 21px on phones, in the text colour, in the heading's
+   column. */
+.page-lede { font-size: 24px; line-height: 30px; color: var(--dk-ink, #0b0c0c); max-width: var(--dk-text-column, 720px); text-wrap: pretty; margin: 0 0 40px; }
 .page-section { margin-top: 60px; }
 .dk-section-head.page-title-block { margin-bottom: 40px; }
 .page-note { font-size: 16px; color: var(--lg-color-text-tertiary); max-width: 640px; margin: 15px 0 0; }
 @media (max-width: 640px) {
   .page-main { padding-top: 25px; padding-bottom: 40px; }
   .page-section { margin-top: 40px; }
+  .page-lede { font-size: 21px; line-height: 25px; }
   .dk-section-head.page-title-block { flex-direction: column; align-items: flex-start; gap: 15px; }
 }
 

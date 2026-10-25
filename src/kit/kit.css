@@ -228,9 +228,14 @@
 
 /* ── Page-level typography helpers ── */
 /* Page titles: a clear step above the 24px section headings, the same on every dataset site. */
-.dk-h1 { font: 700 36px/1.12 var(--dk-font); color: var(--dk-ink); margin: 0 0 20px; }
+/* The page heading and the lede share one text column, 720px: about 63 characters a line for the 24px lede, under
+   75. The heading balances its lines and the lede avoids a lone last word. Charts and cards keep the full width. */
+:root { --dk-text-column: 720px; }
+.dk-h1 { font: 700 36px/1.12 var(--dk-font); color: var(--dk-ink); margin: 0 0 20px; max-width: var(--dk-text-column); text-wrap: balance; }
 @media (max-width: 640px) { .dk-h1 { font-size: 27px; } }
-.dk-lede { font: 400 var(--dk-fs-l)/1.5 var(--dk-font); color: var(--dk-muted); margin: 0 0 16px; max-width: 72ch; }
+/* The lead paragraph: 24px, 21px on phones, in the text colour, once per page. */
+.dk-lede { font: 400 var(--dk-fs-l)/30px var(--dk-font); color: var(--dk-ink); margin: 0 0 16px; max-width: var(--dk-text-column); text-wrap: pretty; }
+@media (max-width: 640px) { .dk-lede { font-size: 21px; line-height: 25px; } }
 .dk-link { color: var(--dk-link); text-decoration: underline; text-underline-offset: 2px; }
 .dk-link:hover { text-decoration-thickness: 2px; }
 .dk-link:focus-visible { outline: 3px solid var(--dk-focus); outline-offset: 0; }
