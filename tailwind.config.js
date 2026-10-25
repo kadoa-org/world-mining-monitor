@@ -34,7 +34,7 @@ export default {
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       fontSize: {
-        // GOV.UK type scale (design-system.service.gov.uk/styles/type-scale). Nothing outside a chart is below 16px.
+        // Type scale: 16, 19, 24, 27 and 36px; 14px for chart labels. Nothing outside a chart is below 16px.
         chart: ["14px", { lineHeight: "1.4" }], // chart and map labels only
         mini: ["16px", { lineHeight: "1.4" }],
         small: ["16px", { lineHeight: "1.4" }],

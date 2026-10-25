@@ -176,8 +176,7 @@ export function SiteFooter({ current, dataset = current }) {
       <div className="dk-container dk-footer-inner">
         <h2 className="dk-footer-heading">Open datasets</h2>
         <nav aria-label="Open datasets">
-          {/* In columns, as the GOV.UK footer lists its links (govuk-footer__list--columns-3): four on desktop, two on
-              a phone, so the list grows sideways instead of down. */}
+          {/* In columns: four on desktop, two on a phone, so the list grows sideways instead of down. */}
           <ul className="dk-footer-links">
             {sites.map(([key, href, label]) => (
               <li key={key}>
@@ -197,7 +196,7 @@ export function SiteFooter({ current, dataset = current }) {
   );
 }
 
-// `collapse` follows the GOV.UK service navigation: below 641px the links fold behind a "Menu" toggle and open as a
+// With `collapse`, below 641px the links fold behind a "Menu" toggle and open as a
 // vertical list. An item with `end` sits at the far right on wider screens, for a page about the site itself.
 export function NavBar({ items, LinkComponent = "a", collapse = false }) {
   const L = LinkComponent;

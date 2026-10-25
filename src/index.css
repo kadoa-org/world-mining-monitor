@@ -42,7 +42,8 @@ html, body {
   line-height: 1.4;
 }
 
-/* GOV.UK headings. Utility classes still win where a page sets its own size or margin. */
+/* Headings: 36px page titles (27px on phones), then 24px and 19px. Utility classes still win where a page sets its
+   own size or margin. */
 @layer base {
   h1 { font-size: 36px; line-height: 1.12; margin-bottom: 20px; }
   h2 { font-size: 24px; line-height: 1.25; margin-bottom: 20px; }
@@ -50,7 +51,7 @@ html, body {
   @media (max-width: 640px) { h1 { font-size: 27px; } }
 }
 
-/* Page shell: GOV.UK main padding, a 40px gap under the title block, 60px between sections. */
+/* Page shell: 40px top padding (25px on phones), a 40px gap under the title block, 60px between sections. */
 .page-main { padding-top: 40px; padding-bottom: 60px; }
 .page-breadcrumb { font-size: 16px; color: var(--lg-color-text-tertiary); margin: 0 0 15px; }
 .page-lede { font-size: 19px; line-height: 1.4; color: var(--lg-color-text-tertiary); max-width: 640px; margin: 0 0 40px; }

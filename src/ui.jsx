@@ -1,4 +1,4 @@
-// Reusable primitives shared by all pages. Type follows the GOV.UK scale in tailwind.config.js.
+// Reusable primitives shared by all pages. Type follows the scale in tailwind.config.js.
 import React, { useEffect, useId, useRef } from "react";
 import { SectionHeading, Stat, StatGrid as KitStatGrid } from "./kit";
 import { Tag as DkTag } from "./kit";
