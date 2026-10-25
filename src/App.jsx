@@ -47,7 +47,7 @@ function ErrorScreen({ error }) {
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-large font-semibold text-ink mb-[15px] max-w-[var(--dk-text-column,720px)] text-balance">Could not load the dataset</h1>
+        <h1 className="text-large font-semibold text-ink mb-[15px] text-balance">Could not load the dataset</h1>
         <p className="text-small text-ink_muted">{String(error?.message ?? error)}</p>
       </div>
     </div>

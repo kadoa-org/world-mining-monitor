@@ -54,8 +54,8 @@ html, body {
 /* Page shell: 40px top padding (25px on phones), a 40px gap under the title block, 60px between sections. */
 .page-main { padding-top: 40px; padding-bottom: 60px; }
 .page-breadcrumb { font-size: 16px; color: var(--lg-color-text-tertiary); margin: 0 0 15px; }
-/* The page lede is the kit's lead paragraph (.dk-lede): 24px, 21px on phones, in the text colour, in the heading's
-   column. */
+/* The page lede is the kit's lead paragraph (.dk-lede): 24px, 21px on phones, in the text colour, in the
+   720px text column. */
 .page-lede { font-size: 24px; line-height: 30px; color: var(--dk-ink, #0b0c0c); max-width: var(--dk-text-column, 720px); text-wrap: pretty; margin: 0 0 40px; }
 .page-section { margin-top: 60px; }
 .dk-section-head.page-title-block { margin-bottom: 40px; }
